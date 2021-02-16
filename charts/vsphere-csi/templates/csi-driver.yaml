@@ -1,0 +1,9 @@
+{{- if .Values.csidriver.enabled -}}
+apiVersion: storage.k8s.io/v1beta1
+kind: CSIDriver
+metadata:
+  name: csi.vsphere.vmware.com
+spec:
+  attachRequired: true
+  podInfoOnMount: false
+{{- end -}}
