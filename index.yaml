@@ -26,6 +26,6 @@ entries:
     sources:
     - https://github.com/kubernetes-sigs/vsphere-csi-driver
     urls:
-    - https://vsphere-tmm.github.io/charts/vsphere-csi-0.0.4.tgz
+    - https://vsphere-tmm.github.io/helm-charts/charts/vsphere-csi-0.0.4.tgz
     version: 0.0.4
 generated: "2021-02-16T11:07:28.589705Z"
