@@ -1,6 +1,6 @@
 # vSphere TMM Helm Charts
 
-Unofficial repository of helm charts create by the vSphere Technical Marketing team.
+Unofficial repository of helm charts created by the vSphere Technical Marketing team.
 
 ## Adding this helm repository
 
