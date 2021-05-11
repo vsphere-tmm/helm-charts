@@ -20,7 +20,8 @@ config:
   externalKubeconfig: 
     enabled: false
     secretName: ""
-  secretsInline: true
+    keyName: "value"
+  secretsInline: false
   # Global properties in this section will be used for all specified vCenters unless overriden in VirtualCenter section.
   global:
     port: 443
@@ -192,7 +193,10 @@ vSphereCPI:
   command: []
   ## @param vSphereCPI.args Override default container args (useful when using custom images)
   ##
-  args: []
+  args:
+    - --cloud-provider=vsphere
+    - --v=7
+    - --cloud-config=/etc/cloud/vsphere.conf
   ## @param vSphereCPI.hostAliases vSphereCPI pods host aliases
   ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
   ##

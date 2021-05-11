@@ -75,6 +75,12 @@ spec:
           {{- end }}
           {{- if .Values.vSphereCPI.args }}
           args: {{- include "common.tplvalues.render" (dict "value" .Values.vSphereCPI.args "context" $) | nindent 12 }}
+            {{- if .Values.config.externalKubeconfig.enabled }}
+            - --kubeconfig=/etc/kubernetes/value
+            {{- end }}
+            {{- if gt .Values.vSphereCPI.replicaCount 1 }}
+            - --leader-elect=false
+            {{- end }}
           {{- end }}
           env:
             {{- if .Values.vSphereCPI.extraEnvVars }}
@@ -106,16 +112,28 @@ spec:
             - name: vsphere-config-volume
               mountPath: /etc/cloud
               readOnly: true
-          {{- if .Values.vSphereCPI.extraVolumeMounts }}
-          {{- include "common.tplvalues.render" (dict "value" .Values.vSphereCPI.extraVolumeMounts "context" $) | nindent 12 }}
-          {{- end }}
+            {{- if .Values.config.externalKubeconfig.enabled }}
+            - mountPath: /etc/kubernetes
+              name: kubeconfig-volume
+              readOnly: true
+            {{- end }}
         {{- if .Values.vSphereCPI.sidecars }}
         {{- include "common.tplvalues.render" ( dict "value" .Values.vSphereCPI.sidecars "context" $) | nindent 8 }}
         {{- end }}
       volumes:
         - name: vsphere-config-volume
+          {{- if not .Values.config.secretsInline }}
           configMap:
-            path: {{ template "common.names.fullname" . }}
+            name: {{ template "common.names.fullname" . }}
+          {{- else }}
+          secret:
+            secretName: {{ template "common.names.fullname" . }}
+          {{- end }}
+        {{- if .Values.config.externalKubeconfig.enabled }}
+        - name: kubeconfig-volume
+          secret:
+            secretName: {{ .Values.config.externalKubeconfig.secretName }}
+        {{- end }}
         {{- if .Values.vSphereCPI.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.vSphereCPI.extraVolumes "context" $) | nindent 8 }}
         {{- end }}

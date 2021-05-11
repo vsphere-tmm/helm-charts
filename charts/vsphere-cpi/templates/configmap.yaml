@@ -1,3 +1,4 @@
+{{- if not .Values.config.secretsInline }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -16,7 +17,7 @@ data:
     {{- if .Values.config.global }}
     global:
     {{- include "common.tplvalues.render" ( dict "value" .Values.config.global "context" $ ) | nindent 6 }}
-      {{- if and (not .Values.config.secretsInline ) (and (not .Values.config.global.secretName) (not .Values.config.global.secretNamespace)) }} 
+      {{- if and (not .Values.config.global.secretName) (not .Values.config.global.secretNamespace) }} 
       secretName: {{ template "common.names.fullname" . }}
       secretNamespace: {{ .Release.Namespace | quote }}
       {{- end }}
@@ -25,3 +26,4 @@ data:
     labels:
     {{- include "common.tplvalues.render" ( dict "value" .Values.config.labels "context" $ ) | nindent 6 }}
     {{- end }}
+{{- end }}
