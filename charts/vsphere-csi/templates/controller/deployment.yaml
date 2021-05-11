@@ -61,7 +61,7 @@ spec:
         {{- end }}
       containers:
         - name: vsphere-csi-controller
-          image: {{ template "vsphere-csi.controller.image.controller" . }}
+          image: {{ template "vsphere-csi.controller.image" . }}
           imagePullPolicy: {{ .Values.controller.image.pullPolicy }}
           {{- if .Values.controller.lifecycleHooks }}
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.controller.lifecycleHooks "context" $) | nindent 12 }}
@@ -76,8 +76,6 @@ spec:
           args: {{- include "common.tplvalues.render" (dict "value" .Values.controller.args "context" $) | nindent 12 }}
           {{- end }}
           env:
-            - name: foo
-              value: bar
             {{- if .Values.controller.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.controller.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}

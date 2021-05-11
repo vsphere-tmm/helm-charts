@@ -1,4 +1,11 @@
 %%Instructions to access the application depending on the serviceType and other considerations%%
 
-{{- include "common.warnings.rollingTag" .Values.node.image.node }}
-{{- include "common.warnings.rollingTag" .Values.controller.image.controller }}
+{{- include "common.warnings.rollingTag" .Values.node.image }}
+{{- include "common.warnings.rollingTag" .Values.node.registrar.image }}
+{{- include "common.warnings.rollingTag" .Values.node.livenessprobe.image }}
+{{- include "common.warnings.rollingTag" .Values.controller.image }}
+{{- include "common.warnings.rollingTag" .Values.controller.attacher.image }}
+{{- include "common.warnings.rollingTag" .Values.controller.resizer.image }}
+{{- include "common.warnings.rollingTag" .Values.controller.livenessprobe.image }}
+{{- include "common.warnings.rollingTag" .Values.controller.syncer.image }}
+{{- include "common.warnings.rollingTag" .Values.controller.provisioner.image }}
