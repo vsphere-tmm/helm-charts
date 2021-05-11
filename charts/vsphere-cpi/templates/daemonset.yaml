@@ -9,8 +9,14 @@ metadata:
     {{- if .Values.commonLabels }}
     {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
     {{- end }}
-  {{- if .Values.commonAnnotations }}
-  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+  {{- if or .Values.commonAnnotations ( eq ( .Release.Namespace | toString) "kube-system" )}}
+  annotations: 
+    {{- if or .Values.commonAnnotations }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+    {{- end }}
+    {{- if eq "kube-system" ( .Release.Namespace | toString ) }}
+    scheduler.alpha.kubernetes.io/critical-pod: ""
+    {{- end }}
   {{- end }}
 spec:
   {{- if .Values.vSphereCPI.updateStrategy }}
@@ -119,6 +125,9 @@ spec:
         {{- if .Values.vSphereCPI.sidecars }}
         {{- include "common.tplvalues.render" ( dict "value" .Values.vSphereCPI.sidecars "context" $) | nindent 8 }}
         {{- end }}
+      {{- if .Values.vSphereCPI.useHostNet }}
+      hostNetwork: true
+      {{- end }}
       volumes:
         - name: vsphere-config-volume
           {{- if not .Values.config.secretsInline }}

@@ -129,6 +129,7 @@ vSphereCPI:
   ## @param vSphereCPI.livenessProbe.failureThreshold Failure threshold for livenessProbe
   ## @param vSphereCPI.livenessProbe.successThreshold Success threshold for livenessProbe
   ##
+  useHostNet: true
   livenessProbe:
     enabled: false
     # %%httpGet || command || etc%%
@@ -165,7 +166,8 @@ vSphereCPI:
   ##
   resources:
     limits: {}
-    requests: {}
+    requests: 
+      cpu: 200m
   ## Configure Pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param vSphereCPI.podSecurityContext.enabled Enabled vSphereCPI pods' Security Context
