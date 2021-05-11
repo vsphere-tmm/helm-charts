@@ -4,7 +4,7 @@ metadata:
   name: {{ template "common.names.fullname" . }}
   namespace: {{ .Release.Namespace | quote }}
   labels: {{- include "common.labels.standard" . | nindent 4 }}
-    app.kubernetes.io/component: %%COMPONENT_NAME%%
+    app.kubernetes.io/component: {{ template "common.names.fullname" . }}
     {{- if .Values.commonLabels }}
     {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
     {{- end }}
@@ -12,5 +12,5 @@ metadata:
   annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
   {{- end }}
 data:
-  %%CONFIG_FILE_NAME%%: |
+  csi-vsphere.conf: |
   # Config file

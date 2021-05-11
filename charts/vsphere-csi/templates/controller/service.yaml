@@ -4,7 +4,7 @@ metadata:
   name: {{ template "common.names.fullname" . }}
   namespace: {{ .Release.Namespace | quote }}
   labels: {{- include "common.labels.standard" . | nindent 4 }}
-    app.kubernetes.io/component: %%COMPONENT_NAME%%
+    app.kubernetes.io/component: {{ template "common.names.fullname" . }}-controller
     {{- if .Values.commonLabels }}
     {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
     {{- end }}
@@ -23,8 +23,13 @@ spec:
   loadBalancerIP: {{ .Values.service.loadBalancerIP }}
   {{- end }}
   ports:
-    - name: %%PORT_NAME%%
-      port: foo
-      protocol: bar
+    - name: ctlr
+      port: 2112
+      targetPort: 2112
+      protocol: TCP
+    - name: syncer
+      port: 2113
+      targetPort: 2113
+      protocol: TCP
   selector: {{- include "common.labels.matchLabels" . | nindent 4 }}
-    app.kubernetes.io/component: %%COMPONENT_NAME%%
+    app.kubernetes.io/component: {{ template "common.names.fullname" . }}-controller

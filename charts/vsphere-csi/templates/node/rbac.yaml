@@ -4,7 +4,7 @@ metadata:
   name: {{ template "common.names.fullname" . }}
   namespace: {{ .Release.Namespace | quote }}
   labels: {{- include "common.labels.standard" . | nindent 4 }}
-    app.kubernetes.io/component: cloud-controller-manager
+    app.kubernetes.io/component: {{ template "common.names.fullname" . }}-node
     {{- if .Values.commonLabels }}
     {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
     {{- end }}
@@ -17,7 +17,7 @@ roleRef:
   name: {{ template "common.names.fullname" . }}
 subjects:
   - kind: ServiceAccount
-    name: {{ template "vSphereCPI.serviceAccountName" . }}
+    name: {{ template "vsphere-csi.node.serviceAccountName" . }}
     namespace: {{ .Release.Namespace }}
 {{ if .Values.rbac.create  }}
 ---
@@ -26,7 +26,7 @@ kind: ClusterRole
 metadata:
   name: {{ include "common.names.fullname" . }}-controller
   labels: {{- include "common.labels.standard" . | nindent 4 }}
-    app.kubernetes.io/component: controller
+    app.kubernetes.io/component: {{ template "common.names.fullname" . }}-node
     {{- if .Values.commonLabels }}
     {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
     {{- end }}

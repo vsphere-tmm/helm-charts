@@ -4,7 +4,7 @@ metadata:
   name: {{ template "common.names.fullname" . }}
   namespace: {{ .Release.Namespace | quote }}
   labels: {{- include "common.labels.standard" . | nindent 4 }}
-    app.kubernetes.io/component: %%COMPONENT_NAME%%
+    app.kubernetes.io/component: {{ template "common.names.fullname" . }}-node
     {{- if .Values.commonLabels }}
     {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
     {{- end }}
@@ -17,19 +17,19 @@ spec:
   {{- end }}
   selector:
     matchLabels: {{- include "common.labels.matchLabels" . | nindent 6 }}
-      app.kubernetes.io/component: %%COMPONENT_NAME%%
+      app.kubernetes.io/component: {{ template "common.names.fullname" . }}-node
   template:
     metadata:
       {{- if .Values.node.podAnnotations }}
       annotations: {{- include "common.tplvalues.render" (dict "value" .Values.node.podAnnotations "context" $) | nindent 8 }}
       {{- end }}
       labels: {{- include "common.labels.standard" . | nindent 8 }}
-        app.kubernetes.io/component: %%COMPONENT_NAME%%
+        app.kubernetes.io/component: {{ template "common.names.fullname" . }}-node
         {{- if .Values.node.podLabels }}
         {{- include "common.tplvalues.render" (dict "value" .Values.node.podLabels "context" $) | nindent 8 }}
         {{- end }}
     spec:
-      serviceAccountName: {{ template "vsphere-csi.serviceAccountName" . }}
+      serviceAccountName: {{ template "vsphere-csi.node.serviceAccountName" . }}
       {{- include "vsphere-csi.imagePullSecrets" . | nindent 6 }}
       {{- if .Values.node.hostAliases }}
       hostAliases: {{- include "common.tplvalues.render" (dict "value" .Values.node.hostAliases "context" $) | nindent 8 }}
@@ -38,8 +38,8 @@ spec:
       affinity: {{- include "common.tplvalues.render" ( dict "value" .Values.node.affinity "context" $) | nindent 8 }}
       {{- else }}
       affinity:
-        podAffinity: {{- include "common.affinities.pods" (dict "type" .Values.node.podAffinityPreset "component" %%COMPONENT_NAME%% "context" $) | nindent 10 }}
-        podAntiAffinity: {{- include "common.affinities.pods" (dict "type" .Values.node.podAntiAffinityPreset "component" %%COMPONENT_NAME%% "context" $) | nindent 10 }}
+        podAffinity: {{- include "common.affinities.pods" (dict "type" .Values.node.podAffinityPreset "context" $) | nindent 10 }}
+        podAntiAffinity: {{- include "common.affinities.pods" (dict "type" .Values.node.podAntiAffinityPreset  "context" $) | nindent 10 }}
         nodeAffinity: {{- include "common.affinities.nodes" (dict "type" .Values.node.nodeAffinityPreset.type "key" .Values.node.nodeAffinityPreset.key "values" .Values.node.nodeAffinityPreset.values) | nindent 10 }}
       {{- end }}
       {{- if .Values.node.nodeSelector }}
@@ -55,27 +55,12 @@ spec:
       securityContext: {{- omit .Values.node.podSecurityContext "enabled" | toYaml | nindent 8 }}
       {{- end }}
       initContainers:
-        {{- if and .Values.volumePermissions.enabled .Values.persistence.enabled }}
-        - name: volume-permissions
-          image: {{ include "vsphere-csi.volumePermissions.image" . }}
-          imagePullPolicy: {{ .Values.volumePermissions.image.pullPolicy | quote }}
-          command:
-            - %%commands%%
-          securityContext:
-            runAsUser: 0
-          {{- if .Values.volumePermissions.resources }}
-          resources: {{- toYaml .Values.volumePermissions.resources | nindent 12 }}
-          {{- end }}
-          volumeMounts:
-            - name: foo
-              mountPath: bar
-        {{- end }}
         {{- if .Values.node.initContainers }}
           {{- include "common.tplvalues.render" (dict "value" .Values.node.initContainers "context" $) | nindent 8 }}
         {{- end }}
       containers:
-        - name: %%CONTAINER_NAME%%
-          image: {{ template "vsphere-csi.image" . }}
+        - name: vsphere-csi-node
+          image: {{ template "vsphere-csi.node.image.node" . }}
           imagePullPolicy: {{ .Values.node.image.pullPolicy }}
           {{- if .Values.node.lifecycleHooks }}
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.node.lifecycleHooks "context" $) | nindent 12 }}
