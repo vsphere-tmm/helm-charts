@@ -1,139 +1,106 @@
-# %%CHART_NAME%%
+# vSphere Container Storage Interface (CSI)
 
-%%DESCRIPTION%% (check existing examples)
-
-## TL;DR
-
-```console
-$ helm repo add bitnami https://charts.bitnami.com/bitnami
-$ helm install my-release bitnami/%%CHART_NAME%%
-```
+[vSphere Container Storage Interface](https://github.com/kubernetes-sigs/vsphere-csi-driver) handles storage specific functionality for Kubernetes running on VMware vSphere infrastructure.
 
 ## Introduction
 
-%%INTRODUCTION%% (check existing examples)
+This chart deploys all components required to run the vSphere CSI as described on it's [GitHub page](https://vsphere-csi-driver.sigs.k8s.io/). This Helm chart has been created to work with CSI driver version 2.0, released with vSphere 7.0. This means that it supports both block and file Persistent Volumes. Block PVs can be dynamically created on VMFS, NFS, vSAN and vVol datastores. File PVs can be dynamically created on vSAN datastores with vSAN File Services enabled.
 
 ## Prerequisites
 
-- Kubernetes 1.12+
-- Helm 3.1.0
-- PV provisioner support in the underlying infrastructure
-- ReadWriteMany volumes for deployment scaling
+- Has been tested on Kubernetes v1.18.3
+- This Helm chart assumes that your Kubernetes cluster has not been configured to use the external vSphere CPI cloud provider. The vSphere CSI driver has a dependency on the vSphere CPI cloud provider and this Helm chart will automatically deploy is as part of the CSI deployment. For further information on the vSphere CPI driver, please refer to the following documentation: [Kubernetes documentation](https://kubernetes.io/docs/tasks/administer-cluster/running-cloud-controller/#running-cloud-controller-manager).
 
-## Installing the Chart
+## Adding this helm repository
 
-To install the chart with the release name `my-release`:
+To add the helm repository for the vSphere CSI driver, run the following commands:
 
-```console
-helm install my-release bitnami/%%CHART_NAME%%s
+```bash
+helm repo add vsphere-tmm https://vsphere-tmm.github.io/helm-charts
+helm search repo vsphere-csi
 ```
 
-The command deploys %%CHART_NAME%% on the Kubernetes cluster in the default configuration. The [Parameters](#parameters) section lists the parameters that can be configured during installation.
+## Testing the Helm Chart
 
-> **Tip**: List all releases using `helm list`
+To test the helm chart before installing it , the following commands can be run:
 
-## Uninstalling the Chart
+```bash
+helm template --debug vsphere-csi vsphere-tmm/vsphere-csi
+helm install --dry-run  --debug vsphere-csi vsphere-tmm/vsphere-csi
+```
 
-To uninstall/delete the `my-release` deployment:
+## Installing the Helm Chart for Block based Persistent Volumes
 
-```console
-helm delete my-release
+To install this chart for block based PVs, you will need to provide additional vCenter information/credentials. Run the following command (but replace the placeholder values with the ones for your environment):
+
+```bash
+helm install vsphere-csi vsphere-tmm/vsphere-csi \
+--namespace kube-system \
+--set global.config.enabled=true \
+--set global.config.vcenter=<vCenter IP> \
+--set global.config.username=<vCenter Username> \
+--set global.config.password=<vCenter Password> \
+--set global.config.datacenter=<vCenter Datacenter> \
+--set global.config.clusterId='changeme' \
+```
+
+A full example can be seen here. If you need to make changes to any of the configuration options (other than the secret), you can use the `upgrade --install` option shown here. If you need to change the secret, you will have to delete and reinstall the chart.
+
+> **Caution**: The clusterId is a unique identifier for the Kubernetes cluster, chosen at the time the helm chart is installed. The same clusterId should not be used for different Kubernetes clusters managed by the same vCenter Server.
+
+```bash
+helm upgrade --install vsphere-csi vsphere-tmm/vsphere-csi
+--namespace kube-system \
+--set global.config.enabled=true \
+--set global.config.vcenter=vcsa-01.rainpole.com \
+--set global.config.password=VMware123 \
+--set global.config.datacenter=Datacenter \
+--set global.config.clusterId=MyCluster1 \
+```
+
+> **Tip**: List all releases using `helm list --all`
+
+## Installing the Helm Chart for Block and File based Persistent Volumes
+
+To install this helm chart for both block and file PVs, the chart includes a `netconfig` parameter set to support CSI file shares. This allows vSAN File Shares to be used as read-write-many Persistent Volumes. To enable a certain IP address range to access the file shares, select the datastore where file shares can be created, set specific file share permissions and control the root squash parameter, run the following command:
+
+```bash
+helm upgrade --install vsphere-csi vsphere-tmm/vsphere-csi
+--namespace kube-system \
+--set global.config.enabled=true \
+--set global.config.vcenter=vcsa-01.rainpole.com \
+--set global.config.password=VMware123 \
+--set global.config.datacenter=Datacenter \
+--set global.config.clusterId=MyCluster1\
+--set netconfig.enabled=true \
+--set netconfig.datastore=ds:///vmfs/volumes/vsan:52e2cfb57ce8d5d3-c12e042893ff2f76/ \
+--set netconfig.ips='*' \
+--set netconfig.permissions=READ_WRITE \
+--set netconfig.rootsquash=true
+```
+
+The datastore URL entry above may be found in the vSphere client of the vCenter Server managing the Kubernetes Cluster. Select the Datastores view, then the vSAN datastore that supports vSAN File Services. In the Summary view, the URL will be displayed.
+
+## Still on vSphere 6.7U3 (csi-resizer crashing)
+
+If you are still on vSphere 6.7U3, you will need to use `--set csiResizer.enabled=false` to disable the csi-resizer container, which requires vSphere 7.0 or newer.
+
+## Override image source (air gapped)
+
+If your Kubernetes clusters are in a network that is firewalled from the Internet, and need to override the image sources to something internal, please see the `values.yaml`.
+
+## Manually installing the vSphere CSI driver
+
+If you want to provide your own `csi-vsphere.conf`, for example, to handle multple datacenters/vCenters or for using zones, you can learn how to manually deploy the CSI driver by reading the following [documentation](https://vsphere-csi-driver.sigs.k8s.io/driver-deployment/installation.html).
+
+## Uninstalling the vSphere CSI Helm Chart
+
+To uninstall/delete the `vsphere-csi` deployment via Helm:
+
+```bash
+helm delete vsphere-csi --namespace kube-system
 ```
 
 The command removes all the Kubernetes components associated with the chart and deletes the release.
 
-## Parameters
-
-See https://github.com/bitnami-labs/readmenator to create the table
-
-The above parameters map to the env variables defined in [bitnami/%%CHART_NAME%%](http://github.com/bitnami/bitnami-docker-%%CHART_NAME%%). For more information please refer to the [bitnami/%%CHART_NAME%%](http://github.com/bitnami/bitnami-docker-%%CHART_NAME%%) image documentation.
-
-Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example,
-
-```console
-helm install my-release \
-  --set %%CHART_NAME%%Username=admin \
-  --set %%CHART_NAME%%Password=password \
-  --set mariadb.auth.rootPassword=secretpassword \
-    bitnami/%%CHART_NAME%%
-```
-
-The above command sets the %%CHART_NAME%% administrator account username and password to `admin` and `password` respectively. Additionally, it sets the MariaDB `root` user password to `secretpassword`.
-
-> NOTE: Once this chart is deployed, it is not possible to change the application's access credentials, such as usernames or passwords, using Helm. To change these application credentials after deployment, delete any persistent volumes (PVs) used by the chart and re-deploy it, or use the application's built-in administrative tools if available.
-
-Alternatively, a YAML file that specifies the values for the above parameters can be provided while installing the chart. For example,
-
-```console
-helm install my-release -f values.yaml bitnami/%%CHART_NAME%%
-```
-
-> **Tip**: You can use the default [values.yaml](values.yaml)
-
-## Configuration and installation details
-
-### [Rolling VS Immutable tags](https://docs.bitnami.com/containers/how-to/understand-rolling-tags-containers/)
-
-It is strongly recommended to use immutable tags in a production environment. This ensures your deployment does not change automatically if the same tag is updated with a different image.
-
-Bitnami will release a new chart updating its containers if a new version of the main container, significant changes, or critical vulnerabilities exist.
-
-### External database support
-
-%%IF NEEDED%%
-
-You may want to have %%CHART_NAME%% connect to an external database rather than installing one inside your cluster. Typical reasons for this are to use a managed database service, or to share a common database server for all your applications. To achieve this, the chart allows you to specify credentials for an external database with the [`externalDatabase` parameter](#parameters). You should also disable the MariaDB installation with the `mariadb.enabled` option. Here is an example:
-
-```console
-mariadb.enabled=false
-externalDatabase.host=myexternalhost
-externalDatabase.user=myuser
-externalDatabase.password=mypassword
-externalDatabase.database=mydatabase
-externalDatabase.port=3306
-```
-
-### Ingress
-
-%%IF NEEDED%%
-
-This chart provides support for Ingress resources. If an Ingress controller, such as [nginx-ingress](https://kubeapps.com/charts/stable/nginx-ingress) or [traefik](https://kubeapps.com/charts/stable/traefik), that Ingress controller can be used to serve %%CHART_NAME%%.
-
-To enable Ingress integration, set `ingress.enabled` to `true`. The `ingress.hostname` property can be used to set the host name. The `ingress.tls` parameter can be used to add the TLS configuration for this host. It is also possible to have more than one host, with a separate TLS configuration for each host. [Learn more about configuring and using Ingress](https://docs.bitnami.com/kubernetes/apps/%%CHART_NAME%%/configuration/configure-use-ingress/).
-
-### TLS secrets
-
-The chart also facilitates the creation of TLS secrets for use with the Ingress controller, with different options for certificate management. [Learn more about TLS secrets](https://docs.bitnami.com/kubernetes/apps/%%CHART_NAME%%/administration/enable-tls/).
-
-### %%OTHER_SECTIONS%%
-
-## Persistence
-
-The [Bitnami %%CHART_NAME%%](https://github.com/bitnami/bitnami-docker-%%CHART_NAME%%) image stores the %%CHART_NAME%% data and configurations at the `/bitnami` path of the container. Persistent Volume Claims are used to keep the data across deployments. [Learn more about persistence in the chart documentation](https://docs.bitnami.com/kubernetes/apps/%%CHART_NAME%%/configuration/chart-persistence/).
-
-### Additional environment variables
-
-In case you want to add extra environment variables (useful for advanced operations like custom init scripts), you can use the `extraEnvVars` property.
-
-```yaml
-%%CHART_NAME%%:
-  extraEnvVars:
-    - name: LOG_LEVEL
-      value: error
-```
-
-Alternatively, you can use a ConfigMap or a Secret with the environment variables. To do so, use the `extraEnvVarsCM` or the `extraEnvVarsSecret` values.
-
-### Sidecars
-
-If additional containers are needed in the same pod as %%CHART_NAME%% (such as additional metrics or logging exporters), they can be defined using the `sidecars` parameter. If these sidecars export extra ports, extra port definitions can be added using the `service.extraPorts` parameter. [Learn more about configuring and using sidecar containers](https://docs.bitnami.com/kubernetes/apps/%%CHART_NAME%%/administration/configure-use-sidecars/).
-
-### Pod affinity
-
-This chart allows you to set your custom affinity using the `affinity` parameter. Find more information about Pod affinity in the [kubernetes documentation](https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity).
-
-As an alternative, use one of the preset configurations for pod affinity, pod anti-affinity, and node affinity available at the [bitnami/common](https://github.com/bitnami/charts/tree/master/bitnami/common#affinities) chart. To do so, set the `podAffinityPreset`, `podAntiAffinityPreset`, or `nodeAffinityPreset` parameters.
-
-## Troubleshooting
-
-Find more information about how to deal with common errors related to Bitnami's Helm charts in [this troubleshooting guide](https://docs.bitnami.com/general/how-to/troubleshoot-helm-chart-issues).
+> **Tip**: To permanently remove the release using Helm, run `helm delete --purge vsphere-csi --namespace kube-system`
