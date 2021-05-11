@@ -5,7 +5,6 @@
 
 ## @param global.imageRegistry Global Docker image registry
 ## @param global.imagePullSecrets Global Docker registry secret names as an array
-## @param global.storageClass Global StorageClass for Persistent Volume(s)
 ##
 global:
   imageRegistry:
@@ -14,7 +13,6 @@ global:
   ##   - myRegistryKeySecretName
   ##
   imagePullSecrets: []
-  storageClass:
 
 config:
   externalKubeconfig: 
@@ -23,32 +21,32 @@ config:
     keyName: "value"
   secretsInline: true
   # Global properties in this section will be used for all specified vCenters unless overriden in VirtualCenter section.
-  global:
-    port: 443
-    # set insecureFlag to true if the vCenter uses a self-signed cert
-    insecureFlag: true
-    # settings for using k8s secret
-    #secretName: vsphere-cloud-secret
-    #secretNamespace: kube-system
-  # vcenter section
-  vcenter:
-    your-vcenter-name-here:
-      server: 10.0.0.1
-      user: use-your-vcenter-user-here
-      password: use-your-vcenter-password-here
-      datacenters:
-        - hrwest
-        - hreast
-    could-be-a-tenant-label:
-      server: 1.2.3.4
-      datacenters:
-        - mytenantdc
-      secretName: cpi-engineering-secret
-      secretNamespace: kube-system
-  # labels for regions and zones
-  labels:
-    region: k8s-region
-    zone: k8s-zone
+  # global:
+  #   port: 443
+  #   # set insecureFlag to true if the vCenter uses a self-signed cert
+  #   insecureFlag: true
+  #   # settings for using k8s secret
+  #   #secretName: vsphere-cloud-secret
+  #   #secretNamespace: kube-system
+  # # vcenter section
+  # vcenter:
+  #   your-vcenter-name-here:
+  #     server: 10.0.0.1
+  #     user: use-your-vcenter-user-here
+  #     password: use-your-vcenter-password-here
+  #     datacenters:
+  #       - hrwest
+  #       - hreast
+  #   could-be-a-tenant-label:
+  #     server: 1.2.3.4
+  #     datacenters:
+  #       - mytenantdc
+  #     secretName: cpi-engineering-secret
+  #     secretNamespace: kube-system
+  # # labels for regions and zones
+  # labels:
+  #   region: k8s-region
+  #   zone: k8s-zone
 
   
 ## @section Common parameters
@@ -181,8 +179,6 @@ vSphereCPI:
     enabled: true
     runAsUser: 1001
   
-  # %%OTHER_PARAMETERS_RELATED_TO_THIS_CONTAINER/POD%%
-
   ## @param vSphereCPI.existingConfigmap The name of an existing ConfigMap with your custom configuration for vSphereCPI
   ##
   existingConfigmap:
@@ -319,7 +315,7 @@ vSphereCPI:
 rbac:
   ## @param rbac.create Specifies whether RBAC resources should be created
   ##
-  create: false
+  create: true
 
 ## ServiceAccount configuration
 ##

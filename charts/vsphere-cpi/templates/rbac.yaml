@@ -19,7 +19,7 @@ subjects:
   - kind: ServiceAccount
     name: {{ template "vSphereCPI.serviceAccountName" . }}
     namespace: {{ .Release.Namespace }}
-{{- if .Values.rbac.create  -}}
+{{ if .Values.rbac.create  }}
 ---
 apiVersion: {{ include "common.capabilities.rbac.apiVersion" . }}
 kind: ClusterRole
