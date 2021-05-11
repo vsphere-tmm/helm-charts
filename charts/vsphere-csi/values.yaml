@@ -16,6 +16,10 @@ global:
   imagePullSecrets: []
   storageClass:
 
+
+csidriver:
+  enabled: true
+  create: true
 ## @section Common parameters
 
 ## @param kubeVersion Override Kubernetes version
@@ -164,7 +168,7 @@ controller:
       ##
       debug: false
 
-    liveness-probe:
+    livenessProbe:
       registry: quay.io
       repository: k8scsi/livenessprobe
       tag: v2.2.0
@@ -241,7 +245,8 @@ controller:
   ##
   livenessProbe:
     enabled: true
-    %%httpGet || command || etc%%
+    httpGet:
+      path: /
     initialDelaySeconds: foo
     periodSeconds: bar
     timeoutSeconds: foo
@@ -256,7 +261,8 @@ controller:
   ##
   readinessProbe:
     enabled: true
-    %%httpGet || command || etc%%
+    httpGet:
+      path: /
     initialDelaySeconds: foo
     periodSeconds: bar
     timeoutSeconds: foo
@@ -293,8 +299,6 @@ controller:
     enabled: true
     runAsUser: 1001
   
-  %%OTHER_PARAMETERS_RELATED_TO_THIS_CONTAINER/POD%%
-
   ## @param controller.existingConfigmap The name of an existing ConfigMap with your custom configuration for %%MAIN_CONTAINER_NAME%%
   ##
   existingConfigmap:
@@ -476,7 +480,7 @@ node:
       ##
       debug: false
 
-    liveness-probe:
+    livenessProbe:
       registry: quay.io
       repository: k8scsi/k8scsi/livenessprobe
       tag: v2.2.0
@@ -511,7 +515,8 @@ node:
   ##
   livenessProbe:
     enabled: true
-    %%httpGet || command || etc%%
+    httpGet:
+      path: /
     initialDelaySeconds: foo
     periodSeconds: bar
     timeoutSeconds: foo
@@ -526,7 +531,8 @@ node:
   ##
   readinessProbe:
     enabled: true
-    %%httpGet || command || etc%%
+    httpGet:
+      path: /
     initialDelaySeconds: foo
     periodSeconds: bar
     timeoutSeconds: foo
@@ -563,8 +569,6 @@ node:
     enabled: true
     runAsUser: 1001
   
-  %%OTHER_PARAMETERS_RELATED_TO_THIS_CONTAINER/POD%%
-
   ## @param node.existingConfigmap The name of an existing ConfigMap with your custom configuration for %%MAIN_CONTAINER_NAME%%
   ##
   existingConfigmap:
@@ -751,12 +755,11 @@ volumePermissions:
 rbac:
   ## @param rbac.create Specifies whether RBAC resources should be created
   ##
-  create: false
+  create: true
 
 
 
 ## %%SUBCHART_CONTAINER/POD_DESCRIPTION%%
 ##
-%%SUBCHART_NAME%%:
+vsphere-cpi:
   enabled: false
-  %%OTHER_PARAMETERS_RELATED_TO_THIS_SUBCHART%%
