@@ -21,7 +21,7 @@ config:
     enabled: false
     secretName: ""
     keyName: "value"
-  secretsInline: false
+  secretsInline: true
   # Global properties in this section will be used for all specified vCenters unless overriden in VirtualCenter section.
   global:
     port: 443
@@ -50,10 +50,6 @@ config:
     region: k8s-region
     zone: k8s-zone
 
-  vcenter-credentials:
-    - your-server-address:
-        username: ""
-        password: ""
   
 ## @section Common parameters
 
