@@ -1,0 +1,161 @@
+# Default values for vsphere-csi.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+#
+########
+# Optionally override subchart values / otherwise they will be taken from globals
+########
+# vsphere-cpi:
+#   config:
+#     enabled: true
+#     vcenter: "vcenter.local"
+#     username: "administrator@vsphere.local"
+#     password: "pass"
+#     datacenter: "datacenter"
+
+global:
+  config:
+    enabled: true
+    vcenter: "vcenter.local"
+    username: "administrator@vsphere.local"
+    password: "pass"
+    datacenter: "datacenter"
+
+config:
+  # enabled: true
+  create: true
+  name: "vsphere-config-secret"
+  # Important that clusterId is _unique_ per K8s cluster in a VC, otherwise you will have conflicting volume mounts
+  clusterId: "cluster"
+  port: 443
+  cafile: "ca"
+
+netconfig:
+  enabled: false
+  create: true
+  ips: "*"
+  permissions: "READ_WRITE"
+  rootsquash: true
+  datastore: "datastore"
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+clusterRole:
+  enabled: true
+  create: true
+
+clusterRoleBinding:
+  enabled: true
+  create: true
+
+csideployment:
+  enabled: true
+  create: true
+
+csidriver:
+  enabled: true
+  create: true
+
+csidaemonset:
+  enabled: true
+  create: true
+
+
+# Containers in csi-deployment:
+csiAttacher: # csi-attacher
+  image:
+    repository: quay.io/k8scsi/csi-attacher
+    tag: v2.0.0
+    pullPolicy: IfNotPresent
+
+csiResizer: # csi-resizer
+  enabled: true # set to false if vSphere < 7.0
+  image:
+    repository: quay.io/k8scsi/csi-resizer
+    tag: v0.3.0
+    pullPolicy: IfNotPresent
+
+csiController: # csi-controller
+  image:
+    repository: gcr.io/cloud-provider-vsphere/csi/release/driver
+    tag: v2.0.0
+    pullPolicy: IfNotPresent
+
+livenessProbe: # liveness-probe
+  image:
+    repository: quay.io/k8scsi/livenessprobe
+    tag: v1.1.0
+    pullPolicy: IfNotPresent
+
+vsphereSyncer: # vsphere-syncer
+  image:
+    repository: gcr.io/cloud-provider-vsphere/csi/release/syncer
+    tag: v2.0.0
+    pullPolicy: IfNotPresent
+
+
+csiProvisioner: # csi-provisioner
+  image:
+    repository: quay.io/k8scsi/csi-provisioner
+    tag: v1.4.0
+    pullPolicy: IfNotPresent
+
+
+# Containers in csi-daemonset:
+nodeDriverRegistrar: # node-driver-registrar
+  image:
+    repository: quay.io/k8scsi/csi-node-driver-registrar
+    tag: v1.2.0
+    pullPolicy: IfNotPresent
+
+csiNode: # csi-node
+  image:
+    repository: gcr.io/cloud-provider-vsphere/csi/release/driver
+    tag: v2.0.0
+    pullPolicy: IfNotPresent
+
+# liveness-robe info above is shared
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+replicaCount: 1
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""

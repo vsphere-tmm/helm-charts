@@ -1,0 +1,20 @@
+# Verify that CSI has been successfully deployed #
+
+To verify that the CSI driver has been successfully deployed,
+you should observe that there is one instance of the vsphere-csi-controller
+running on the master node and that an instance of the vsphere-csi-node is
+running on each of the worker nodes.
+
+$ kubectl get deployment --namespace={{ .Release.namespace }}
+
+$ kubectl get daemonsets vsphere-csi-node --namespace={{ .Release.namespace }}
+
+
+# Verify that the vSphere CSI driver has been registered with Kubernetes #
+
+$ kubectl describe csidrivers
+
+
+# Verify that the CSINodes have been created #
+
+$ kubectl get CSINode

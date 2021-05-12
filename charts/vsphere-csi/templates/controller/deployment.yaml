@@ -102,8 +102,6 @@ spec:
           readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.controller.customReadinessProbe "context" $) | nindent 12 }}
           {{- end }}
           volumeMounts:
-            - name: foo
-              mountPath: bar
           {{- if .Values.controller.extraVolumeMounts }}
           {{- include "common.tplvalues.render" (dict "value" .Values.controller.extraVolumeMounts "context" $) | nindent 12 }}
           {{- end }}
@@ -111,9 +109,11 @@ spec:
         {{- include "common.tplvalues.render" ( dict "value" .Values.controller.sidecars "context" $) | nindent 8 }}
         {{- end }}
       volumes:
-        - name: foo
-          hostPath:
-            path: bar
+      - name: vsphere-config-volume
+        secret:
+          secretName: vsphere-config-secret
+      - name: socket-dir
+        emptyDir: {}
         {{- if .Values.controller.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.controller.extraVolumes "context" $) | nindent 8 }}
         {{- end }}
