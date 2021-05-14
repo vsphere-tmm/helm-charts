@@ -19,20 +19,20 @@ Return the proper controller attacher image name
 {{/*
 Return the proper controller livenessProbe image name
 */}}
-{{- define "vsphere-csi.controlle.livenessprobe.image" -}}
-{{ include "common.images.image" (dict "imageRoot" .Values.controller.image.livenessprobe.image "global" .Values.global) }}
+{{- define "vsphere-csi.controller.livenessprobe.image" -}}
+{{ include "common.images.image" (dict "imageRoot" .Values.controller.livenessprobe.image "global" .Values.global) }}
 {{- end -}}
 {{/*
 Return the proper controller syncer image name
 */}}
 {{- define "vsphere-csi.controller.syncer.image" -}}
-{{ include "common.images.image" (dict "imageRoot" .Values.controller.image.syncer.image "global" .Values.global) }}
+{{ include "common.images.image" (dict "imageRoot" .Values.controller.syncer.image "global" .Values.global) }}
 {{- end -}}
 {{/*
 Return the proper controller provisioner image name
 */}}
 {{- define "vsphere-csi.controller.provisioner.image" -}}
-{{ include "common.images.image" (dict "imageRoot" .Values.controlle.image.provisioner.image "global" .Values.global) }}
+{{ include "common.images.image" (dict "imageRoot" .Values.controller.provisioner.image "global" .Values.global) }}
 {{- end -}}
 
 

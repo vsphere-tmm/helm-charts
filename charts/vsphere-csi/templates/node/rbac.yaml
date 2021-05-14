@@ -1,4 +1,4 @@
-kind: ClusterRoleBinding
+kind: RoleBinding
 apiVersion: {{ include "common.capabilities.rbac.apiVersion" . }}
 metadata:
   name: {{ template "common.names.fullname" . }}
@@ -13,8 +13,8 @@ metadata:
   {{- end }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: {{ template "common.names.fullname" . }}
+  kind: Role
+  name: {{ template "common.names.fullname" . }}-node
 subjects:
   - kind: ServiceAccount
     name: {{ template "vsphere-csi.node.serviceAccountName" . }}
@@ -22,9 +22,10 @@ subjects:
 {{ if .Values.rbac.create  }}
 ---
 apiVersion: {{ include "common.capabilities.rbac.apiVersion" . }}
-kind: ClusterRole
+kind: Role
 metadata:
-  name: {{ include "common.names.fullname" . }}-controller
+  name: {{ include "common.names.fullname" . }}-node
+  namespace: {{ .Release.Namespace | quote }}
   labels: {{- include "common.labels.standard" . | nindent 4 }}
     app.kubernetes.io/component: {{ template "common.names.fullname" . }}-node
     {{- if .Values.commonLabels }}

@@ -729,6 +729,9 @@ controller:
   ## @param controller.customReadinessProbe Custom readinessProbe that overrides the default one
   ##
   customReadinessProbe: {}
+  ## @param node.dnsPolicy set DNS Policy
+  ##
+  dnsPolicy: "Default"
   ## %%MAIN_CONTAINER_NAME%% resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
   ## @param controller.resources.limits The resources limits for the %%MAIN_CONTAINER_NAME%% containers
@@ -808,11 +811,15 @@ controller:
   ## @param controller.nodeSelector Node labels for %%MAIN_CONTAINER_NAME%% pods assignment
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
-  nodeSelector: {}
+  nodeSelector: 
+    node-role.kubernetes.io/master: ""
   ## @param controller.tolerations Tolerations for %%MAIN_CONTAINER_NAME%% pods assignment
   ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
   ##
-  tolerations: []
+  tolerations: 
+    - key: node-role.kubernetes.io/master
+      operator: Exists
+      effect: NoSchedule
   ## @param controller.updateStrategy.type %%MAIN_CONTAINER_NAME%% statefulset strategy type
   ## ref: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies
   ##
