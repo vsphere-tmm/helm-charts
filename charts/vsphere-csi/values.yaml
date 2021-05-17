@@ -16,10 +16,47 @@ global:
   imagePullSecrets: []
   storageClass:
 
+  config:
+    csidriver:
+      enabled: true
+      create: true
+    netconfig: {}
+      # A:
+      #   create: true
+      #   ips: "*"
+      #   permissions: "READ_WRITE"
+      #   rootsquash: true
+      #   datastore: "datastore"
+    # Global properties in this section will be used for all specified vCenters unless overriden in VirtualCenter section.
+    global:
+      port: 443
+      # set insecureFlag to true if the vCenter uses a self-signed cert
+      insecureFlag: true
+      # settings for using k8s secret
+      #secretName: vsphere-cloud-secret
+      #secretNamespace: kube-system
+    # vcenter section
+    vcenter: {}
+      # your-vcenter-name-here:
+      #   server: 10.0.0.1
+      #   user: use-your-vcenter-user-here
+      #   password: use-your-vcenter-password-here
+      #   datacenters:
+      #     - hrwest
+      #     - hreast
+      # could-be-a-tenant-label:
+      #   server: 1.2.3.4
+      #   datacenters:
+      #     - mytenantdc
+      #   secretName: cpi-engineering-secret
+      #   secretNamespace: kube-system
+    # labels for regions and zones
+    labels:
+      region: k8s-region
+      zone: k8s-zone
 
-csidriver:
-  enabled: true
-  create: true
+
+
 ## @section Common parameters
 
 ## @param kubeVersion Override Kubernetes version
