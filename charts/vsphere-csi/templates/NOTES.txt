@@ -9,3 +9,4 @@
 {{- include "common.warnings.rollingTag" .Values.controller.livenessprobe.image }}
 {{- include "common.warnings.rollingTag" .Values.controller.syncer.image }}
 {{- include "common.warnings.rollingTag" .Values.controller.provisioner.image }}
+{{ include "common.validations.values.single.empty" (dict "valueKey" "global.config.global.cluster-id" "context" $) }}

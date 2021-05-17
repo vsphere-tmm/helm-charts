@@ -35,6 +35,7 @@ global:
       # settings for using k8s secret
       #secretName: vsphere-cloud-secret
       #secretNamespace: kube-system
+      #cluster-id: your-unique-cluster-id
     # vcenter section
     vcenter: {}
       # your-vcenter-name-here:
