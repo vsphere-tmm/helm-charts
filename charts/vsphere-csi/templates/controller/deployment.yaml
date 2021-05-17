@@ -404,7 +404,13 @@ spec:
           command: {{- include "common.tplvalues.render" (dict "value" .Values.controller.provisioner.command "context" $) | nindent 12 }}
           {{- end }}
           {{- if .Values.controller.provisioner.args }}
-          args: {{- include "common.tplvalues.render" (dict "value" .Values.controller.provisioner.args "context" $) | nindent 12 }}
+          args: 
+          {{- include "common.tplvalues.render" (dict "value" .Values.controller.provisioner.args "context" $) | nindent 12 }}
+          {{- if .Values.global.config.labels }}
+            # needed only for topology aware setup
+            - "--feature-gates=Topology=true"
+            - "--strict-topology"
+          {{- end }}
           {{- end }}
           env:
             - name: ADDRESS

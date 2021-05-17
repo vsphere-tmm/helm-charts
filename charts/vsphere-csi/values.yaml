@@ -20,6 +20,11 @@ global:
     csidriver:
       enabled: true
       create: true
+    storageclass: 
+      enabled: false
+      storagepolicyname: {}
+      expansion: false # https://vsphere-csi-driver.sigs.k8s.io/features/volume_expansion.html
+      default: false
     netconfig: {}
       # A:
       #   create: true
@@ -52,9 +57,9 @@ global:
       #   secretName: cpi-engineering-secret
       #   secretNamespace: kube-system
     # labels for regions and zones
-    labels:
-      region: k8s-region
-      zone: k8s-zone
+    labels: {}
+      # region: k8s-region
+      # zone: k8s-zone
 
 
 
@@ -680,9 +685,7 @@ controller:
       - "--kube-api-burst=100"
       - "--leader-election"
       - "--default-fstype=ext4"
-      # needed only for topology aware setup
-      - "--feature-gates=Topology=true"
-      - "--strict-topology"
+
     ## @param node.extraEnvVars Array with extra environment variables to add to %%MAIN_CONTAINER_NAME%% nodes
     ## e.g:
     ## extraEnvVars:
