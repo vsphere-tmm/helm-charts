@@ -256,6 +256,10 @@ spec:
         {{- include "common.tplvalues.render" ( dict "value" .Values.node.sidecars "context" $) | nindent 8 }}
         {{- end }}
       volumes:
+      # needed only for topology aware setups
+      #- name: vsphere-config-volume
+      #  secret:
+      #    secretName: {{ template "common.names.fullname" . }}
       - name: registration-dir
         hostPath:
           path: /var/lib/kubelet/plugins_registry

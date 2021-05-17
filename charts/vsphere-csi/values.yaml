@@ -203,7 +203,7 @@ controller:
     ## @param node.livenessProbe.successThreshold Success threshold for livenessProbe
     ##
     livenessProbe:
-      enabled: true
+      enabled: false
       httpGet:
         path: /
       initialDelaySeconds: foo
@@ -219,7 +219,7 @@ controller:
     ## @param node.readinessProbe.successThreshold Success threshold for readinessProbe
     ##
     readinessProbe:
-      enabled: true
+      enabled: false
       httpGet:
         path: /
       initialDelaySeconds: foo
@@ -316,7 +316,7 @@ controller:
     ## @param node.livenessProbe.successThreshold Success threshold for livenessProbe
     ##
     livenessProbe:
-      enabled: true
+      enabled: false
       httpGet:
         path: /
       initialDelaySeconds: foo
@@ -332,7 +332,7 @@ controller:
     ## @param node.readinessProbe.successThreshold Success threshold for readinessProbe
     ##
     readinessProbe:
-      enabled: true
+      enabled: false
       httpGet:
         path: /
       initialDelaySeconds: foo
@@ -428,7 +428,7 @@ controller:
     ## @param node.livenessProbe.successThreshold Success threshold for livenessProbe
     ##
     livenessProbe:
-      enabled: true
+      enabled: false
       httpGet:
         path: /
       initialDelaySeconds: foo
@@ -444,7 +444,7 @@ controller:
     ## @param node.readinessProbe.successThreshold Success threshold for readinessProbe
     ##
     readinessProbe:
-      enabled: true
+      enabled: false
       httpGet:
         path: /
       initialDelaySeconds: foo
@@ -540,7 +540,7 @@ controller:
     ## @param node.livenessProbe.successThreshold Success threshold for livenessProbe
     ##
     livenessProbe:
-      enabled: true
+      enabled: false
       httpGet:
         path: /
       initialDelaySeconds: foo
@@ -556,7 +556,7 @@ controller:
     ## @param node.readinessProbe.successThreshold Success threshold for readinessProbe
     ##
     readinessProbe:
-      enabled: true
+      enabled: false
       httpGet:
         path: /
       initialDelaySeconds: foo
@@ -652,7 +652,7 @@ controller:
     ## @param node.livenessProbe.successThreshold Success threshold for livenessProbe
     ##
     livenessProbe:
-      enabled: true
+      enabled: false
       httpGet:
         path: /
       initialDelaySeconds: foo
@@ -668,7 +668,7 @@ controller:
     ## @param node.readinessProbe.successThreshold Success threshold for readinessProbe
     ##
     readinessProbe:
-      enabled: true
+      enabled: false
       httpGet:
         path: /
       initialDelaySeconds: foo
@@ -701,12 +701,13 @@ controller:
   livenessProbe:
     enabled: true
     httpGet:
-      path: /
-    initialDelaySeconds: foo
-    periodSeconds: bar
-    timeoutSeconds: foo
-    failureThreshold: bar
-    successThreshold: foo
+      path: /healthz
+      port: healthz
+    initialDelaySeconds: 10
+    periodSeconds: 5
+    timeoutSeconds: 3
+    failureThreshold: 3
+    #successThreshold: foo
   ## @param controller.readinessProbe.enabled Enable readinessProbe on %%MAIN_CONTAINER_NAME%% nodes
   ## @param controller.readinessProbe.initialDelaySeconds Initial delay seconds for readinessProbe
   ## @param controller.readinessProbe.periodSeconds Period seconds for readinessProbe
@@ -715,7 +716,7 @@ controller:
   ## @param controller.readinessProbe.successThreshold Success threshold for readinessProbe
   ##
   readinessProbe:
-    enabled: true
+    enabled: false
     httpGet:
       path: /
     initialDelaySeconds: foo
@@ -1042,7 +1043,7 @@ node:
   livenessprobe:
     image:
       registry: quay.io
-      repository: k8scsi/k8scsi/livenessprobe
+      repository: k8scsi/livenessprobe
       tag: v2.2.0
       ## Specify a imagePullPolicy
       ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
