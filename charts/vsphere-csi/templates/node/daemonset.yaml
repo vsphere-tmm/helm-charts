@@ -186,9 +186,9 @@ spec:
           {{- end }}
           volumeMounts:
             # needed only for topology aware setups
-            #- name: vsphere-config-volume
-            #  mountPath: /etc/cloud
-            #  readOnly: true
+            - name: vsphere-config-volume
+              mountPath: /etc/cloud
+              readOnly: true
             - name: plugin-dir
               mountPath: /csi
             - name: pods-mount-dir
@@ -257,9 +257,9 @@ spec:
         {{- end }}
       volumes:
       # needed only for topology aware setups
-      #- name: vsphere-config-volume
-      #  secret:
-      #    secretName: {{ template "common.names.fullname" . }}
+      - name: vsphere-config-volume
+        secret:
+          secretName: {{ template "common.names.fullname" . }}
       - name: registration-dir
         hostPath:
           path: /var/lib/kubelet/plugins_registry

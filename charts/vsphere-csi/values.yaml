@@ -200,14 +200,21 @@ controller:
     ## @param node.containerSecurityContext.runAsUser Set %%MAIN_CONTAINER_NAME%% containers' Security Context runAsUser
     ##
     containerSecurityContext:
-      enabled: true
+      enabled: false
       runAsUser: 1001
     ## @param node.command Override default container command (useful when using custom images)
     ##
     command: []
     ## @param node.args Override default container args (useful when using custom images)
     ##
-    args: []
+    args: 
+      - "--v=4"
+      - "--timeout=300s"
+      - "--handle-volume-inuse-error=false"
+      - "--csi-address=$(ADDRESS)"
+      - "--kube-api-qps=100"
+      - "--kube-api-burst=100"
+      - "--leader-election"
     ## @param node.extraEnvVars Array with extra environment variables to add to %%MAIN_CONTAINER_NAME%% nodes
     ## e.g:
     ## extraEnvVars:
@@ -313,14 +320,18 @@ controller:
     ## @param node.containerSecurityContext.runAsUser Set %%MAIN_CONTAINER_NAME%% containers' Security Context runAsUser
     ##
     containerSecurityContext:
-      enabled: true
+      enabled: false
       runAsUser: 1001
     ## @param node.command Override default container command (useful when using custom images)
     ##
     command: []
     ## @param node.args Override default container args (useful when using custom images)
     ##
-    args: []
+    args: 
+      - "--v=4"
+      - "--timeout=300s"
+      - "--csi-address=$(ADDRESS)"
+      - "--leader-election"
     ## @param node.extraEnvVars Array with extra environment variables to add to %%MAIN_CONTAINER_NAME%% nodes
     ## e.g:
     ## extraEnvVars:
@@ -425,14 +436,16 @@ controller:
     ## @param node.containerSecurityContext.runAsUser Set %%MAIN_CONTAINER_NAME%% containers' Security Context runAsUser
     ##
     containerSecurityContext:
-      enabled: true
+      enabled: false
       runAsUser: 1001
     ## @param node.command Override default container command (useful when using custom images)
     ##
     command: []
     ## @param node.args Override default container args (useful when using custom images)
     ##
-    args: []
+    args: 
+      - "--v=4"
+      - "--csi-address=/csi/csi.sock"
     ## @param node.extraEnvVars Array with extra environment variables to add to %%MAIN_CONTAINER_NAME%% nodes
     ## e.g:
     ## extraEnvVars:
@@ -537,14 +550,17 @@ controller:
     ## @param node.containerSecurityContext.runAsUser Set %%MAIN_CONTAINER_NAME%% containers' Security Context runAsUser
     ##
     containerSecurityContext:
-      enabled: true
+      enabled: false
       runAsUser: 1001
     ## @param node.command Override default container command (useful when using custom images)
     ##
     command: []
     ## @param node.args Override default container args (useful when using custom images)
     ##
-    args: []
+    args: 
+      - "--leader-election"
+      - "--fss-name=internal-feature-states.csi.vsphere.vmware.com"
+      - "--fss-namespace=$(CSI_NAMESPACE)"
     ## @param node.extraEnvVars Array with extra environment variables to add to %%MAIN_CONTAINER_NAME%% nodes
     ## e.g:
     ## extraEnvVars:
@@ -649,14 +665,24 @@ controller:
     ## @param node.containerSecurityContext.runAsUser Set %%MAIN_CONTAINER_NAME%% containers' Security Context runAsUser
     ##
     containerSecurityContext:
-      enabled: true
+      enabled: false
       runAsUser: 1001
     ## @param node.command Override default container command (useful when using custom images)
     ##
     command: []
     ## @param node.args Override default container args (useful when using custom images)
     ##
-    args: []
+    args: 
+      - "--v=4"
+      - "--timeout=300s"
+      - "--csi-address=$(ADDRESS)"
+      - "--kube-api-qps=100"
+      - "--kube-api-burst=100"
+      - "--leader-election"
+      - "--default-fstype=ext4"
+      # needed only for topology aware setup
+      - "--feature-gates=Topology=true"
+      - "--strict-topology"
     ## @param node.extraEnvVars Array with extra environment variables to add to %%MAIN_CONTAINER_NAME%% nodes
     ## e.g:
     ## extraEnvVars:
@@ -741,7 +767,7 @@ controller:
     httpGet:
       path: /healthz
       port: healthz
-    initialDelaySeconds: 10
+    initialDelaySeconds: 25
     periodSeconds: 5
     timeoutSeconds: 3
     failureThreshold: 3
@@ -785,7 +811,7 @@ controller:
   ## @param controller.podSecurityContext.fsGroup Set %%MAIN_CONTAINER_NAME%% pod's Security Context fsGroup
   ##
   podSecurityContext:
-    enabled: true
+    enabled: false
     fsGroup: 1001
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
@@ -793,7 +819,7 @@ controller:
   ## @param controller.containerSecurityContext.runAsUser Set %%MAIN_CONTAINER_NAME%% containers' Security Context runAsUser
   ##
   containerSecurityContext:
-    enabled: true
+    enabled: false
     runAsUser: 1001
   
   ## @param controller.existingConfigmap The name of an existing ConfigMap with your custom configuration for %%MAIN_CONTAINER_NAME%%
@@ -804,7 +830,9 @@ controller:
   command: []
   ## @param controller.args Override default container args (useful when using custom images)
   ##
-  args: []
+  args: 
+    - "--fss-name=internal-feature-states.csi.vsphere.vmware.com"
+    - "--fss-namespace=$(CSI_NAMESPACE)"
   ## @param controller.hostAliases %%MAIN_CONTAINER_NAME%% pods host aliases
   ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
   ##
@@ -1250,7 +1278,7 @@ node:
   ## @param node.podSecurityContext.fsGroup Set %%MAIN_CONTAINER_NAME%% pod's Security Context fsGroup
   ##
   podSecurityContext:
-    enabled: true
+    enabled: false
     fsGroup: 1001
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod

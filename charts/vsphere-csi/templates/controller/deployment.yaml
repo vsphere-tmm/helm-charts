@@ -447,11 +447,11 @@ spec:
         {{- include "common.tplvalues.render" ( dict "value" .Values.controller.sidecars "context" $) | nindent 8 }}
         {{- end }}
       volumes:
-      - name: vsphere-config-volume
-        secret:
-          secretName: {{ template "common.names.fullname" . }}
-      - name: socket-dir
-        emptyDir: {}
+        - name: vsphere-config-volume
+          secret:
+            secretName: {{ template "common.names.fullname" . }}
+        - name: socket-dir
+          emptyDir: {}
         {{- if .Values.controller.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.controller.extraVolumes "context" $) | nindent 8 }}
         {{- end }}
