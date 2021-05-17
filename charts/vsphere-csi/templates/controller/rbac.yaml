@@ -1,7 +1,7 @@
 kind: ClusterRoleBinding
 apiVersion: {{ include "common.capabilities.rbac.apiVersion" . }}
 metadata:
-  name: {{ template "common.names.fullname" . }}
+  name: {{ template "common.names.fullname" . }}-controller
   labels: {{- include "common.labels.standard" . | nindent 4 }}
     app.kubernetes.io/component: {{ template "common.names.fullname" . }}-controller
     {{- if .Values.commonLabels }}
@@ -13,7 +13,7 @@ metadata:
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: {{ template "common.names.fullname" . }}
+  name: {{ template "common.names.fullname" . }}-controller
 subjects:
   - kind: ServiceAccount
     name: {{ template "vsphere-csi.controller.serviceAccountName" . }}
