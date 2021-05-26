@@ -11,7 +11,7 @@ metadata:
 provisioner: csi.vsphere.vmware.com
 {{- if .Values.global.config.storageclass.storagepolicyname }}
 parameters:
-  storagepolicyname: {{- .Values.global.config.storageclass.storagepolicyname }}
+  storagepolicyname: {{ .Values.global.config.storageclass.storagepolicyname }}
 {{- end -}}
 {{- if .Values.global.config.storageclass.expansion }}
 allowVolumeExpansion: true

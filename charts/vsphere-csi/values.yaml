@@ -22,7 +22,7 @@ global:
       create: true
     storageclass: 
       enabled: false
-      storagepolicyname: {}
+      storagepolicyname: ""
       expansion: false # https://vsphere-csi-driver.sigs.k8s.io/features/volume_expansion.html
       default: false
     netconfig: {}
