@@ -1,0 +1,230 @@
+apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
+kind: Deployment
+metadata:
+  name: {{ template "common.names.fullname" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+    app.kubernetes.io/component: vsphere-csi-controller
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+    {{- end }}
+  {{- if or .Values.commonAnnotations ( eq ( .Release.Namespace | toString) "kube-system" )}}
+  annotations:
+    {{- if or .Values.commonAnnotations }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+    {{- end }}
+    {{- if eq "kube-system" ( .Release.Namespace | toString ) }}
+    scheduler.alpha.kubernetes.io/critical-pod: ""
+    {{- end }}
+  {{- end }}
+spec:
+  replicas: {{ .Values.vSphereCSI.replicaCount }}
+  selector:
+    matchLabels: {{- include "common.labels.matchLabels" . | nindent 6 }}
+      app.kubernetes.io/component: vsphere-csi-controller
+  template:
+    metadata:
+      {{- if .Values.vSphereCSI.podAnnotations }}
+      annotations: {{- include "common.tplvalues.render" (dict "value" .Values.vSphereCSI.podAnnotations "context" $) | nindent 8 }}
+      {{- end }}
+      labels: {{- include "common.labels.standard" . | nindent 8 }}
+        app.kubernetes.io/component: vsphere-csi-controller
+        {{- if .Values.vSphereCSI.podLabels }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.vSphereCSI.podLabels "context" $) | nindent 8 }}
+        {{- end }}
+    spec:
+      serviceAccountName: {{ template "vSphereCSI.controllerServiceAccountName" . }}
+      {{- include "vSphereCSI.imagePullSecrets" . | nindent 6 }}
+      {{- if .Values.vSphereCSI.hostAliases }}
+      hostAliases: {{- include "common.tplvalues.render" (dict "value" .Values.vSphereCSI.hostAliases "context" $) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.vSphereCSI.affinity }}
+      affinity: {{- include "common.tplvalues.render" ( dict "value" .Values.vSphereCSI.affinity "context" $) | nindent 8 }}
+      {{- else }}
+      affinity:
+        podAffinity: {{- include "common.affinities.pods" (dict "type" .Values.vSphereCSI.podAffinityPreset "context" $) | nindent 10 }}
+        podAntiAffinity: {{- include "common.affinities.pods" (dict "type" .Values.vSphereCSI.podAntiAffinityPreset "context" $) | nindent 10 }}
+        nodeAffinity: {{- include "common.affinities.nodes" (dict "type" .Values.vSphereCSI.nodeAffinityPreset.type "key" .Values.vSphereCSI.nodeAffinityPreset.key "values" .Values.vSphereCSI.nodeAffinityPreset.values) | nindent 10 }}
+      {{- end }}
+      {{- if .Values.vSphereCSI.nodeSelector }}
+      nodeSelector: {{- include "common.tplvalues.render" ( dict "value" .Values.vSphereCSI.nodeSelector "context" $) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.vSphereCSI.tolerations }}
+      tolerations: {{- include "common.tplvalues.render" (dict "value" .Values.vSphereCSI.tolerations "context" .) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.vSphereCSI.priorityClassName }}
+      priorityClassName: {{ .Values.vSphereCSI.priorityClassName | quote }}
+      {{- end }}
+      {{- if .Values.vSphereCSI.podSecurityContext.enabled }}
+      securityContext: {{- omit .Values.vSphereCSI.podSecurityContext "enabled" | toYaml | nindent 8 }}
+      {{- end }}
+      initContainers:
+      {{- if .Values.vSphereCSI.initContainers }}
+      {{- include "common.tplvalues.render" (dict "value" .Values.vSphereCSI.initContainers "context" $) | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: vsphere-csi-controller
+          image: {{ template "vSphereCSI.image" . }}
+          imagePullPolicy: {{ .Values.vSphereCSI.image.pullPolicy }}
+          args:
+            - "--fss-name=internal-feature-states.csi.vsphere.vmware.com"
+            - "--fss-namespace=$(CSI_NAMESPACE)"
+          env:
+            - name: CSI_ENDPOINT
+              value: unix:///csi/csi.sock
+            - name: X_CSI_MODE
+              value: "controller"
+            - name: X_CSI_SPEC_DISABLE_LEN_CHECK
+              value: "true"
+            - name: X_CSI_SERIAL_VOL_ACCESS_TIMEOUT
+              value: 3m
+            - name: VSPHERE_CSI_CONFIG
+              value: "/etc/cloud/csi-vsphere.conf"
+            - name: LOGGER_LEVEL
+              value: "PRODUCTION" # Options: DEVELOPMENT, PRODUCTION
+            - name: INCLUSTER_CLIENT_QPS
+              value: "100"
+            - name: INCLUSTER_CLIENT_BURST
+              value: "100"
+            - name: CSI_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            {{- if .Values.vSphereCSI.extraEnvVars }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.vSphereCSI.extraEnvVars "context" $) | nindent 12 }}
+            {{- end }}
+          volumeMounts:
+            - mountPath: /etc/cloud
+              name: vsphere-config-volume
+              readOnly: true
+            - mountPath: /csi
+              name: socket-dir
+            {{- if .Values.vSphereCSI.extraVolumeMounts }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.vSphereCSI.extraVolumeMounts "context" $) | nindent 12 }}
+            {{- end }}
+          ports:
+            - name: healthz
+              containerPort: 9808
+              protocol: TCP
+            - name: prometheus
+              containerPort: 2112
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: healthz
+            initialDelaySeconds: 10
+            timeoutSeconds: 3
+            periodSeconds: 5
+            failureThreshold: 3
+        - name: csi-attacher
+          image: {{ template "vSphereCSI.attacherImage" . }}
+          imagePullPolicy: {{ .Values.vSphereCSI.attacherImage.pullPolicy }}
+          args: {{- include "common.tplvalues.render" (dict "value" .Values.vSphereCSI.attacherArgs "context" $) | nindent 12 }}
+            - "--csi-address=$(ADDRESS)"
+            - "--leader-election"
+          env:
+            - name: ADDRESS
+              value: /csi/csi.sock
+          volumeMounts:
+            - mountPath: /csi
+              name: socket-dir
+            {{- if .Values.vSphereCSI.extraVolumeMounts }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.vSphereCSI.extraVolumeMounts "context" $) | nindent 12 }}
+            {{- end }}
+        {{- if .Values.resizerEnabled }}
+        - name: csi-resizer
+          image: {{ template "vSphereCSI.resizerImage" . }}
+          imagePullPolicy: {{ .Values.vSphereCSI.resizerImage.pullPolicy }}
+          args: {{- include "common.tplvalues.render" (dict "value" .Values.vSphereCSI.resizerArgs "context" $) | nindent 12 }}
+            - "--csi-address=$(ADDRESS)"
+            - "--leader-election"
+            - "--leader-election-namespace={{ .Release.Namespace }}"
+          env:
+            - name: ADDRESS
+              value: /csi/csi.sock
+          volumeMounts:
+            - mountPath: /csi
+              name: socket-dir
+            {{- if .Values.vSphereCSI.extraVolumeMounts }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.vSphereCSI.extraVolumeMounts "context" $) | nindent 12 }}
+            {{- end }}
+        {{- end }}
+        - name: liveness-probe
+          image: {{ template "vSphereCSI.livenessProbeImage" . }}
+          imagePullPolicy: {{ .Values.vSphereCSI.livenessProbeImage.pullPolicy }}
+          args: {{- include "common.tplvalues.render" (dict "value" .Values.vSphereCSI.livenessProbeArgs "context" $) | nindent 12 }}
+            - "--csi-address=$(ADDRESS)"
+          env:
+            - name: ADDRESS
+              value: /csi/csi.sock
+          volumeMounts:
+            - name: socket-dir
+              mountPath: /csi
+            {{- if .Values.vSphereCSI.extraVolumeMounts }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.vSphereCSI.extraVolumeMounts "context" $) | nindent 12 }}
+            {{- end }}
+        - name: vsphere-syncer
+          image: {{ template "vSphereCSI.syncerImage" . }}
+          imagePullPolicy: {{ .Values.vSphereCSI.syncerImage.pullPolicy }}
+          args:
+            - "--fss-name=internal-feature-states.csi.vsphere.vmware.com"
+            - "--fss-namespace=$(CSI_NAMESPACE)"
+            - "--leader-election"
+          env:
+            - name: FULL_SYNC_INTERVAL_MINUTES
+              value: "30"
+            - name: VSPHERE_CSI_CONFIG
+              value: "/etc/cloud/csi-vsphere.conf"
+            - name: LOGGER_LEVEL
+              value: "PRODUCTION" # Options: DEVELOPMENT, PRODUCTION
+            - name: INCLUSTER_CLIENT_QPS
+              value: "100"
+            - name: INCLUSTER_CLIENT_BURST
+              value: "100"
+            - name: CSI_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          ports:
+            - containerPort: 2113
+              name: prometheus
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /etc/cloud
+              name: vsphere-config-volume
+              readOnly: true
+            {{- if .Values.vSphereCSI.extraVolumeMounts }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.vSphereCSI.extraVolumeMounts "context" $) | nindent 12 }}
+            {{- end }}
+        - name: csi-provisioner
+          image: {{ template "vSphereCSI.provisionerImage" . }}
+          imagePullPolicy: {{ .Values.vSphereCSI.provisionerImage.pullPolicy }}
+          args: {{- include "common.tplvalues.render" (dict "value" .Values.vSphereCSI.provisionerArgs "context" $) | nindent 12 }}
+            - "--csi-address=$(ADDRESS)"
+            - "--leader-election"
+            - "--leader-election-namespace={{ .Release.Namespace }}"
+            {{- if .Values.topologyAware }}
+            - "--feature-gates=Topology=true"
+            - "--strict-topology"
+            {{- end }}
+          env:
+            - name: ADDRESS
+              value: /csi/csi.sock
+          volumeMounts:
+            - mountPath: /csi
+              name: socket-dir
+            {{- if .Values.vSphereCSI.extraVolumeMounts }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.vSphereCSI.extraVolumeMounts "context" $) | nindent 12 }}
+            {{- end }}
+      volumes:
+      - name: vsphere-config-volume
+        secret:
+          secretName: {{ .Values.config.secretName }}
+      - name: socket-dir
+        hostPath:
+          path: {{ .Values.hostSocketDir }}
+          type: DirectoryOrCreate
+        {{- if .Values.vSphereCSI.extraVolumes }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.vSphereCSI.extraVolumes "context" $) | nindent 8 }}
+        {{- end }}

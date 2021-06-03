@@ -1,63 +1,96 @@
-{{/* vim: set filetype=mustache: */}}
 {{/*
-Expand the name of the chart.
+Return the proper csi image name
 */}}
-{{- define "vsphere-csi.name" -}}
-{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
-{{- end }}
+{{- define "vSphereCSI.image" -}}
+{{ include "common.images.image" (dict "imageRoot" .Values.vSphereCSI.image "global" .Values.global) }}
+{{- end -}}
 
 {{/*
-Create a default fully qualified app name.
-We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
-If release name contains chart name it will be used as a full name.
+Return the proper csi image name
 */}}
-{{- define "vsphere-csi.fullname" -}}
-{{- if .Values.fullnameOverride }}
-{{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
-{{- else }}
-{{- $name := default .Chart.Name .Values.nameOverride }}
-{{- if contains $name .Release.Name }}
-{{- .Release.Name | trunc 63 | trimSuffix "-" }}
-{{- else }}
-{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" }}
-{{- end }}
-{{- end }}
-{{- end }}
+{{- define "vSphereCSI.attacherImage" -}}
+{{ include "common.images.image" (dict "imageRoot" .Values.vSphereCSI.attacherImage "global" .Values.global) }}
+{{- end -}}
 
 {{/*
-Create chart name and version as used by the chart label.
+Return the proper csi image name
 */}}
-{{- define "vsphere-csi.chart" -}}
-{{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
-{{- end }}
+{{- define "vSphereCSI.resizerImage" -}}
+{{ include "common.images.image" (dict "imageRoot" .Values.vSphereCSI.resizerImage "global" .Values.global) }}
+{{- end -}}
 
 {{/*
-Common labels
+Return the proper csi image name
 */}}
-{{- define "vsphere-csi.labels" -}}
-helm.sh/chart: {{ include "vsphere-csi.chart" . }}
-{{ include "vsphere-csi.selectorLabels" . }}
-{{- if .Chart.AppVersion }}
-app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-{{- end }}
-app.kubernetes.io/managed-by: {{ .Release.Service }}
-{{- end }}
+{{- define "vSphereCSI.livenessProbeImage" -}}
+{{ include "common.images.image" (dict "imageRoot" .Values.vSphereCSI.livenessProbeImage "global" .Values.global) }}
+{{- end -}}
 
 {{/*
-Selector labels
+Return the proper csi image name
 */}}
-{{- define "vsphere-csi.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "vsphere-csi.name" . }}
-app.kubernetes.io/instance: {{ .Release.Name }}
-{{- end }}
+{{- define "vSphereCSI.syncerImage" -}}
+{{ include "common.images.image" (dict "imageRoot" .Values.vSphereCSI.syncerImage "global" .Values.global) }}
+{{- end -}}
 
 {{/*
-Create the name of the service account to use
+Return the proper csi image name
 */}}
-{{- define "vsphere-csi.serviceAccountName" -}}
-{{- if .Values.serviceAccount.create }}
-{{- default (include "vsphere-csi.fullname" .) .Values.serviceAccount.name }}
-{{- else }}
-{{- default "default" .Values.serviceAccount.name }}
-{{- end }}
-{{- end }}
+{{- define "vSphereCSI.provisionerImage" -}}
+{{ include "common.images.image" (dict "imageRoot" .Values.vSphereCSI.provisionerImage "global" .Values.global) }}
+{{- end -}}
+
+{{/*
+Return the proper csi image name
+*/}}
+{{- define "vSphereCSI.node.image" -}}
+{{ include "common.images.image" (dict "imageRoot" .Values.vSphereCSINode.image "global" .Values.global) }}
+{{- end -}}
+
+{{/*
+Return the proper csi image name
+*/}}
+{{- define "vSphereCSI.node.driverRegistrarImage" -}}
+{{ include "common.images.image" (dict "imageRoot" .Values.vSphereCSINode.driverRegistrarImage "global" .Values.global) }}
+{{- end -}}
+
+{{/*
+Return the proper Docker Image Registry Secret Names
+*/}}
+{{- define "vSphereCSI.imagePullSecrets" -}}
+{{- include "common.images.pullSecrets" (dict "images" (list .Values.vSphereCSI.image  ) "global" .Values.global) -}}
+{{- end -}}
+
+{{/*
+Create the name of the controller service account to use
+*/}}
+{{- define "vSphereCSI.controllerServiceAccountName" -}}
+{{- if .Values.serviceAccount.create -}}
+    {{ default (printf "controller-%s" (include "common.names.fullname" .)) .Values.serviceAccount.controllerName }}
+{{- else -}}
+    {{ default "default" .Values.serviceAccount.controllerName }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Create the name of the node service account to use
+*/}}
+{{- define "vSphereCSI.nodeServiceAccountName" -}}
+{{- if .Values.serviceAccount.create -}}
+    {{ default (printf "node-%s" (include "common.names.fullname" .)) .Values.serviceAccount.nodeName }}
+{{- else -}}
+    {{ default "default" .Values.serviceAccount.nodeName }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Compile all warnings into a single message.
+*/}}
+{{- define "vSphereCSI.validateValues" -}}
+{{- $messages := list -}}
+{{- $messages := without $messages "" -}}
+{{- $message := join "\n" $messages -}}
+{{- if $message -}}
+{{-   printf "\nVALUES VALIDATION:\n%s" $message -}}
+{{- end -}}
+{{- end -}}

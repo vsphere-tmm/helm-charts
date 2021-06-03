@@ -1,0 +1,199 @@
+kind: DaemonSet
+apiVersion: apps/v1
+metadata:
+  name: {{ template "common.names.fullname" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+    app.kubernetes.io/component: vsphere-csi-node
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+  {{- end }}
+  {{- if or .Values.commonAnnotations ( eq ( .Release.Namespace | toString) "kube-system" )}}
+  annotations:
+    {{- if or .Values.commonAnnotations }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+    {{- end }}
+    {{- if eq "kube-system" ( .Release.Namespace | toString ) }}
+    scheduler.alpha.kubernetes.io/critical-pod: ""
+  {{- end }}
+  {{- end }}
+spec:
+  selector:
+    matchLabels: {{- include "common.labels.matchLabels" . | nindent 6 }}
+      app.kubernetes.io/component: vsphere-csi-node
+  updateStrategy:
+    type: "RollingUpdate"
+    rollingUpdate:
+      maxUnavailable: 1
+  template:
+    metadata:
+      {{- if .Values.vSphereCSINode.podAnnotations }}
+      annotations: {{- include "common.tplvalues.render" (dict "value" .Values.vSphereCSINode.podAnnotations "context" $) | nindent 8 }}
+      {{- end }}
+      labels: {{- include "common.labels.standard" . | nindent 8 }}
+        app.kubernetes.io/component: vsphere-csi-node
+        {{- if .Values.vSphereCSINode.podLabels }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.vSphereCSINode.podLabels "context" $) | nindent 8 }}
+        {{- end }}
+    spec:
+      serviceAccountName: {{ template "vSphereCSI.nodeServiceAccountName" . }}
+      {{- if .Values.vSphereCSINode.nodeSelector }}
+      nodeSelector: {{- include "common.tplvalues.render" ( dict "value" .Values.vSphereCSINode.nodeSelector "context" $) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.vSphereCSINode.tolerations }}
+      tolerations: {{- include "common.tplvalues.render" (dict "value" .Values.vSphereCSINode.tolerations "context" .) | nindent 6 }}
+      {{- end }}
+      dnsPolicy: "Default"
+      containers:
+        - name: vsphere-csi-node
+          image: {{ template "vSphereCSI.node.image" . }}
+          imagePullPolicy: {{ .Values.vSphereCSINode.image.pullPolicy }}
+          args:
+            - "--fss-name=internal-feature-states.csi.vsphere.vmware.com"
+            - "--fss-namespace=$(CSI_NAMESPACE)"
+          env:
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: CSI_ENDPOINT
+              value: unix:///csi/csi.sock
+            - name: X_CSI_MODE
+              value: "node"
+            - name: X_CSI_SPEC_REQ_VALIDATION
+              value: "false"
+            - name: X_CSI_SPEC_DISABLE_LEN_CHECK
+              value: "true"
+            - name: LOGGER_LEVEL
+              value: "PRODUCTION" # Options: DEVELOPMENT, PRODUCTION
+            - name: CSI_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            {{- if .Values.topologyAware }}
+            - name: VSPHERE_CSI_CONFIG
+              value: /etc/cloud/csi-vsphere.conf # here vsphere.conf is the name of the file used for creating secret using "--from-file" flag
+            {{- end }}
+            {{- if .Values.vSphereCSINode.extraEnvVars }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.vSphereCSINode.extraEnvVars "context" $) | nindent 12 }}
+            {{- end }}
+          securityContext:
+            privileged: true
+            capabilities:
+              add: ["SYS_ADMIN"]
+            allowPrivilegeEscalation: true
+          volumeMounts:
+              - name: plugin-dir
+                mountPath: /csi
+              - name: pods-mount-dir
+                mountPath: /var/lib/kubelet
+                # needed so that any mounts setup inside this container are
+                # propagated back to the host machine.
+                mountPropagation: "Bidirectional"
+              - name: device-dir
+                mountPath: /dev
+              - name: blocks-dir
+                mountPath: /sys/block
+              - name: sys-devices-dir
+                mountPath: /sys/devices
+              {{- if .Values.topologyAware }}
+              - name: vsphere-config-volume
+                mountPath: /etc/cloud
+                readOnly: true
+            {{- end }}
+            {{- if .Values.vSphereCSINode.extraVolumeMounts }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.vSphereCSINode.extraVolumeMounts "context" $) | nindent 12 }}
+          {{- end }}
+          ports:
+            - name: healthz
+              containerPort: 9808
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: healthz
+            initialDelaySeconds: 10
+            timeoutSeconds: 5
+            periodSeconds: 5
+            failureThreshold: 3
+        - name: node-driver-registrar
+          image: {{ template "vSphereCSI.node.driverRegistrarImage" . }}
+          imagePullPolicy: {{ .Values.vSphereCSINode.driverRegistrarImage.pullPolicy }}
+          args: {{- include "common.tplvalues.render" (dict "value" .Values.vSphereCSINode.nodeRegistrarArgs "context" $) | nindent 12 }}
+            - "--csi-address=$(ADDRESS)"
+            - "--kubelet-registration-path=$(DRIVER_REG_SOCK_PATH)"
+            - "--health-port=9809"
+          env:
+            - name: ADDRESS
+              value: /csi/csi.sock
+            - name: DRIVER_REG_SOCK_PATH
+              value: {{ .Values.hostSocketPath }}
+            {{- if .Values.vSphereCSINode.extraEnvVars }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.vSphereCSINode.extraEnvVars "context" $) | nindent 12 }}
+            {{- end }}
+          volumeMounts:
+            - name: plugin-dir
+              mountPath: /csi
+            - name: registration-dir
+              mountPath: /registration
+            {{- if .Values.vSphereCSINode.extraVolumeMounts }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.vSphereCSINode.extraVolumeMounts "context" $) | nindent 12 }}
+            {{- end }}
+          ports:
+            - containerPort: 9809
+              name: healthz
+          livenessProbe:
+            httpGet:
+                path: /healthz
+                port: healthz
+            initialDelaySeconds: 5
+            timeoutSeconds: 5
+        - name: liveness-probe
+          image: {{ template "vSphereCSI.livenessProbeImage" . }}
+          imagePullPolicy: {{ .Values.vSphereCSI.livenessProbeImage.pullPolicy }}
+          args: {{- include "common.tplvalues.render" (dict "value" .Values.vSphereCSI.livenessProbeArgs "context" $) | nindent 12 }}
+            - "--csi-address=$(ADDRESS)"
+          env:
+            - name: ADDRESS
+              value: /csi/csi.sock
+            {{- if .Values.vSphereCSINode.extraEnvVars }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.vSphereCSINode.extraEnvVars "context" $) | nindent 12 }}
+            {{- end }}
+          volumeMounts:
+            - name: plugin-dir
+              mountPath: /csi
+            {{- if .Values.vSphereCSINode.extraVolumeMounts }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.vSphereCSINode.extraVolumeMounts "context" $) | nindent 12 }}
+            {{- end }}
+      volumes:
+        - name: registration-dir
+          hostPath:
+            path: /var/lib/kubelet/plugins_registry
+            type: Directory
+        - name: plugin-dir
+          hostPath:
+            path: /var/lib/kubelet/plugins/csi.vsphere.vmware.com/
+            type: DirectoryOrCreate
+        - name: pods-mount-dir
+          hostPath:
+            path: /var/lib/kubelet
+            type: Directory
+        - name: device-dir
+          hostPath:
+            path: /dev
+        - name: blocks-dir
+          hostPath:
+            path: /sys/block
+            type: Directory
+        - name: sys-devices-dir
+          hostPath:
+            path: /sys/devices
+            type: Directory
+        {{- if .Values.topologyAware }}
+        - name: vsphere-config-volume
+          secret:
+            secretName: {{ .Values.config.secretName }}
+        {{- end }}
+        {{- if .Values.vSphereCSINode.extraVolumes }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.vSphereCSINode.extraVolumes "context" $) | nindent 8 }}
+        {{- end }}

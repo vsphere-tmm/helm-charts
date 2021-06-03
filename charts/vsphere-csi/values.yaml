@@ -1,161 +1,555 @@
-# Default values for vsphere-csi.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
-#
-########
-# Optionally override subchart values / otherwise they will be taken from globals
-########
-# vsphere-cpi:
-#   config:
-#     enabled: true
-#     vcenter: "vcenter.local"
-#     username: "administrator@vsphere.local"
-#     password: "pass"
-#     datacenter: "datacenter"
+## @section Global parameters
+## Global Docker image parameters
+## Please, note that this will override the image parameters, including dependencies, configured to use the global value
+## Current available global Docker image parameters: imageRegistry, imagePullSecrets and storageClass
 
+## @param global.imageRegistry Global Docker image registry
+## @param global.imagePullSecrets Global Docker registry secret names as an array
+##
 global:
-  config:
-    enabled: true
-    vcenter: "vcenter.local"
-    username: "administrator@vsphere.local"
-    password: "pass"
-    datacenter: "datacenter"
+  imageRegistry:
+  ## E.g.
+  ## imagePullSecrets:
+  ##   - myRegistryKeySecretName
+  ##
+  imagePullSecrets: []
+
+## @param kubeVersion Override Kubernetes version
+##
+kubeVersion:
+## @param nameOverride String to partially override common.names.fullname
+##
+nameOverride:
+## @param fullnameOverride String to fully override common.names.fullname
+##
+fullnameOverride:
+## @param commonLabels Labels to add to all deployed objects
+##
+commonLabels: {}
+## @param commonAnnotations Annotations to add to all deployed objects
+##
+commonAnnotations: {}
+## @param clusterDomain Kubernetes cluster domain name
+##
+clusterDomain: cluster.local
+## @param extraDeploy Array of extra objects to deploy with the release
+##
+extraDeploy: []
+
+## @section Traffic Exposure Parameters
+
+## @section vSphereCSI Parameters
+
+installCSIDriver: true
+topologyAware: false
+resizerEnabled: true # set to false if vSphere < 7.0
+
+internalFeatureStates:
+  csi-migration: false
+  csi-auth-check: true
+  online-volume-extend: true
+  trigger-csi-fullsync: false
+  async-query-volume: false
+  csi-volume-manager-idempotency: false
+
+hostSocketDir: /var/lib/csi/sockets/pluginproxy/csi.vsphere.vmware.com
+hostSocketPath: /var/lib/kubelet/plugins/csi.vsphere.vmware.com/csi.sock
 
 config:
-  # enabled: true
-  create: true
-  name: "vsphere-config-secret"
-  # Important that clusterId is _unique_ per K8s cluster in a VC, otherwise you will have conflicting volume mounts
-  clusterId: "cluster"
-  port: 443
-  cafile: "ca"
+  secretName: vsphere-cpi
 
-netconfig:
-  enabled: false
-  create: true
-  ips: "*"
-  permissions: "READ_WRITE"
-  rootsquash: true
-  datastore: "datastore"
-
-serviceAccount:
-  # Specifies whether a service account should be created
-  create: true
-  # Annotations to add to the service account
-  annotations: {}
-  # The name of the service account to use.
-  # If not set and create is true, a name is generated using the fullname template
-  name: ""
-
-clusterRole:
-  enabled: true
-  create: true
-
-clusterRoleBinding:
-  enabled: true
-  create: true
-
-csideployment:
-  enabled: true
-  create: true
-
-csidriver:
-  enabled: true
-  create: true
-
-csidaemonset:
-  enabled: true
-  create: true
-
-
-# Containers in csi-deployment:
-csiAttacher: # csi-attacher
+## %%MAIN_CONTAINER/POD_DESCRIPTION%%
+##
+vSphereCSI:
+  ## @param image.registry vSphereCSI Attacher image registry
+  ## @param image.repository vSphereCSI Attacher image repository
+  ## @param image.tag vSphereCSI Attacher image tag (immutable tags are recommended)
+  ## @param image.pullPolicy vSphereCSI Attacher image pull policy
+  ## @param image.pullSecrets vSphereCSI Attacher image pull secrets
+  ##
   image:
-    repository: quay.io/k8scsi/csi-attacher
-    tag: v2.0.0
+    registry: gcr.io
+    repository: cloud-provider-vsphere/csi/release/driver
+    tag: v2.2.0
+    ## Specify a imagePullPolicy
+    ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
+    ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
+    ##
     pullPolicy: IfNotPresent
+    ## Optionally specify an array of imagePullSecrets.
+    ## Secrets must be manually created in the namespace.
+    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+    ## e.g:
+    ## pullSecrets:
+    ##   - myRegistryKeySecretName
+    ##
+    pullSecrets: [ ]
 
-csiResizer: # csi-resizer
-  enabled: true # set to false if vSphere < 7.0
-  image:
-    repository: quay.io/k8scsi/csi-resizer
-    tag: v0.3.0
+  attacherImage:
+    registry: k8s.gcr.io
+    repository: sig-storage/csi-attacher
+    tag: v3.1.0
+    ## Specify a imagePullPolicy
+    ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
+    ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
+    ##
     pullPolicy: IfNotPresent
+    ## Optionally specify an array of imagePullSecrets.
+    ## Secrets must be manually created in the namespace.
+    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+    ## e.g:
+    ## pullSecrets:
+    ##   - myRegistryKeySecretName
+    ##
+    pullSecrets: []
 
-csiController: # csi-controller
-  image:
-    repository: gcr.io/cloud-provider-vsphere/csi/release/driver
-    tag: v2.0.0
-    pullPolicy: IfNotPresent
-
-livenessProbe: # liveness-probe
-  image:
-    repository: quay.io/k8scsi/livenessprobe
+  resizerImage:
+    registry: k8s.gcr.io
+    repository: sig-storage/csi-resizer
     tag: v1.1.0
+    ## Specify a imagePullPolicy
+    ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
+    ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
+    ##
     pullPolicy: IfNotPresent
+    ## Optionally specify an array of imagePullSecrets.
+    ## Secrets must be manually created in the namespace.
+    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+    ## e.g:
+    ## pullSecrets:
+    ##   - myRegistryKeySecretName
+    ##
+    pullSecrets: []
 
-vsphereSyncer: # vsphere-syncer
+  livenessProbeImage:
+    registry: k8s.gcr.io
+    repository: sig-storage/livenessprobe
+    tag: v2.2.0
+    ## Specify a imagePullPolicy
+    ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
+    ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
+    ##
+    pullPolicy: IfNotPresent
+    ## Optionally specify an array of imagePullSecrets.
+    ## Secrets must be manually created in the namespace.
+    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+    ## e.g:
+    ## pullSecrets:
+    ##   - myRegistryKeySecretName
+    ##
+    pullSecrets: []
+
+  syncerImage:
+    registry: gcr.io
+    repository: cloud-provider-vsphere/csi/release/syncer
+    tag: v2.2.0
+    ## Specify a imagePullPolicy
+    ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
+    ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
+    ##
+    pullPolicy: IfNotPresent
+    ## Optionally specify an array of imagePullSecrets.
+    ## Secrets must be manually created in the namespace.
+    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+    ## e.g:
+    ## pullSecrets:
+    ##   - myRegistryKeySecretName
+    ##
+    pullSecrets: [ ]
+
+  provisionerImage:
+    registry: k8s.gcr.io
+    repository: sig-storage/csi-provisioner
+    tag: v2.1.0
+    ## Specify a imagePullPolicy
+    ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
+    ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
+    ##
+    pullPolicy: IfNotPresent
+    ## Optionally specify an array of imagePullSecrets.
+    ## Secrets must be manually created in the namespace.
+    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+    ## e.g:
+    ## pullSecrets:
+    ##   - myRegistryKeySecretName
+    ##
+    pullSecrets: [ ]
+
+  ## @param vSphereCSI.replicaCount Number of vSphereCSI replicas to deploy
+  ##
+  replicaCount: 1
+  ## vSphereCSI resource requests and limits
+  ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
+  ## @param vSphereCSI.resources.limits The resources limits for the vSphereCSI containers
+  ## @param vSphereCSI.resources.requests The requested resources for the vSphereCSI containers
+  ##
+  resources:
+    limits: { }
+    requests:
+      cpu: 200m
+  ## Configure Pods Security Context
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+  ## @param vSphereCSI.podSecurityContext.enabled Enabled vSphereCSI pods' Security Context
+  ## @param vSphereCSI.podSecurityContext.fsGroup Set vSphereCSI pod's Security Context fsGroup
+  ##
+  podSecurityContext:
+    enabled: true
+    fsGroup: 1001
+  ## Configure Container Security Context
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+  ## @param vSphereCSI.containerSecurityContext.enabled Enabled vSphereCSI containers' Security Context
+  ## @param vSphereCSI.containerSecurityContext.runAsUser Set vSphereCSI containers' Security Context runAsUser
+  ##
+  containerSecurityContext:
+    enabled: true
+    runAsUser: 1001
+
+  ## @param vSphereCSI.attacherArgs Override default container args (useful when using custom images)
+  ##
+  attacherArgs:
+    - --timeout=300s
+    - --v=3
+  ## @param vSphereCSI.resizerArgs Override default container args (useful when using custom images)
+  ##
+  resizerArgs:
+    - --handle-volume-inuse-error=false
+    - --kube-api-qps=100
+    - --kube-api-burst=100
+    - --timeout=300s
+    - --v=3
+  ## @param vSphereCSI.livenessProbeArgs Override default container args (useful when using custom images)
+  ##
+  livenessProbeArgs:
+    - --v=3
+  ## @param vSphereCSI.provisionerArgs Override default container args (useful when using custom images)
+  ##
+  provisionerArgs:
+    - --timeout=300s
+    - --v=3
+  ## @param vSphereCSI.hostAliases vSphereCSI pods host aliases
+  ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
+  ##
+  hostAliases: [ ]
+  ## @param vSphereCSI.podLabels Extra labels for vSphereCSI pods
+  ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
+  ##
+  podLabels: { }
+  ## @param vSphereCSI.podAnnotations Annotations for vSphereCSI pods
+  ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+  ##
+  podAnnotations: { }
+  ## @param vSphereCSI.podAffinityPreset Pod affinity preset. Ignored if `vSphereCSI.affinity` is set. Allowed values: `soft` or `hard`
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
+  ##
+  podAffinityPreset: ""
+  ## @param vSphereCSI.podAntiAffinityPreset Pod anti-affinity preset. Ignored if `vSphereCSI.affinity` is set. Allowed values: `soft` or `hard`
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
+  ##
+  podAntiAffinityPreset: soft
+  ## Node vSphereCSI.affinity preset
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#node-affinity
+  ##
+  nodeAffinityPreset:
+    ## @param vSphereCSI.nodeAffinityPreset.type Node affinity preset type. Ignored if `vSphereCSI.affinity` is set. Allowed values: `soft` or `hard`
+    ##
+    type: ""
+    ## @param vSphereCSI.nodeAffinityPreset.key Node label key to match. Ignored if `vSphereCSI.affinity` is set
+    ##
+    key: ""
+    ## @param vSphereCSI.nodeAffinityPreset.values Node label values to match. Ignored if `vSphereCSI.affinity` is set
+    ## E.g.
+    ## values:
+    ##   - e2e-az1
+    ##   - e2e-az2
+    ##
+    values: [ ]
+  ## @param vSphereCSI.affinity Affinity for vSphereCSI pods assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
+  ## NOTE: `vSphereCSI.podAffinityPreset`, `vSphereCSI.podAntiAffinityPreset`, and `vSphereCSI.nodeAffinityPreset` will be ignored when it's set
+  ##
+  affinity: { }
+  ## @param vSphereCSI.nodeSelector Node labels for vSphereCSI pods assignment
+  ## ref: https://kubernetes.io/docs/user-guide/node-selection/
+  ##
+  nodeSelector:
+    node-role.kubernetes.io/master: ""
+  ## @param vSphereCSI.tolerations Tolerations for vSphereCSI pods assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
+  ##
+  tolerations:
+    - key: node.cloudprovider.kubernetes.io/uninitialized
+      value: "true"
+      effect: NoSchedule
+    - key: node-role.kubernetes.io/master
+      effect: NoSchedule
+      operator: Exists
+    - key: node.kubernetes.io/not-ready
+      effect: NoSchedule
+      operator: Exists
+  ## @param vSphereCSI.updateStrategy.type vSphereCSI statefulset strategy type
+  ## ref: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies
+  ##
+  updateStrategy:
+    ## StrategyType
+    ## Can be set to RollingUpdate or OnDelete
+    ##
+    type: RollingUpdate
+  ## @param vSphereCSI.priorityClassName vSphereCSI pods' priorityClassName
+  ##
+  priorityClassName: ""
+  ## @param vSphereCSI.lifecycleHooks for the vSphereCSI container(s) to automate configuration before or after startup
+  ##
+  lifecycleHooks: { }
+  ## @param vSphereCSI.extraEnvVars Array with extra environment variables to add to vSphereCSI nodes
+  ## e.g:
+  ## extraEnvVars:
+  ##   - name: FOO
+  ##     value: "bar"
+  ##
+  extraEnvVars: [ ]
+  ## @param vSphereCSI.extraEnvVarsCM Name of existing ConfigMap containing extra env vars for vSphereCSI nodes
+  ##
+  extraEnvVarsCM:
+  ## @param vSphereCSI.extraEnvVarsSecret Name of existing Secret containing extra env vars for vSphereCSI nodes
+  ##
+  extraEnvVarsSecret:
+  ## @param vSphereCSI.extraVolumes Optionally specify extra list of additional volumes for the vSphereCSI pod(s)
+  ##
+  extraVolumes: [ ]
+  ## @param vSphereCSI.extraVolumeMounts Optionally specify extra list of additional volumeMounts for the vSphereCSI container(s)
+  ##
+  extraVolumeMounts: [ ]
+  ## @param vSphereCSI.sidecars Add additional sidecar containers to the vSphereCSI pod(s)
+  ## e.g:
+  ## sidecars:
+  ##   - name: your-image-name
+  ##     image: your-image
+  ##     imagePullPolicy: Always
+  ##     ports:
+  ##       - name: portname
+  ##         containerPort: 1234
+  ##
+  sidecars: { }
+  ## @param vSphereCSI.initContainers Add additional init containers to the vSphereCSI pod(s)
+  ## ref: https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
+  ## e.g:
+  ## initContainers:
+  ##  - name: your-image-name
+  ##    image: your-image
+  ##    imagePullPolicy: Always
+  ##    command: ['sh', '-c', 'echo "hello world"']
+  ##
+  initContainers: { }
+
+## %%NODE_CONTAINER/POD_DESCRIPTION%%
+##
+vSphereCSINode:
+  ## @param image.registry vSphereCSINode image registry
+  ## @param image.repository vSphereCSINode image repository
+  ## @param image.tag vSphereCSINode image tag (immutable tags are recommended)
+  ## @param image.pullPolicy vSphereCSINode image pull policy
+  ## @param image.pullSecrets vSphereCSINode image pull secrets
+  ##
   image:
-    repository: gcr.io/cloud-provider-vsphere/csi/release/syncer
-    tag: v2.0.0
+    registry: gcr.io
+    repository: cloud-provider-vsphere/csi/release/driver
+    tag: v2.2.0
+    ## Specify a imagePullPolicy
+    ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
+    ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
+    ##
     pullPolicy: IfNotPresent
+    ## Optionally specify an array of imagePullSecrets.
+    ## Secrets must be manually created in the namespace.
+    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+    ## e.g:
+    ## pullSecrets:
+    ##   - myRegistryKeySecretName
+    ##
+    pullSecrets: [ ]
 
-
-csiProvisioner: # csi-provisioner
-  image:
-    repository: quay.io/k8scsi/csi-provisioner
-    tag: v1.4.0
+  driverRegistrarImage:
+    registry: k8s.gcr.io
+    repository: sig-storage/csi-node-driver-registrar
+    tag: v2.1.0
+    ## Specify a imagePullPolicy
+    ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
+    ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
+    ##
     pullPolicy: IfNotPresent
+    ## Optionally specify an array of imagePullSecrets.
+    ## Secrets must be manually created in the namespace.
+    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+    ## e.g:
+    ## pullSecrets:
+    ##   - myRegistryKeySecretName
+    ##
+    pullSecrets: []
 
+  ## @param vSphereCSINode.replicaCount Number of vSphereCSINode replicas to deploy
+  ##
+  replicaCount: 1
+  ## vSphereCSINode resource requests and limits
+  ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
+  ## @param vSphereCSINode.resources.limits The resources limits for the vSphereCSINode containers
+  ## @param vSphereCSINode.resources.requests The requested resources for the vSphereCSINode containers
+  ##
+  resources:
+    limits: { }
+    requests:
+      cpu: 200m
+  ## Configure Pods Security Context
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+  ## @param vSphereCSINode.podSecurityContext.enabled Enabled vSphereCSINode pods' Security Context
+  ## @param vSphereCSINode.podSecurityContext.fsGroup Set vSphereCSINode pod's Security Context fsGroup
+  ##
+  podSecurityContext:
+    enabled: true
+    fsGroup: 1001
+  ## Configure Container Security Context
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+  ## @param vSphereCSINode.containerSecurityContext.enabled Enabled vSphereCSINode containers' Security Context
+  ## @param vSphereCSINode.containerSecurityContext.runAsUser Set vSphereCSINode containers' Security Context runAsUser
+  ##
+  containerSecurityContext:
+    enabled: true
+    runAsUser: 1001
 
-# Containers in csi-daemonset:
-nodeDriverRegistrar: # node-driver-registrar
-  image:
-    repository: quay.io/k8scsi/csi-node-driver-registrar
-    tag: v1.2.0
-    pullPolicy: IfNotPresent
+  ## @param vSphereCSINodeNode.attacherArgs Override default container args (useful when using custom images)
+  ##
+  nodeRegistrarArgs:
+    - --v=3
+  ## @param vSphereCSINode.hostAliases vSphereCSINode pods host aliases
+  ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
+  ##
+  hostAliases: [ ]
+  ## @param vSphereCSINode.podLabels Extra labels for vSphereCSINode pods
+  ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
+  ##
+  podLabels: { }
+  ## @param vSphereCSINode.podAnnotations Annotations for vSphereCSINode pods
+  ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+  ##
+  podAnnotations: { }
+  ## @param vSphereCSINode.podAffinityPreset Pod affinity preset. Ignored if `vSphereCSINode.affinity` is set. Allowed values: `soft` or `hard`
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
+  ##
+  podAffinityPreset: ""
+  ## @param vSphereCSINode.podAntiAffinityPreset Pod anti-affinity preset. Ignored if `vSphereCSINode.affinity` is set. Allowed values: `soft` or `hard`
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
+  ##
+  podAntiAffinityPreset: soft
+  ## Node vSphereCSINode.affinity preset
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#node-affinity
+  ##
+  nodeAffinityPreset:
+    ## @param vSphereCSINode.nodeAffinityPreset.type Node affinity preset type. Ignored if `vSphereCSINode.affinity` is set. Allowed values: `soft` or `hard`
+    ##
+    type: ""
+    ## @param vSphereCSINode.nodeAffinityPreset.key Node label key to match. Ignored if `vSphereCSINode.affinity` is set
+    ##
+    key: ""
+    ## @param vSphereCSINode.nodeAffinityPreset.values Node label values to match. Ignored if `vSphereCSINode.affinity` is set
+    ## E.g.
+    ## values:
+    ##   - e2e-az1
+    ##   - e2e-az2
+    ##
+    values: [ ]
+  ## @param vSphereCSINode.affinity Affinity for vSphereCSINode pods assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
+  ## NOTE: `vSphereCSINode.podAffinityPreset`, `vSphereCSINode.podAntiAffinityPreset`, and `vSphereCSINode.nodeAffinityPreset` will be ignored when it's set
+  ##
+  affinity: { }
+  ## @param vSphereCSINode.nodeSelector Node labels for vSphereCSINode pods assignment
+  ## ref: https://kubernetes.io/docs/user-guide/node-selection/
+  ##
+  nodeSelector: { }
+  ## @param vSphereCSINode.tolerations Tolerations for vSphereCSINode pods assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
+  ##
+  tolerations:
+    - effect: NoSchedule
+      operator: Exists
+    - effect: NoSchedule
+      operator: Exists
+  ## @param vSphereCSINode.updateStrategy.type vSphereCSINode statefulset strategy type
+  ## ref: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies
+  ##
+  updateStrategy:
+    ## StrategyType
+    ## Can be set to RollingUpdate or OnDelete
+    ##
+    type: RollingUpdate
+  ## @param vSphereCSINode.priorityClassName vSphereCSINode pods' priorityClassName
+  ##
+  priorityClassName: ""
+  ## @param vSphereCSINode.lifecycleHooks for the vSphereCSINode container(s) to automate configuration before or after startup
+  ##
+  lifecycleHooks: { }
+  ## @param vSphereCSINode.extraEnvVars Array with extra environment variables to add to vSphereCSINode nodes
+  ## e.g:
+  ## extraEnvVars:
+  ##   - name: FOO
+  ##     value: "bar"
+  ##
+  extraEnvVars: [ ]
+  ## @param vSphereCSINode.extraEnvVarsCM Name of existing ConfigMap containing extra env vars for vSphereCSINode nodes
+  ##
+  extraEnvVarsCM:
+  ## @param vSphereCSINode.extraEnvVarsSecret Name of existing Secret containing extra env vars for vSphereCSINode nodes
+  ##
+  extraEnvVarsSecret:
+  ## @param vSphereCSINode.extraVolumes Optionally specify extra list of additional volumes for the vSphereCSINode pod(s)
+  ##
+  extraVolumes: [ ]
+  ## @param vSphereCSINode.extraVolumeMounts Optionally specify extra list of additional volumeMounts for the vSphereCSINode container(s)
+  ##
+  extraVolumeMounts: [ ]
+  ## @param vSphereCSINode.sidecars Add additional sidecar containers to the vSphereCSINode pod(s)
+  ## e.g:
+  ## sidecars:
+  ##   - name: your-image-name
+  ##     image: your-image
+  ##     imagePullPolicy: Always
+  ##     ports:
+  ##       - name: portname
+  ##         containerPort: 1234
+  ##
+  sidecars: { }
+  ## @param vSphereCSINode.initContainers Add additional init containers to the vSphereCSINode pod(s)
+  ## ref: https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
+  ## e.g:
+  ## initContainers:
+  ##  - name: your-image-name
+  ##    image: your-image
+  ##    imagePullPolicy: Always
+  ##    command: ['sh', '-c', 'echo "hello world"']
+  ##
+  initContainers: { }
 
-csiNode: # csi-node
-  image:
-    repository: gcr.io/cloud-provider-vsphere/csi/release/driver
-    tag: v2.0.0
-    pullPolicy: IfNotPresent
+## @section Init Container Parameters
 
-# liveness-robe info above is shared
+## @section Other Parameters
 
-podAnnotations: {}
+## RBAC configuration
+##
+rbac:
+  ## @param rbac.create Specifies whether RBAC resources should be created
+  ##
+  create: true
 
-podSecurityContext: {}
-  # fsGroup: 2000
-
-securityContext: {}
-  # capabilities:
-  #   drop:
-  #   - ALL
-  # readOnlyRootFilesystem: true
-  # runAsNonRoot: true
-  # runAsUser: 1000
-
-resources: {}
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
-
-nodeSelector: {}
-
-tolerations: []
-
-affinity: {}
-
-replicaCount: 1
-
-imagePullSecrets: []
-nameOverride: ""
-fullnameOverride: ""
+## ServiceAccount configuration
+##
+serviceAccount:
+  ## @param serviceAccount.create Specifies whether a ServiceAccount should be created
+  ##
+  create: true
+  ## @param serviceAccount.controllerName The name of the ServiceAccount to use for the controller.
+  ## If not set and create is true, a name is generated using the common.names.fullname template
+  ##
+  controllerName: ""
+  ## @param serviceAccount.nodeName The name of the ServiceAccount to use for each node.
+  ## If not set and create is true, a name is generated using the common.names.fullname template
+  ##
+  nodeName: ""

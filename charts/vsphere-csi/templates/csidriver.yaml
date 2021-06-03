@@ -1,4 +1,4 @@
-{{- if .Values.csidriver.enabled -}}
+{{- if .Values.installCSIDriver -}}
 apiVersion: storage.k8s.io/v1beta1
 kind: CSIDriver
 metadata:
