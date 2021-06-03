@@ -1,0 +1,23 @@
+apiVersion: v2
+name: vsphere-cpi
+version: 0.1.0
+description: Helm chart for the vSphere-CPI
+appVersion: v1.18.2
+home: https://github.com/kubernetes/cloud-provider-vsphere
+icon: https://github.com/kubernetes-sigs/vsphere-csi-driver/blob/master/docs/images/vmware_logo.png
+sources:
+  - https://github.com/kubernetes/cloud-provider-vsphere
+keywords:
+  - vSphere
+  - CPI
+maintainers:
+  - name: chogan
+    email: chogan@vmware.com
+  - name: Myles Gray
+    email: myles@vmware.com
+dependencies:
+  - name: common
+    repository: https://charts.bitnami.com/bitnami
+    tags:
+      - bitnami-common
+    version: 1.x.x
