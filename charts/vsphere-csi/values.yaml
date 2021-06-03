@@ -45,18 +45,18 @@ topologyAware: false
 resizerEnabled: true # set to false if vSphere < 7.0
 
 internalFeatureStates:
-  csi-migration: false
-  csi-auth-check: true
-  online-volume-extend: true
-  trigger-csi-fullsync: false
-  async-query-volume: false
-  csi-volume-manager-idempotency: false
+  async-query-volume: "false"
+  csi-auth-check: "true"
+  csi-migration: "false"
+  csi-volume-manager-idempotency: "false"
+  online-volume-extend: "true"
+  trigger-csi-fullsync: "false"
 
 hostSocketDir: /var/lib/csi/sockets/pluginproxy/csi.vsphere.vmware.com
 hostSocketPath: /var/lib/kubelet/plugins/csi.vsphere.vmware.com/csi.sock
 
 config:
-  secretName: vsphere-cpi
+  secretName: vsphere-csi
 
 ## %%MAIN_CONTAINER/POD_DESCRIPTION%%
 ##
