@@ -109,7 +109,7 @@ spec:
           readinessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.node.registrar.readinessProbe "enabled") "context" $) | nindent 12 }}
           {{- else if .Values.node.registrar.customReadinessProbe }}
           readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.node.registrar.customReadinessProbe "context" $) | nindent 12 }}
-          {{- end }}
+          {{ end }}
           volumeMounts:
             - name: plugin-dir
               mountPath: /csi
@@ -145,11 +145,11 @@ spec:
               value: "node"
             - name: X_CSI_SPEC_REQ_VALIDATION
               value: "false"
-            {{- if .Values.global.config.labels }}
+            {{ if .Values.global.config.labels }}
             #needed only for topology aware setups
             - name: VSPHERE_CSI_CONFIG
-             value: "/etc/cloud/csi-vsphere.conf" # here csi-vsphere.conf is the name of the file used for creating secret using "--from-file" flag
-            {{- end }}
+              value: "/etc/cloud/csi-vsphere.conf" 
+            {{ end }}
             - name: X_CSI_DEBUG
               value: "true"
             - name: LOGGER_LEVEL
@@ -188,11 +188,11 @@ spec:
           {{- end }}
           volumeMounts:
             # needed only for topology aware setups
-          {{- if .Values.global.config.labels }}
+          {{ if .Values.global.config.labels }}
             - name: vsphere-config-volume
               mountPath: /etc/cloud
               readOnly: true
-          {{- end }}
+          {{ end }}
             - name: plugin-dir
               mountPath: /csi
             - name: pods-mount-dir
@@ -261,11 +261,11 @@ spec:
         {{- end }}
       volumes:
       # needed only for topology aware setups
-      {{- if .Values.global.config.labels }}
+      {{ if .Values.global.config.labels }}
       - name: vsphere-config-volume
         secret:
           secretName: {{ template "common.names.fullname" . }}
-      {{- end }}
+      {{ end }}
       - name: registration-dir
         hostPath:
           path: /var/lib/kubelet/plugins_registry

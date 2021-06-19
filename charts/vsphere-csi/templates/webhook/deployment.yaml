@@ -118,7 +118,7 @@ spec:
           {{- else if .Values.webhook.customReadinessProbe }}
           readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.webhook.customReadinessProbe "context" $) | nindent 12 }}
           {{- end }}
-          ports: {}
+          #ports: 
           volumeMounts:
             - mountPath: /etc/webhook
               name: webhook-certs
