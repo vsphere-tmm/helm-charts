@@ -935,7 +935,7 @@ controller:
   ## @skip "controller.nodeSelector.node-role.kubernetes.io/master"
   ## @skip controller.nodeSelector.node-role.kubernetes.io\/master
 
-    node-role.kubernetes.io/master: ""
+    #node-role.kubernetes.io/master: ""
   ## @param controller.tolerations Tolerations for controller pods assignment
   ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
   ##
@@ -1295,7 +1295,6 @@ node:
   ## @param node.livenessProbe.periodSeconds Period seconds for livenessProbe
   ## @param node.livenessProbe.timeoutSeconds Timeout seconds for livenessProbe
   ## @param node.livenessProbe.failureThreshold Failure threshold for livenessProbe
-  ## @param node.livenessProbe.successThreshold Success threshold for livenessProbe
   ##
   livenessProbe:
     enabled: true
@@ -1351,11 +1350,9 @@ node:
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param node.containerSecurityContext.enabled Enabled node containers' Security Context
-  ## @param node.containerSecurityContext.runAsUser Set node containers' Security Context runAsUser
   ## @param node.containerSecurityContext.privileged Set node containers' Security Context privileged
-  ## @param node.containerSecurityContext.capabilities Set node containers' Security Context capabilities
   ## @param node.containerSecurityContext.allowPrivilegeEscalation Set node containers' Security Context allowPrivilegeEscalation
-
+  ## @skip node.containerSecurityContext.capabilities.add
   containerSecurityContext:
     enabled: true
     privileged: true
@@ -1541,7 +1538,6 @@ webhook:
   ## @param webhook.livenessProbe.periodSeconds Period seconds for livenessProbe
   ## @param webhook.livenessProbe.timeoutSeconds Timeout seconds for livenessProbe
   ## @param webhook.livenessProbe.failureThreshold Failure threshold for livenessProbe
-  ## @param webhook.livenessProbe.successThreshold Success threshold for livenessProbe
   ##
   livenessProbe:
     enabled: false
@@ -1597,11 +1593,9 @@ webhook:
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param webhook.containerSecurityContext.enabled Enabled webhook containers' Security Context
-  ## @param webhook.containerSecurityContext.runAsUser Set webhook containers' Security Context runAsUser
   ## @param webhook.containerSecurityContext.privileged Set webhook containers' Security Context privileged
-  ## @param webhook.containerSecurityContext.capabilities Set webhook containers' Security Context capabilities
   ## @param webhook.containerSecurityContext.allowPrivilegeEscalation Set webhook containers' Security Context allowPrivilegeEscalation
-
+  ## @skip webhook.containerSecurityContext.capabilities.add
   containerSecurityContext:
     enabled: true
     privileged: true
@@ -1666,8 +1660,9 @@ webhook:
   ## @param webhook.nodeSelector Node labels for webhook pods assignment
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
+  ## @skip webhook.nodeSelector.node-role.kubernetes.io/master
   nodeSelector: 
-    node-role.kubernetes.io/master: ""
+    #node-role.kubernetes.io/master: ""
 
   ## @param webhook.tolerations Tolerations for webhook pods assignment
   ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/

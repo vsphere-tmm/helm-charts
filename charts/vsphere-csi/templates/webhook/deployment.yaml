@@ -2,7 +2,7 @@
 apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
 kind: Deployment
 metadata:
-  name: {{ template "common.names.fullname" . }}
+  name: {{ template "common.names.fullname" . }}-webhook
   namespace: {{ .Release.Namespace | quote }}
   labels: {{- include "common.labels.standard" . | nindent 4 }}
     app.kubernetes.io/component: {{ template "common.names.fullname" . }}-webhook
@@ -136,7 +136,7 @@ spec:
           emptyDir: {}
         - name: webhook-certs
           secret:
-            secretName: vsphere-webhook-certs
+            secretName: {{ template "common.names.fullname" . }}-webhook-certs
         {{- if .Values.webhook.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.webhook.extraVolumes "context" $) | nindent 8 }}
         {{- end }}

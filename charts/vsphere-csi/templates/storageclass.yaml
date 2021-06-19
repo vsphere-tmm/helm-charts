@@ -16,4 +16,7 @@ parameters:
 {{- if .Values.global.config.storageclass.expansion }}
 allowVolumeExpansion: true
 {{- end -}}
+{{- if .Values.global.config.labels }}
+volumeBindingMode: WaitForFirstConsumer
+{{- end -}}
 {{- end -}}

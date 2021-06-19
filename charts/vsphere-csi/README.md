@@ -101,6 +101,8 @@ The command removes all the Kubernetes components associated with the chart and 
 | Name                               | Description                                           | Value       |
 | ---------------------------------- | ----------------------------------------------------- | ----------- |
 | `service.type`                     | vsphere-csi service type                              | `ClusterIP` |
+| `service.port`                     | vsphere-csi service HTTP port                         | `80`        |
+| `service.httpsPort`                | vsphere-csi service HTTPS port                        | `443`       |
 | `service.nodePorts.http`           | Node port for HTTP                                    | `nil`       |
 | `service.nodePorts.https`          | Node port for HTTPS                                   | `nil`       |
 | `service.clusterIP`                | vsphere-csi service Cluster IP                        | `nil`       |
@@ -116,7 +118,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ | ------------------------------------------- |
 | `controller.image.registry`                                   | controller image registry                                                                              | `gcr.io`                                    |
 | `controller.image.repository`                                 | controller image repository                                                                            | `cloud-provider-vsphere/csi/release/driver` |
-| `controller.image.tag`                                        | controller image tag (immutable tags are recommended)                                                  | `v2.2.0`                                    |
+| `controller.image.tag`                                        | controller image tag (immutable tags are recommended)                                                  | `v2.2.1`                                    |
 | `controller.image.pullPolicy`                                 | controller image pull policy                                                                           | `IfNotPresent`                              |
 | `controller.image.pullSecrets`                                | controller image pull secrets                                                                          | `undefined`                                 |
 | `controller.image.debug`                                      | Enable image debug mode                                                                                | `false`                                     |
@@ -218,7 +220,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `controller.livenessprobe.extraVolumeMounts`                  | Optionally specify extra list of additional volumeMounts for the controller.livenessprobe container(s) | `undefined`                                 |
 | `controller.syncer.image.registry`                            | controller.syncer image registry                                                                       | `gcr.io`                                    |
 | `controller.syncer.image.repository`                          | controller.syncer image repository                                                                     | `cloud-provider-vsphere/csi/release/syncer` |
-| `controller.syncer.image.tag`                                 | controller.syncer image tag (immutable tags are recommended)                                           | `v2.2.0`                                    |
+| `controller.syncer.image.tag`                                 | controller.syncer image tag (immutable tags are recommended)                                           | `v2.2.1`                                    |
 | `controller.syncer.image.pullPolicy`                          | controller.syncer image pull policy                                                                    | `IfNotPresent`                              |
 | `controller.syncer.image.pullSecrets`                         | controller.syncer image pull secrets                                                                   | `undefined`                                 |
 | `controller.syncer.image.debug`                               | Enable image debug mode                                                                                | `false`                                     |
@@ -331,7 +333,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `controller.serviceAccount.name`                              | The name of the ServiceAccount to use.                                                                 | `""`                                        |
 | `node.image.registry`                                         | node image registry                                                                                    | `gcr.io`                                    |
 | `node.image.repository`                                       | node image repository                                                                                  | `cloud-provider-vsphere/csi/release/driver` |
-| `node.image.tag`                                              | node image tag (immutable tags are recommended)                                                        | `v2.2.0`                                    |
+| `node.image.tag`                                              | node image tag (immutable tags are recommended)                                                        | `v2.2.1`                                    |
 | `node.image.pullPolicy`                                       | node image pull policy                                                                                 | `IfNotPresent`                              |
 | `node.image.pullSecrets`                                      | node image pull secrets                                                                                | `undefined`                                 |
 | `node.image.debug`                                            | Enable image debug mode                                                                                | `false`                                     |
@@ -418,7 +420,6 @@ The command removes all the Kubernetes components associated with the chart and 
 | `node.podSecurityContext.fsGroup`                             | Set node pod's Security Context fsGroup                                                                | `1001`                                      |
 | `node.containerSecurityContext.enabled`                       | Enabled node containers' Security Context                                                              | `true`                                      |
 | `node.containerSecurityContext.privileged`                    | Set node containers' Security Context privileged                                                       | `true`                                      |
-| `node.containerSecurityContext.capabilities`                  | Set node containers' Security Context capabilities                                                     | `nil`                                       |
 | `node.containerSecurityContext.allowPrivilegeEscalation`      | Set node containers' Security Context allowPrivilegeEscalation                                         | `true`                                      |
 | `node.existingConfigmap`                                      | The name of an existing ConfigMap with your custom configuration for node                              | `nil`                                       |
 | `node.command`                                                | Override default container command (useful when using custom images)                                   | `undefined`                                 |
@@ -446,6 +447,70 @@ The command removes all the Kubernetes components associated with the chart and 
 | `node.initContainers`                                         | Add additional init containers to the node pod(s)                                                      | `undefined`                                 |
 | `node.serviceAccount.create`                                  | Specifies whether a ServiceAccount should be created                                                   | `true`                                      |
 | `node.serviceAccount.name`                                    | The name of the ServiceAccount to use.                                                                 | `""`                                        |
+| `webhook.enabled`                                             | enable or disable webhook                                                                              | `true`                                      |
+| `webhook.image.registry`                                      | webhook image registry                                                                                 | `gcr.io`                                    |
+| `webhook.image.repository`                                    | webhook image repository                                                                               | `cloud-provider-vsphere/csi/release/syncer` |
+| `webhook.image.tag`                                           | webhook image tag (immutable tags are recommended)                                                     | `v2.2.1`                                    |
+| `webhook.image.pullPolicy`                                    | webhook image pull policy                                                                              | `IfNotPresent`                              |
+| `webhook.image.pullSecrets`                                   | webhook image pull secrets                                                                             | `undefined`                                 |
+| `webhook.image.debug`                                         | Enable image debug mode                                                                                | `false`                                     |
+| `webhook.replicaCount`                                        | Number of webhook replicas to deploy                                                                   | `1`                                         |
+| `webhook.livenessProbe.enabled`                               | Enable livenessProbe on webhook pods                                                                   | `false`                                     |
+| `webhook.livenessProbe.httpGet.path`                          | Path for HTTPGet Livenessprobe                                                                         | `/healthz`                                  |
+| `webhook.livenessProbe.httpGet.port`                          | Path for HTTPGet Livenessprobe                                                                         | `healthz`                                   |
+| `webhook.livenessProbe.initialDelaySeconds`                   | Initial delay seconds for livenessProbe                                                                | `10`                                        |
+| `webhook.livenessProbe.periodSeconds`                         | Period seconds for livenessProbe                                                                       | `5`                                         |
+| `webhook.livenessProbe.timeoutSeconds`                        | Timeout seconds for livenessProbe                                                                      | `5`                                         |
+| `webhook.livenessProbe.failureThreshold`                      | Failure threshold for livenessProbe                                                                    | `3`                                         |
+| `webhook.readinessProbe.enabled`                              | Enable readinessProbe on webhook pods                                                                  | `false`                                     |
+| `webhook.readinessProbe.initialDelaySeconds`                  | Initial delay seconds for readinessProbe                                                               | `foo`                                       |
+| `webhook.readinessProbe.periodSeconds`                        | Period seconds for readinessProbe                                                                      | `bar`                                       |
+| `webhook.readinessProbe.timeoutSeconds`                       | Timeout seconds for readinessProbe                                                                     | `foo`                                       |
+| `webhook.readinessProbe.failureThreshold`                     | Failure threshold for readinessProbe                                                                   | `bar`                                       |
+| `webhook.readinessProbe.successThreshold`                     | Success threshold for readinessProbe                                                                   | `foo`                                       |
+| `webhook.customLivenessProbe`                                 | Custom livenessProbe that overrides the default one                                                    | `undefined`                                 |
+| `webhook.customReadinessProbe`                                | Custom readinessProbe that overrides the default one                                                   | `undefined`                                 |
+| `webhook.resources.limits`                                    | The resources limits for the webhook containers                                                        | `undefined`                                 |
+| `webhook.resources.requests`                                  | The requested resources for the webhook containers                                                     | `undefined`                                 |
+| `webhook.dnsPolicy`                                           | set DNS Policy                                                                                         | `Default`                                   |
+| `webhook.podSecurityContext.enabled`                          | Enabled webhook pods' Security Context                                                                 | `false`                                     |
+| `webhook.podSecurityContext.fsGroup`                          | Set webhook pod's Security Context fsGroup                                                             | `1001`                                      |
+| `webhook.containerSecurityContext.enabled`                    | Enabled webhook containers' Security Context                                                           | `true`                                      |
+| `webhook.containerSecurityContext.privileged`                 | Set webhook containers' Security Context privileged                                                    | `true`                                      |
+| `webhook.containerSecurityContext.allowPrivilegeEscalation`   | Set webhook containers' Security Context allowPrivilegeEscalation                                      | `true`                                      |
+| `webhook.existingConfigmap`                                   | The name of an existing ConfigMap with your custom configuration for webhook                           | `nil`                                       |
+| `webhook.command`                                             | Override default container command (useful when using custom images)                                   | `undefined`                                 |
+| `webhook.args`                                                | Override default container args (useful when using custom images)                                      | `[]`                                        |
+| `webhook.hostAliases`                                         | webhook pods host aliases                                                                              | `undefined`                                 |
+| `webhook.podLabels`                                           | Extra labels for webhook pods                                                                          | `undefined`                                 |
+| `webhook.podAnnotations`                                      | Annotations for webhook pods                                                                           | `undefined`                                 |
+| `webhook.podAffinityPreset`                                   | Pod affinity preset. Ignored if `webhook.affinity` is set. Allowed values: `soft` or `hard`            | `""`                                        |
+| `webhook.podAntiAffinityPreset`                               | Pod anti-affinity preset. Ignored if `webhook.affinity` is set. Allowed values: `soft` or `hard`       | `soft`                                      |
+| `webhook.nodeAffinityPreset.type`                             | webhook affinity preset type. Ignored if `webhook.affinity` is set. Allowed values: `soft` or `hard`   | `""`                                        |
+| `webhook.nodeAffinityPreset.key`                              | webhook label key to match. Ignored if `webhook.affinity` is set                                       | `""`                                        |
+| `webhook.nodeAffinityPreset.values`                           | webhook label values to match. Ignored if `webhook.affinity` is set                                    | `undefined`                                 |
+| `webhook.affinity`                                            | Affinity for webhook pods assignment                                                                   | `undefined`                                 |
+| `webhook.nodeSelector`                                        | Node labels for webhook pods assignment                                                                | `nil`                                       |
+| `webhook.tolerations`                                         | Tolerations for webhook pods assignment                                                                | `[]`                                        |
+| `webhook.updateStrategy.type`                                 | webhook statefulset strategy type                                                                      | `RollingUpdate`                             |
+| `webhook.priorityClassName`                                   | webhook pods' priorityClassName                                                                        | `""`                                        |
+| `webhook.lifecycleHooks`                                      | for the webhook container(s) to automate configuration before or after startup                         | `undefined`                                 |
+| `webhook.extraEnvVars`                                        | Array with extra environment variables to add to webhook pods                                          | `undefined`                                 |
+| `webhook.extraEnvVarsCM`                                      | Name of existing ConfigMap containing extra env vars for webhook pods                                  | `nil`                                       |
+| `webhook.extraEnvVarsSecret`                                  | Name of existing Secret containing extra env vars for webhook pods                                     | `nil`                                       |
+| `webhook.extraVolumes`                                        | Optionally specify extra list of additional volumes for the webhook pod(s)                             | `undefined`                                 |
+| `webhook.extraVolumeMounts`                                   | Optionally specify extra list of additional volumeMounts for the webhook container(s)                  | `undefined`                                 |
+| `webhook.sidecars`                                            | Add additional sidecar containers to the webhook pod(s)                                                | `undefined`                                 |
+| `webhook.initContainers`                                      | Add additional init containers to the webhook pod(s)                                                   | `undefined`                                 |
+| `webhook.serviceAccount.create`                               | Specifies whether a ServiceAccount should be created                                                   | `true`                                      |
+| `webhook.serviceAccount.name`                                 | The name of the ServiceAccount to use.                                                                 | `""`                                        |
+
+
+### Init Container Parameters
+
+| Name | Description | Value |
+| ---- | ----------- | ----- |
+
 
 ### Other Parameters
 
