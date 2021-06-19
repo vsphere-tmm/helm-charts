@@ -1,0 +1,22 @@
+{{- if .Values.webhook.enabled }}
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingWebhookConfiguration
+metadata:
+  name: validation.csi.vsphere.vmware.com
+webhooks:
+  - name: validation.csi.vsphere.vmware.com
+    clientConfig:
+      service:
+        name: vsphere-webhook-svc
+        namespace: kube-system
+        path: "/validate"
+      caBundle: ${CA_BUNDLE}
+    rules:
+      - apiGroups:   ["storage.k8s.io"]
+        apiVersions: ["v1", "v1beta1"]
+        operations:  ["CREATE", "UPDATE"]
+        resources:   ["storageclasses"]
+    sideEffects: None
+    admissionReviewVersions: ["v1"]
+    failurePolicy: Fail
+{{- end }}

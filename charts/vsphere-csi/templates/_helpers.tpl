@@ -56,6 +56,12 @@ Return the proper node livenessProbe image name
 {{ include "common.images.image" (dict "imageRoot" .Values.node.livenessprobe.image "global" .Values.global) }}
 {{- end -}}
 
+{{/*
+Return the proper webhook image name
+*/}}
+{{- define "vsphere-csi.webhook.image" -}}
+{{ include "common.images.image" (dict "imageRoot" .Values.webhook.image "global" .Values.global) }}
+{{- end -}}
 
 {{/*
 Return the proper image name (for the init container volume-permissions image)
@@ -90,6 +96,17 @@ Create the name of the service account to use
     {{ default (printf "%s-node" (include "common.names.fullname" .)) .Values.node.serviceAccount.name }}
 {{- else -}}
     {{ default "default" .Values.node.serviceAccount.name }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Create the name of the webhook service account to use
+*/}}
+{{- define "vsphere-csi.webhook.serviceAccountName" -}}
+{{- if .Values.webhook.serviceAccount.create -}}
+    {{ default (printf "%s-webhook" (include "common.names.fullname" .)) .Values.webhook.serviceAccount.name }}
+{{- else -}}
+    {{ default "default" .Values.webhook.serviceAccount.name }}
 {{- end -}}
 {{- end -}}
 

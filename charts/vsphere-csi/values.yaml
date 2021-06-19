@@ -166,7 +166,7 @@ controller:
   image:
     registry: gcr.io
     repository: cloud-provider-vsphere/csi/release/driver
-    tag: v2.2.0
+    tag: v2.2.1
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -564,7 +564,7 @@ controller:
     image:
       registry: gcr.io
       repository: cloud-provider-vsphere/csi/release/syncer
-      tag: v2.2.0
+      tag: v2.2.1
       ## Specify a imagePullPolicy
       ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
       ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -1023,7 +1023,7 @@ node:
   image:
     registry: gcr.io
     repository: cloud-provider-vsphere/csi/release/driver
-    tag: v2.2.0
+    tag: v2.2.1
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -1490,6 +1490,255 @@ node:
     ##
     create: true
     ## @param node.serviceAccount.name The name of the ServiceAccount to use.
+    ## If not set and create is true, a name is generated using the common.names.fullname template
+    ##
+    name: ""
+
+
+## Configuration for the webhook deployment
+##
+webhook:
+  ## @param webhook.enabled enable or disable webhook
+
+  enabled: true
+  ## @param webhook.image.registry webhook image registry
+  ## @param webhook.image.repository webhook image repository
+  ## @param webhook.image.tag webhook image tag (immutable tags are recommended)
+  ## @param webhook.image.pullPolicy webhook image pull policy
+  ## @param webhook.image.pullSecrets webhook image pull secrets
+  ## @param webhook.image.debug Enable image debug mode
+  ##
+
+  image:
+    registry: gcr.io
+    repository: cloud-provider-vsphere/csi/release/syncer
+    tag: v2.2.1
+    ## Specify a imagePullPolicy
+    ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
+    ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
+    ##
+    pullPolicy: IfNotPresent
+    ## Optionally specify an array of imagePullSecrets.
+    ## Secrets must be manually created in the namespace.
+    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+    ## e.g:
+    ## pullSecrets:
+    ##   - myRegistryKeySecretName
+    ##
+    pullSecrets: []
+    ## Enable debug mode
+    ##
+    debug: false
+  ## @param webhook.replicaCount Number of webhook replicas to deploy
+  ##
+  replicaCount: 1
+  ## Configure extra options for webhook containers' liveness and readiness probes
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
+  ## @param webhook.livenessProbe.enabled Enable livenessProbe on webhook pods
+  ## @param webhook.livenessProbe.httpGet.path Path for HTTPGet Livenessprobe
+  ## @param webhook.livenessProbe.httpGet.port Path for HTTPGet Livenessprobe
+  ## @param webhook.livenessProbe.initialDelaySeconds Initial delay seconds for livenessProbe
+  ## @param webhook.livenessProbe.periodSeconds Period seconds for livenessProbe
+  ## @param webhook.livenessProbe.timeoutSeconds Timeout seconds for livenessProbe
+  ## @param webhook.livenessProbe.failureThreshold Failure threshold for livenessProbe
+  ## @param webhook.livenessProbe.successThreshold Success threshold for livenessProbe
+  ##
+  livenessProbe:
+    enabled: false
+    httpGet:
+      path: /healthz
+      port: healthz
+    initialDelaySeconds: 10
+    periodSeconds: 5
+    timeoutSeconds: 5
+    failureThreshold: 3
+    #successThreshold: foo
+  ## @param webhook.readinessProbe.enabled Enable readinessProbe on webhook pods
+  ## @param webhook.readinessProbe.initialDelaySeconds Initial delay seconds for readinessProbe
+  ## @param webhook.readinessProbe.periodSeconds Period seconds for readinessProbe
+  ## @param webhook.readinessProbe.timeoutSeconds Timeout seconds for readinessProbe
+  ## @param webhook.readinessProbe.failureThreshold Failure threshold for readinessProbe
+  ## @param webhook.readinessProbe.successThreshold Success threshold for readinessProbe
+  ##
+  readinessProbe:
+    enabled: false
+    # httpGet:
+    #   path: /
+    initialDelaySeconds: foo
+    periodSeconds: bar
+    timeoutSeconds: foo
+    failureThreshold: bar
+    successThreshold: foo
+  ## @param webhook.customLivenessProbe Custom livenessProbe that overrides the default one
+  ##
+  customLivenessProbe: {}
+  ## @param webhook.customReadinessProbe Custom readinessProbe that overrides the default one
+  ##
+  customReadinessProbe: {}
+  ## webhook resource requests and limits
+  ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
+  ## @param webhook.resources.limits The resources limits for the webhook containers
+  ## @param webhook.resources.requests The requested resources for the webhook containers
+  ##
+  resources:
+    limits: {}
+    requests: {}
+  ## @param webhook.dnsPolicy set DNS Policy
+  ##
+  dnsPolicy: "Default"
+  ## Configure Pods Security Context
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+  ## @param webhook.podSecurityContext.enabled Enabled webhook pods' Security Context
+  ## @param webhook.podSecurityContext.fsGroup Set webhook pod's Security Context fsGroup
+  ##
+  podSecurityContext:
+    enabled: false
+    fsGroup: 1001
+  ## Configure Container Security Context
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+  ## @param webhook.containerSecurityContext.enabled Enabled webhook containers' Security Context
+  ## @param webhook.containerSecurityContext.runAsUser Set webhook containers' Security Context runAsUser
+  ## @param webhook.containerSecurityContext.privileged Set webhook containers' Security Context privileged
+  ## @param webhook.containerSecurityContext.capabilities Set webhook containers' Security Context capabilities
+  ## @param webhook.containerSecurityContext.allowPrivilegeEscalation Set webhook containers' Security Context allowPrivilegeEscalation
+
+  containerSecurityContext:
+    enabled: true
+    privileged: true
+    capabilities:
+      add: ["SYS_ADMIN"]
+    allowPrivilegeEscalation: true
+  
+  ## @param webhook.existingConfigmap The name of an existing ConfigMap with your custom configuration for webhook
+  ##
+  existingConfigmap:
+  ## @param webhook.command Override default container command (useful when using custom images)
+  ##
+  command: []
+  ## @param webhook.args Override default container args (useful when using custom images)
+  ##
+  args: 
+    - "--operation-mode=WEBHOOK_SERVER"
+    - "--fss-name=internal-feature-states.csi.vsphere.vmware.com"
+    - "--fss-namespace=$(CSI_NAMESPACE)"  
+  ## @param webhook.hostAliases webhook pods host aliases
+  ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
+  ##
+  hostAliases: []
+  ## @param webhook.podLabels Extra labels for webhook pods
+  ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
+  ##
+  podLabels: {}
+  ## @param webhook.podAnnotations Annotations for webhook pods
+  ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+  ##
+  podAnnotations: {}
+  ## @param webhook.podAffinityPreset Pod affinity preset. Ignored if `webhook.affinity` is set. Allowed values: `soft` or `hard`
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
+  ##
+  podAffinityPreset: ""
+  ## @param webhook.podAntiAffinityPreset Pod anti-affinity preset. Ignored if `webhook.affinity` is set. Allowed values: `soft` or `hard`
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
+  ##
+  podAntiAffinityPreset: soft
+  ## Node webhook.affinity preset
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#node-affinity
+  ##
+  nodeAffinityPreset:
+    ## @param webhook.nodeAffinityPreset.type webhook affinity preset type. Ignored if `webhook.affinity` is set. Allowed values: `soft` or `hard`
+    ##
+    type: ""
+    ## @param webhook.nodeAffinityPreset.key webhook label key to match. Ignored if `webhook.affinity` is set
+    ##
+    key: ""
+    ## @param webhook.nodeAffinityPreset.values webhook label values to match. Ignored if `webhook.affinity` is set
+    ## E.g.
+    ## values:
+    ##   - e2e-az1
+    ##   - e2e-az2
+    ##
+    values: []
+  ## @param webhook.affinity Affinity for webhook pods assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
+  ## NOTE: `webhook.podAffinityPreset`, `webhook.podAntiAffinityPreset`, and `webhook.nodeAffinityPreset` will be ignored when it's set
+  ##
+  affinity: {}
+  ## @param webhook.nodeSelector Node labels for webhook pods assignment
+  ## ref: https://kubernetes.io/docs/user-guide/node-selection/
+  ##
+  nodeSelector: 
+    node-role.kubernetes.io/master: ""
+
+  ## @param webhook.tolerations Tolerations for webhook pods assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
+  ##
+  tolerations: 
+    - key: node-role.kubernetes.io/master
+      operator: Exists
+      effect: NoSchedule
+
+  ## @param webhook.updateStrategy.type webhook statefulset strategy type
+  ## ref: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies
+  ##
+  updateStrategy:
+    ## StrategyType
+    ## Can be set to RollingUpdate or OnDelete
+    ##
+    type: RollingUpdate
+  ## @param webhook.priorityClassName webhook pods' priorityClassName
+  ##
+  priorityClassName: ""
+  ## @param webhook.lifecycleHooks for the webhook container(s) to automate configuration before or after startup
+  ##
+  lifecycleHooks: {}
+  ## @param webhook.extraEnvVars Array with extra environment variables to add to webhook pods
+  ## e.g:
+  ## extraEnvVars:
+  ##   - name: FOO
+  ##     value: "bar"
+  ##
+  extraEnvVars: []
+  ## @param webhook.extraEnvVarsCM Name of existing ConfigMap containing extra env vars for webhook pods
+  ##
+  extraEnvVarsCM:
+  ## @param webhook.extraEnvVarsSecret Name of existing Secret containing extra env vars for webhook pods
+  ##
+  extraEnvVarsSecret:
+  ## @param webhook.extraVolumes Optionally specify extra list of additional volumes for the webhook pod(s)
+  ##
+  extraVolumes: []
+  ## @param webhook.extraVolumeMounts Optionally specify extra list of additional volumeMounts for the webhook container(s)
+  ##
+  extraVolumeMounts: []
+  ## @param webhook.sidecars Add additional sidecar containers to the webhook pod(s)
+  ## e.g:
+  ## sidecars:
+  ##   - name: your-image-name
+  ##     image: your-image
+  ##     imagePullPolicy: Always
+  ##     ports:
+  ##       - name: portname
+  ##         containerPort: 1234
+  ##
+  sidecars: {}
+  ## @param webhook.initContainers Add additional init containers to the webhook pod(s)
+  ## ref: https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
+  ## e.g:
+  ## initContainers:
+  ##  - name: your-image-name
+  ##    image: your-image
+  ##    imagePullPolicy: Always
+  ##    command: ['sh', '-c', 'echo "hello world"']
+  ##
+  initContainers: {}
+
+  ## ServiceAccount configuration
+  ##
+  serviceAccount:
+    ## @param webhook.serviceAccount.create Specifies whether a ServiceAccount should be created
+    ##
+    create: true
+    ## @param webhook.serviceAccount.name The name of the ServiceAccount to use.
     ## If not set and create is true, a name is generated using the common.names.fullname template
     ##
     name: ""
