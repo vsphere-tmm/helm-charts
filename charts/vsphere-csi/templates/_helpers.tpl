@@ -81,33 +81,21 @@ Return the proper Docker Image Registry Secret Names
 Create the name of the service account to use
 */}}
 {{- define "vsphere-csi.controller.serviceAccountName" -}}
-{{- if .Values.controller.serviceAccount.create -}}
-    {{ default (printf "%s-controller" (include "common.names.fullname" .)) .Values.controller.serviceAccount.name }}
-{{- else -}}
-    {{ default "default" .Values.controller.serviceAccount.name }}
-{{- end -}}
+{{ include "common.secrets.name" (dict "existingSecret" .Values.controller.serviceAccount.name "defaultNameSuffix" "node" "context" $) }}
 {{- end -}}
 
 {{/*
 Create the name of the service account to use
 */}}
 {{- define "vsphere-csi.node.serviceAccountName" -}}
-{{- if .Values.node.serviceAccount.create -}}
-    {{ default (printf "%s-node" (include "common.names.fullname" .)) .Values.node.serviceAccount.name }}
-{{- else -}}
-    {{ default "default" .Values.node.serviceAccount.name }}
-{{- end -}}
+{{ include "common.secrets.name" (dict "existingSecret" .Values.node.serviceAccount.name "defaultNameSuffix" "node" "context" $) }}
 {{- end -}}
 
 {{/*
 Create the name of the webhook service account to use
 */}}
 {{- define "vsphere-csi.webhook.serviceAccountName" -}}
-{{- if .Values.webhook.serviceAccount.create -}}
-    {{ default (printf "%s-webhook" (include "common.names.fullname" .)) .Values.webhook.serviceAccount.name }}
-{{- else -}}
-    {{ default "default" .Values.webhook.serviceAccount.name }}
-{{- end -}}
+{{ include "common.secrets.name" (dict "existingSecret" .Values.webhook.serviceAccount.name "defaultNameSuffix" "node" "context" $) }}
 {{- end -}}
 
 {{/*
