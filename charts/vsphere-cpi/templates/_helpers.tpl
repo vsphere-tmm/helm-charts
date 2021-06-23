@@ -17,12 +17,8 @@ Return the proper Docker Image Registry Secret Names
 Create the name of the service account to use
 */}}
 {{- define "vSphereCPI.serviceAccountName" -}}
-{{- if .Values.serviceAccount.create -}}
-    {{ default (printf "cloud-controller-manager-%s" (include "common.names.fullname" .)) .Values.serviceAccount.name }}
-{{- else -}}
-    {{ default "default" .Values.serviceAccount.name }}
-{{- end -}}
-{{- end -}}
+{{ include "common.secrets.name" (dict "existingSecret" .Values.serviceAccount.name "defaultNameSuffix" "" "context" $) }}
+{{- end }}
 
 {{/*
 Compile all warnings into a single message.
