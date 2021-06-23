@@ -80,17 +80,17 @@ extraDeploy: []
 ## %%MAIN_CONTAINER/POD_DESCRIPTION%%
 ##
 vSphereCPI:
-  ## @param image.registry vSphereCPI image registry
-  ## @param image.repository vSphereCPI image repository
-  ## @param image.tag vSphereCPI image tag (immutable tags are recommended)
-  ## @param image.pullPolicy vSphereCPI image pull policy
-  ## @param image.pullSecrets vSphereCPI image pull secrets
-  ## @param image.debug Enable image debug mode
+  ## @param vSphereCPI.image.registry vSphereCPI image registry
+  ## @param vSphereCPI.image.repository vSphereCPI image repository
+  ## @param vSphereCPI.image.tag vSphereCPI image tag (immutable tags are recommended)
+  ## @param vSphereCPI.image.pullPolicy vSphereCPI image pull policy
+  ## @param vSphereCPI.image.pullSecrets vSphereCPI image pull secrets
+  ## @param vSphereCPI.image.debug Enable image debug mode
   ##
   image:
     registry: gcr.io
     repository: cloud-provider-vsphere/cpi/release/manager
-    tag: v1.19.0
+    tag: v1.20.0
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
