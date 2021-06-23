@@ -1,7 +1,7 @@
 annotations:
   category: cpi
 apiVersion: v2
-appVersion: v1.19.0
+appVersion: v1.20.0
 dependencies:
   - name: common
     repository: https://charts.bitnami.com/bitnami
@@ -21,4 +21,4 @@ maintainers:
     email: myles@vmware.com
 name: vsphere-cpi
 sources:
-version: 0.0.1
+version: 0.1.0
