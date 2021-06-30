@@ -1,6 +1,7 @@
 # vSphere-CPI
 
-
+Warning: V1.x.x introductes a new hierarchy of config to make usage as a subchart easier. 
+Basically all config items under `config`moved under `global.config`
 ## TL;DR
 
 ```console
