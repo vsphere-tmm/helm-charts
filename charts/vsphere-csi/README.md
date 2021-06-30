@@ -1,6 +1,6 @@
 # vSphere TMM Helm Charts
-
-
+WARNING: v1.x.x of this Helm chart contains breaking changes!
+While it is possible to deploy CPI directly with this chart, beware of the resulting naming and complexity.
 ## Adding this helm repository
 
 To add the helm repository for the vSphere CSI driver, run the following commands:
