@@ -6,6 +6,8 @@
 ## @param global.imageRegistry Global Docker image registry
 ## @param global.imagePullSecrets Global Docker registry secret names as an array
 ## @param global.storageClass Global StorageClass for Persistent Volume(s)
+## @param global.logLevel Global logLevel for CSI, can be PRODUCTION or DEVELOPMENT
+
 ##
 global:
   imageRegistry:
@@ -15,6 +17,7 @@ global:
   ##
   imagePullSecrets: []
   storageClass:
+  logLevel: PRODUCTION
 ## @section global.config Global Configuration for both CPI and CSI
 ## @param global.config.csidriver.enabled Enable CSI-Driver
 
@@ -606,8 +609,6 @@ controller:
     ##
     args: 
       - "--leader-election"
-      - "--fss-name=internal-feature-states.csi.vsphere.vmware.com"
-      - "--fss-namespace=$(CSI_NAMESPACE)"
     ## @param controller.syncer.extraEnvVars Array with extra environment variables to add to controller.syncer nodes
     ## e.g:
     ## extraEnvVars:

@@ -116,12 +116,12 @@ spec:
               name: socket-dir
           {{- if .Values.controller.attacher.extraVolumeMounts }}
           {{- include "common.tplvalues.render" (dict "value" .Values.controller.attacher.extraVolumeMounts "context" $) | nindent 12 }}
-          {{- end }}
+          {{- end }}      
 
 
 
 
-      
+
         - name: csi-resizer
           image: {{ template "vsphere-csi.controller.resizer.image" . }}
           imagePullPolicy: {{ .Values.controller.resizer.image.pullPolicy }}
@@ -188,9 +188,12 @@ spec:
           {{- if .Values.controller.command }}
           command: {{- include "common.tplvalues.render" (dict "value" .Values.controller.command "context" $) | nindent 12 }}
           {{- end }}
+          args: 
           {{- if .Values.controller.args }}
-          args: {{- include "common.tplvalues.render" (dict "value" .Values.controller.args "context" $) | nindent 12 }}
+          {{- include "common.tplvalues.render" (dict "value" .Values.controller.args "context" $) | nindent 12 }}
           {{- end }}
+            - "--fss-name=internal-feature-states.csi.vsphere.vmware.com"
+            - "--fss-namespace=$(CSI_NAMESPACE)"
           env:
             - name: CSI_ENDPOINT
               value: unix:///csi/csi.sock
@@ -199,7 +202,7 @@ spec:
             - name: VSPHERE_CSI_CONFIG
               value: "/etc/cloud/csi-vsphere.conf"
             - name: LOGGER_LEVEL
-              value: "PRODUCTION" # Options: DEVELOPMENT, PRODUCTION
+              value: "{{ .Values.global.logLevel }}" # Options: DEVELOPMENT, PRODUCTION
             - name: INCLUSTER_CLIENT_QPS
               value: "100"
             - name: INCLUSTER_CLIENT_BURST
