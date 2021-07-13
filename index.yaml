@@ -5,7 +5,7 @@ entries:
       category: cpi
     apiVersion: v2
     appVersion: v1.20.0
-    created: "2021-06-23T14:59:22.64028+01:00"
+    created: "2021-07-13T09:46:14.584981+01:00"
     dependencies:
     - name: common
       repository: https://charts.bitnami.com/bitnami
@@ -25,13 +25,13 @@ entries:
       name: Myles Gray
     name: vsphere-cpi
     urls:
-    - https://vsphere-tmm.github.io/charts/vsphere-cpi-0.1.1.tgz
+    - https://vsphere-tmm.github.io/helm-charts/charts/vsphere-cpi-0.1.1.tgz
     version: 0.1.1
   - annotations:
       category: cpi
     apiVersion: v2
     appVersion: v1.20.0
-    created: "2021-06-23T14:59:22.638386+01:00"
+    created: "2021-07-13T09:46:14.582313+01:00"
     dependencies:
     - name: common
       repository: https://charts.bitnami.com/bitnami
@@ -51,13 +51,13 @@ entries:
       name: Myles Gray
     name: vsphere-cpi
     urls:
-    - https://vsphere-tmm.github.io/charts/vsphere-cpi-0.1.0.tgz
+    - https://vsphere-tmm.github.io/helm-charts/charts/vsphere-cpi-0.1.0.tgz
     version: 0.1.0
   - annotations:
       category: cpi
     apiVersion: v2
     appVersion: v1.19.0
-    created: "2021-06-23T14:59:22.636583+01:00"
+    created: "2021-07-13T09:46:14.579853+01:00"
     dependencies:
     - name: common
       repository: https://charts.bitnami.com/bitnami
@@ -77,12 +77,12 @@ entries:
       name: Myles Gray
     name: vsphere-cpi
     urls:
-    - https://vsphere-tmm.github.io/charts/vsphere-cpi-0.0.1.tgz
+    - https://vsphere-tmm.github.io/helm-charts/charts/vsphere-cpi-0.0.1.tgz
     version: 0.0.1
   vsphere-csi:
   - apiVersion: v2
     appVersion: 2.0.0
-    created: "2021-06-23T14:59:22.642289+01:00"
+    created: "2021-07-13T09:46:14.587137+01:00"
     dependencies:
     - enabled: true
       name: vsphere-cpi
@@ -105,6 +105,6 @@ entries:
     sources:
     - https://github.com/kubernetes-sigs/vsphere-csi-driver
     urls:
-    - https://vsphere-tmm.github.io/charts/vsphere-csi-0.0.4.tgz
+    - https://vsphere-tmm.github.io/helm-charts/charts/vsphere-csi-0.0.4.tgz
     version: 0.0.4
-generated: "2021-06-23T14:59:22.634577+01:00"
+generated: "2021-07-13T09:46:14.576179+01:00"
