@@ -15,8 +15,8 @@ keywords:
   - vSphere
   - CPI
 maintainers:
-  - name: chogan
-    email: chogan@vmware.com
+  - name: Maximilian Rink
+    email: maximilian.rink@telekom.de
   - name: Myles Gray
     email: myles@vmware.com
 name: vsphere-cpi
