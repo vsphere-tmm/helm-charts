@@ -81,7 +81,7 @@ spec:
           {{- end }}
           {{- if .Values.vSphereCPI.args }}
           args: {{- include "common.tplvalues.render" (dict "value" .Values.vSphereCPI.args "context" $) | nindent 12 }}
-            {{- if .Values.config.externalKubeconfig.enabled }}
+            {{- if .Values.global.config.externalKubeconfig.enabled }}
             - --kubeconfig=/etc/kubernetes/value
             {{- end }}
             {{- if gt .Values.vSphereCPI.replicaCount 1 }}
@@ -118,7 +118,7 @@ spec:
             - name: vsphere-config-volume
               mountPath: /etc/cloud
               readOnly: true
-            {{- if .Values.config.externalKubeconfig.enabled }}
+            {{- if .Values.global.config.externalKubeconfig.enabled }}
             - mountPath: /etc/kubernetes
               name: kubeconfig-volume
               readOnly: true
@@ -131,17 +131,17 @@ spec:
       {{- end }}
       volumes:
         - name: vsphere-config-volume
-          {{- if not .Values.config.secretsInline }}
+          {{- if not .Values.global.config.secretsInline }}
           configMap:
             name: {{ template "common.names.fullname" . }}
           {{- else }}
           secret:
             secretName: {{ template "common.names.fullname" . }}
           {{- end }}
-        {{- if .Values.config.externalKubeconfig.enabled }}
+        {{- if .Values.global.config.externalKubeconfig.enabled }}
         - name: kubeconfig-volume
           secret:
-            secretName: {{ .Values.config.externalKubeconfig.secretName }}
+            secretName: {{ .Values.global.config.externalKubeconfig.secretName }}
         {{- end }}
         {{- if .Values.vSphereCPI.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.vSphereCPI.extraVolumes "context" $) | nindent 8 }}
