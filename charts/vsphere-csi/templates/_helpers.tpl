@@ -81,7 +81,7 @@ Return the proper Docker Image Registry Secret Names
 Create the name of the service account to use
 */}}
 {{- define "vsphere-csi.controller.serviceAccountName" -}}
-{{ include "common.secrets.name" (dict "existingSecret" .Values.controller.serviceAccount.name "defaultNameSuffix" "node" "context" $) }}
+{{ include "common.secrets.name" (dict "existingSecret" .Values.controller.serviceAccount.name "defaultNameSuffix" "controller" "context" $) }}
 {{- end -}}
 
 {{/*
