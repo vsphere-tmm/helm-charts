@@ -13,8 +13,6 @@ global:
   ##   - myRegistryKeySecretName
   ##
   imagePullSecrets: []
-
-global:
   config:
     externalKubeconfig: 
       enabled: false
