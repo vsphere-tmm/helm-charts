@@ -4,8 +4,34 @@ entries:
   - annotations:
       category: cpi
     apiVersion: v2
+    appVersion: v1.21.0
+    created: "2021-08-30T18:09:41.601227692+02:00"
+    dependencies:
+    - name: common
+      repository: https://charts.bitnami.com/bitnami
+      tags:
+      - bitnami-common
+      version: 1.x.x
+    description: Helm chart for the vSphere-CPI
+    digest: 6e117d16fb4bedbdad657e323682e1c824497d5c967cee1c750d981b9f383a41
+    home: https://github.com/kubernetes/cloud-provider-vsphere
+    keywords:
+    - vSphere
+    - CPI
+    maintainers:
+    - email: maximilian.rink@telekom.de
+      name: Maximilian Rink
+    - email: myles@vmware.com
+      name: Myles Gray
+    name: vsphere-cpi
+    urls:
+    - https://vsphere-tmm.github.io/helm-charts/charts/vsphere-cpi-1.1.0.tgz
+    version: 1.1.0
+  - annotations:
+      category: cpi
+    apiVersion: v2
     appVersion: v1.20.0
-    created: "2021-07-14T12:57:15.099936+01:00"
+    created: "2021-08-30T18:09:41.598227932+02:00"
     dependencies:
     - name: common
       repository: https://charts.bitnami.com/bitnami
@@ -31,7 +57,7 @@ entries:
       category: cpi
     apiVersion: v2
     appVersion: v1.20.0
-    created: "2021-07-14T12:57:15.097574+01:00"
+    created: "2021-08-30T18:09:41.59661201+02:00"
     dependencies:
     - name: common
       repository: https://charts.bitnami.com/bitnami
@@ -57,7 +83,7 @@ entries:
       category: cpi
     apiVersion: v2
     appVersion: v1.20.0
-    created: "2021-07-14T12:57:15.093975+01:00"
+    created: "2021-08-30T18:09:41.595056571+02:00"
     dependencies:
     - name: common
       repository: https://charts.bitnami.com/bitnami
@@ -83,7 +109,7 @@ entries:
       category: cpi
     apiVersion: v2
     appVersion: v1.19.0
-    created: "2021-07-14T12:57:15.091623+01:00"
+    created: "2021-08-30T18:09:41.593320871+02:00"
     dependencies:
     - name: common
       repository: https://charts.bitnami.com/bitnami
@@ -108,7 +134,7 @@ entries:
   vsphere-csi:
   - apiVersion: v2
     appVersion: 2.2.1
-    created: "2021-07-14T12:57:15.114388+01:00"
+    created: "2021-08-30T18:09:41.614326107+02:00"
     dependencies:
     - condition: vsphere-cpi.enabled
       name: vsphere-cpi
@@ -140,7 +166,7 @@ entries:
     version: 1.0.1
   - apiVersion: v2
     appVersion: 2.2.1
-    created: "2021-07-14T12:57:15.108376+01:00"
+    created: "2021-08-30T18:09:41.607626147+02:00"
     dependencies:
     - condition: vsphere-cpi.enabled
       name: vsphere-cpi
@@ -172,7 +198,7 @@ entries:
     version: 1.0.0
   - apiVersion: v2
     appVersion: 2.0.0
-    created: "2021-07-14T12:57:15.102164+01:00"
+    created: "2021-08-30T18:09:41.602639886+02:00"
     dependencies:
     - enabled: true
       name: vsphere-cpi
@@ -197,4 +223,4 @@ entries:
     urls:
     - https://vsphere-tmm.github.io/helm-charts/charts/vsphere-csi-0.0.4.tgz
     version: 0.0.4
-generated: "2021-07-14T12:57:15.088912+01:00"
+generated: "2021-08-30T18:09:41.591404003+02:00"

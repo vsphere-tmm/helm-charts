@@ -84,7 +84,7 @@ spec:
             {{- if .Values.global.config.externalKubeconfig.enabled }}
             - --kubeconfig=/etc/kubernetes/value
             {{- end }}
-            {{- if gt .Values.vSphereCPI.replicaCount 1 }}
+            {{- if le (.Values.vSphereCPI.replicaCount | int) 1 }}
             - --leader-elect=false
             {{- end }}
           {{- end }}
