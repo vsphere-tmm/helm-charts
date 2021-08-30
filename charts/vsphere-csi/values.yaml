@@ -158,7 +158,9 @@ service:
 ## Configuration for the csi controller daemonset
 ##
 controller:
-  ## controller image
+  ## @param controller.name name used for the deployment, if unset defaults to "{{ template "common.names.fullname" . }}"
+  name: vsphere-csi-controller
+  ## controller image 
   ## @param controller.image.registry controller image registry
   ## @param controller.image.repository controller image repository
   ## @param controller.image.tag controller image tag (immutable tags are recommended)
@@ -169,7 +171,7 @@ controller:
   image:
     registry: gcr.io
     repository: cloud-provider-vsphere/csi/release/driver
-    tag: v2.2.1
+    tag: v2.3.0
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -322,9 +324,9 @@ controller:
   ## @param controller.attacher.image.debug Enable image debug mode
   ##
     image:
-      registry: quay.io
-      repository: k8scsi/csi-attacher
-      tag: v3.1.0
+      registry: k8s.gcr.io
+      repository: sig-storage/csi-attacher
+      tag: v3.2.0
       ## Specify a imagePullPolicy
       ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
       ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -369,6 +371,8 @@ controller:
       - "--timeout=300s"
       - "--csi-address=$(ADDRESS)"
       - "--leader-election"
+      - "--kube-api-qps=100"
+      - "--kube-api-burst=100"
     ## @param controller.attacher.extraEnvVars Array with extra environment variables to add to controller.attacher nodes
     ## e.g:
     ## extraEnvVars:
@@ -567,7 +571,7 @@ controller:
     image:
       registry: gcr.io
       repository: cloud-provider-vsphere/csi/release/syncer
-      tag: v2.2.1
+      tag: v2.3.0
       ## Specify a imagePullPolicy
       ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
       ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -609,6 +613,8 @@ controller:
     ##
     args: 
       - "--leader-election"
+      - "--fss-name=internal-feature-states.csi.vsphere.vmware.com"
+      - "--fss-namespace=$(CSI_NAMESPACE)"
     ## @param controller.syncer.extraEnvVars Array with extra environment variables to add to controller.syncer nodes
     ## e.g:
     ## extraEnvVars:
@@ -684,9 +690,9 @@ controller:
   ## @param controller.provisioner.image.debug Enable image debug mode
   ##
     image:
-      registry: quay.io
-      repository: k8scsi/csi-provisioner
-      tag: v2.1.0
+      registry: k8s.gcr.io
+      repository: sig-storage/csi-provisioner
+      tag: v2.2.0
       ## Specify a imagePullPolicy
       ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
       ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -1013,6 +1019,8 @@ controller:
 ## Configuration for the node daemonset
 ##
 node:
+  ## @param node.name name used for the demonset, if unset defaults to "{{ template "common.names.fullname" . }}"
+  name: vsphere-csi-node
   ## @param node.image.registry node image registry
   ## @param node.image.repository node image repository
   ## @param node.image.tag node image tag (immutable tags are recommended)
@@ -1024,7 +1032,7 @@ node:
   image:
     registry: gcr.io
     repository: cloud-provider-vsphere/csi/release/driver
-    tag: v2.2.1
+    tag: v2.3.0
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -1337,9 +1345,12 @@ node:
   resources:
     limits: {}
     requests: {}
+  ## @param node.hostNetwork set use of hostNetwork for node containers
+  ##
+  hostNetwork: true
   ## @param node.dnsPolicy set DNS Policy
   ##
-  dnsPolicy: "Default"
+  dnsPolicy: "ClusterFirstWithHostNet"
   ## Configure Pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param node.podSecurityContext.enabled Enabled node pods' Security Context
@@ -1510,7 +1521,7 @@ webhook:
   image:
     registry: gcr.io
     repository: cloud-provider-vsphere/csi/release/syncer
-    tag: v2.2.1
+    tag: v2.3.0
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images

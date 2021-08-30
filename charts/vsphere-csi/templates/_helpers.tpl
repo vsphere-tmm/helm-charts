@@ -113,3 +113,23 @@ Compile all warnings into a single message.
 {{- end -}}
 {{- end -}}
 
+{{/*
+Define Name for controller deployment
+*/}}
+{{- define "vsphere-csi.controllerName" -}}
+{{- if .Values.controller.name -}}
+{{ .Values.controller.name }}
+{{- else -}}
+{{ include "common.names.fullname" }}-controller
+{{- end -}}
+{{- end -}}
+{{/*
+Define Name for node daemonset
+*/}}
+{{- define "vsphere-csi.nodeName" -}}
+{{- if .Values.node.name -}}
+{{ .Values.node.name }}
+{{- else -}}
+{{ include "common.names.fullname" }}-node
+{{- end -}}
+{{- end -}}

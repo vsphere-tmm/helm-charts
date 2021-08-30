@@ -13,7 +13,7 @@ webhooks:
     clientConfig:
       service:
         name: vsphere-webhook-svc
-        namespace: kube-system
+        namespace: {{ .Release.Namespace | quote }}
         path: "/validate"
       caBundle: {{ $ca.Cert | b64enc | quote }}
     rules:
@@ -29,6 +29,7 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: {{ template "common.names.fullname" . }}-webhook-certs
+  namespace: {{ .Release.Namespace | quote }}
   labels: {{- include "common.labels.standard" . | nindent 4 }}
     app.kubernetes.io/component: {{ template "common.names.fullname" . }}-webhook
     {{- if .Values.commonLabels }}
