@@ -1,6 +1,9 @@
 # vSphere TMM Helm Charts
 WARNING: v1.x.x of this Helm chart contains breaking changes!
 While it is possible to deploy CPI directly with this chart, beware of the resulting naming and complexity.
+
+The Namespace for vSphere CSI in upstream has changed with version 2.3.0, its is now `vmware-system-csi` instead of `kube-system`. This chart should be unaffected, as you can freely change the Namespace.
+
 ## Adding this helm repository
 
 To add the helm repository for the vSphere CSI driver, run the following commands:
@@ -54,11 +57,12 @@ The command removes all the Kubernetes components associated with the chart and 
 
 ### Global parameters
 
-| Name                      | Description                                     | Value       |
-| ------------------------- | ----------------------------------------------- | ----------- |
-| `global.imageRegistry`    | Global Docker image registry                    | `nil`       |
-| `global.imagePullSecrets` | Global Docker registry secret names as an array | `undefined` |
-| `global.storageClass`     | Global StorageClass for Persistent Volume(s)    | `nil`       |
+| Name                      | Description                                               | Value        |
+| ------------------------- | --------------------------------------------------------- | ------------ |
+| `global.imageRegistry`    | Global Docker image registry                              | `nil`        |
+| `global.imagePullSecrets` | Global Docker registry secret names as an array           | `undefined`  |
+| `global.storageClass`     | Global StorageClass for Persistent Volume(s)              | `nil`        |
+| `global.logLevel`         | Global logLevel for CSI, can be PRODUCTION or DEVELOPMENT | `PRODUCTION` |
 
 
 ### global.config Global Configuration for both CPI and CSI
@@ -116,9 +120,10 @@ The command removes all the Kubernetes components associated with the chart and 
 
 | Name                                                          | Description                                                                                            | Value                                       |
 | ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ | ------------------------------------------- |
+| `controller.name`                                             | name used for the deployment, if unset defaults to "{{ template "common.names.fullname" . }}"          | `vsphere-csi-controller`                    |
 | `controller.image.registry`                                   | controller image registry                                                                              | `gcr.io`                                    |
 | `controller.image.repository`                                 | controller image repository                                                                            | `cloud-provider-vsphere/csi/release/driver` |
-| `controller.image.tag`                                        | controller image tag (immutable tags are recommended)                                                  | `v2.2.1`                                    |
+| `controller.image.tag`                                        | controller image tag (immutable tags are recommended)                                                  | `v2.3.0`                                    |
 | `controller.image.pullPolicy`                                 | controller image pull policy                                                                           | `IfNotPresent`                              |
 | `controller.image.pullSecrets`                                | controller image pull secrets                                                                          | `undefined`                                 |
 | `controller.image.debug`                                      | Enable image debug mode                                                                                | `false`                                     |
@@ -154,9 +159,9 @@ The command removes all the Kubernetes components associated with the chart and 
 | `controller.resizer.customLivenessProbe`                      | Custom livenessProbe that overrides the default one                                                    | `undefined`                                 |
 | `controller.resizer.customReadinessProbe`                     | Custom readinessProbe that overrides the default one                                                   | `undefined`                                 |
 | `controller.resizer.extraVolumeMounts`                        | Optionally specify extra list of additional volumeMounts for the controller.resizer container(s)       | `undefined`                                 |
-| `controller.attacher.image.registry`                          | controller.attacher image registry                                                                     | `quay.io`                                   |
-| `controller.attacher.image.repository`                        | controller.attacher image repository                                                                   | `k8scsi/csi-attacher`                       |
-| `controller.attacher.image.tag`                               | controller.attacher image tag (immutable tags are recommended)                                         | `v3.1.0`                                    |
+| `controller.attacher.image.registry`                          | controller.attacher image registry                                                                     | `k8s.gcr.io`                                |
+| `controller.attacher.image.repository`                        | controller.attacher image repository                                                                   | `sig-storage/csi-attacher`                  |
+| `controller.attacher.image.tag`                               | controller.attacher image tag (immutable tags are recommended)                                         | `v3.2.0`                                    |
 | `controller.attacher.image.pullPolicy`                        | controller.attacher image pull policy                                                                  | `IfNotPresent`                              |
 | `controller.attacher.image.pullSecrets`                       | controller.attacher image pull secrets                                                                 | `undefined`                                 |
 | `controller.attacher.image.debug`                             | Enable image debug mode                                                                                | `false`                                     |
@@ -220,7 +225,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `controller.livenessprobe.extraVolumeMounts`                  | Optionally specify extra list of additional volumeMounts for the controller.livenessprobe container(s) | `undefined`                                 |
 | `controller.syncer.image.registry`                            | controller.syncer image registry                                                                       | `gcr.io`                                    |
 | `controller.syncer.image.repository`                          | controller.syncer image repository                                                                     | `cloud-provider-vsphere/csi/release/syncer` |
-| `controller.syncer.image.tag`                                 | controller.syncer image tag (immutable tags are recommended)                                           | `v2.2.1`                                    |
+| `controller.syncer.image.tag`                                 | controller.syncer image tag (immutable tags are recommended)                                           | `v2.3.0`                                    |
 | `controller.syncer.image.pullPolicy`                          | controller.syncer image pull policy                                                                    | `IfNotPresent`                              |
 | `controller.syncer.image.pullSecrets`                         | controller.syncer image pull secrets                                                                   | `undefined`                                 |
 | `controller.syncer.image.debug`                               | Enable image debug mode                                                                                | `false`                                     |
@@ -250,9 +255,9 @@ The command removes all the Kubernetes components associated with the chart and 
 | `controller.syncer.customLivenessProbe`                       | Custom livenessProbe that overrides the default one                                                    | `undefined`                                 |
 | `controller.syncer.customReadinessProbe`                      | Custom readinessProbe that overrides the default one                                                   | `undefined`                                 |
 | `controller.syncer.extraVolumeMounts`                         | Optionally specify extra list of additional volumeMounts for the controller.syncer container(s)        | `undefined`                                 |
-| `controller.provisioner.image.registry`                       | controller.provisioner image registry                                                                  | `quay.io`                                   |
-| `controller.provisioner.image.repository`                     | controller.provisioner image repository                                                                | `k8scsi/csi-provisioner`                    |
-| `controller.provisioner.image.tag`                            | controller.provisioner image tag (immutable tags are recommended)                                      | `v2.1.0`                                    |
+| `controller.provisioner.image.registry`                       | controller.provisioner image registry                                                                  | `k8s.gcr.io`                                |
+| `controller.provisioner.image.repository`                     | controller.provisioner image repository                                                                | `sig-storage/csi-provisioner`               |
+| `controller.provisioner.image.tag`                            | controller.provisioner image tag (immutable tags are recommended)                                      | `v2.2.0`                                    |
 | `controller.provisioner.image.pullPolicy`                     | controller.provisioner image pull policy                                                               | `IfNotPresent`                              |
 | `controller.provisioner.image.pullSecrets`                    | controller.provisioner image pull secrets                                                              | `undefined`                                 |
 | `controller.provisioner.image.debug`                          | Enable image debug mode                                                                                | `false`                                     |
@@ -331,9 +336,10 @@ The command removes all the Kubernetes components associated with the chart and 
 | `controller.initContainers`                                   | Add additional init containers to the controller pod(s)                                                | `undefined`                                 |
 | `controller.serviceAccount.create`                            | Specifies whether a ServiceAccount should be created                                                   | `true`                                      |
 | `controller.serviceAccount.name`                              | The name of the ServiceAccount to use.                                                                 | `""`                                        |
+| `node.name`                                                   | name used for the demonset, if unset defaults to "{{ template "common.names.fullname" . }}"            | `vsphere-csi-controller`                    |
 | `node.image.registry`                                         | node image registry                                                                                    | `gcr.io`                                    |
 | `node.image.repository`                                       | node image repository                                                                                  | `cloud-provider-vsphere/csi/release/driver` |
-| `node.image.tag`                                              | node image tag (immutable tags are recommended)                                                        | `v2.2.1`                                    |
+| `node.image.tag`                                              | node image tag (immutable tags are recommended)                                                        | `v2.3.0`                                    |
 | `node.image.pullPolicy`                                       | node image pull policy                                                                                 | `IfNotPresent`                              |
 | `node.image.pullSecrets`                                      | node image pull secrets                                                                                | `undefined`                                 |
 | `node.image.debug`                                            | Enable image debug mode                                                                                | `false`                                     |
@@ -415,7 +421,8 @@ The command removes all the Kubernetes components associated with the chart and 
 | `node.customReadinessProbe`                                   | Custom readinessProbe that overrides the default one                                                   | `undefined`                                 |
 | `node.resources.limits`                                       | The resources limits for the node containers                                                           | `undefined`                                 |
 | `node.resources.requests`                                     | The requested resources for the node containers                                                        | `undefined`                                 |
-| `node.dnsPolicy`                                              | set DNS Policy                                                                                         | `Default`                                   |
+| `node.hostNetwork`                                            | set use of hostNetwork for node containers                                                             | `true`                                      |
+| `node.dnsPolicy`                                              | set DNS Policy                                                                                         | `ClusterFirstWithHostNet`                   |
 | `node.podSecurityContext.enabled`                             | Enabled node pods' Security Context                                                                    | `false`                                     |
 | `node.podSecurityContext.fsGroup`                             | Set node pod's Security Context fsGroup                                                                | `1001`                                      |
 | `node.containerSecurityContext.enabled`                       | Enabled node containers' Security Context                                                              | `true`                                      |
@@ -447,10 +454,10 @@ The command removes all the Kubernetes components associated with the chart and 
 | `node.initContainers`                                         | Add additional init containers to the node pod(s)                                                      | `undefined`                                 |
 | `node.serviceAccount.create`                                  | Specifies whether a ServiceAccount should be created                                                   | `true`                                      |
 | `node.serviceAccount.name`                                    | The name of the ServiceAccount to use.                                                                 | `""`                                        |
-| `webhook.enabled`                                             | enable or disable webhook                                                                              | `true`                                      |
+| `webhook.enabled`                                             | enable or disable webhook                                                                              | `false`                                     |
 | `webhook.image.registry`                                      | webhook image registry                                                                                 | `gcr.io`                                    |
 | `webhook.image.repository`                                    | webhook image repository                                                                               | `cloud-provider-vsphere/csi/release/syncer` |
-| `webhook.image.tag`                                           | webhook image tag (immutable tags are recommended)                                                     | `v2.2.1`                                    |
+| `webhook.image.tag`                                           | webhook image tag (immutable tags are recommended)                                                     | `v2.3.0`                                    |
 | `webhook.image.pullPolicy`                                    | webhook image pull policy                                                                              | `IfNotPresent`                              |
 | `webhook.image.pullSecrets`                                   | webhook image pull secrets                                                                             | `undefined`                                 |
 | `webhook.image.debug`                                         | Enable image debug mode                                                                                | `false`                                     |

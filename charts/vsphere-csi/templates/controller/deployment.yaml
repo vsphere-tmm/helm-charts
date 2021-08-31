@@ -1,10 +1,10 @@
 apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
 kind: Deployment
 metadata:
-  name: {{ template "common.names.fullname" . }}
+  name: {{ template "vsphere-csi.controllerName" . }}
   namespace: {{ .Release.Namespace | quote }}
   labels: {{- include "common.labels.standard" . | nindent 4 }}
-    app.kubernetes.io/component: {{ template "common.names.fullname" . }}-controller
+    app.kubernetes.io/component: {{ template "vsphere-csi.controllerName" . }}
     {{- if .Values.commonLabels }}
     {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
     {{- end }}
@@ -18,14 +18,14 @@ spec:
   {{- end }}
   selector:
     matchLabels: {{- include "common.labels.matchLabels" . | nindent 6 }}
-      app.kubernetes.io/component: {{ template "common.names.fullname" . }}-controller
+      app.kubernetes.io/component: {{ template "vsphere-csi.controllerName" . }}
   template:
     metadata:
       {{- if .Values.controller.podAnnotations }}
       annotations: {{- include "common.tplvalues.render" (dict "value" .Values.controller.podAnnotations "context" $) | nindent 8 }}
       {{- end }}
       labels: {{- include "common.labels.standard" . | nindent 8 }}
-        app.kubernetes.io/component: {{ template "common.names.fullname" . }}-controller
+        app.kubernetes.io/component: {{ template "vsphere-csi.controllerName" . }}
         {{- if .Values.controller.podLabels }}
         {{- include "common.tplvalues.render" (dict "value" .Values.controller.podLabels "context" $) | nindent 8 }}
         {{- end }}
@@ -199,10 +199,14 @@ spec:
               value: unix:///csi/csi.sock
             - name: X_CSI_MODE
               value: "controller"
+            - name: X_CSI_SPEC_DISABLE_LEN_CHECK
+              value: "true"
+            - name: X_CSI_SERIAL_VOL_ACCESS_TIMEOUT
+              value: 3m
             - name: VSPHERE_CSI_CONFIG
               value: "/etc/cloud/csi-vsphere.conf"
             - name: LOGGER_LEVEL
-              value: "{{ .Values.global.logLevel }}" # Options: DEVELOPMENT, PRODUCTION
+              value: {{ include "common.tplvalues.render" (dict "value" .Values.global.logLevel "context" $) }}
             - name: INCLUSTER_CLIENT_QPS
               value: "100"
             - name: INCLUSTER_CLIENT_BURST
@@ -211,8 +215,6 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.namespace
-            - name: X_CSI_SERIAL_VOL_ACCESS_TIMEOUT
-              value: 3m
             {{- if .Values.controller.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.controller.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
@@ -341,7 +343,7 @@ spec:
             - name: VSPHERE_CSI_CONFIG
               value: "/etc/cloud/csi-vsphere.conf"
             - name: LOGGER_LEVEL
-              value: "PRODUCTION" # Options: DEVELOPMENT, PRODUCTION
+              value: {{ include "common.tplvalues.render" (dict "value" .Values.global.logLevel "context" $) }}
             - name: INCLUSTER_CLIENT_QPS
               value: "100"
             - name: INCLUSTER_CLIENT_BURST

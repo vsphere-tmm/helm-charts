@@ -1,10 +1,10 @@
 kind: RoleBinding
 apiVersion: {{ include "common.capabilities.rbac.apiVersion" . }}
 metadata:
-  name: {{ template "common.names.fullname" . }}
+  name: {{ template "vsphere-csi.nodeName" . }}
   namespace: {{ .Release.Namespace | quote }}
   labels: {{- include "common.labels.standard" . | nindent 4 }}
-    app.kubernetes.io/component: {{ template "common.names.fullname" . }}-node
+    app.kubernetes.io/component: {{ template "vsphere-csi.nodeName" . }}
     {{- if .Values.commonLabels }}
     {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
     {{- end }}
@@ -14,7 +14,7 @@ metadata:
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
-  name: {{ template "common.names.fullname" . }}-node
+  name: {{ template "vsphere-csi.nodeName" . }}
 subjects:
   - kind: ServiceAccount
     name: {{ template "vsphere-csi.node.serviceAccountName" . }}
@@ -24,10 +24,10 @@ subjects:
 apiVersion: {{ include "common.capabilities.rbac.apiVersion" . }}
 kind: Role
 metadata:
-  name: {{ include "common.names.fullname" . }}-node
+  name: {{ include "vsphere-csi.nodeName" . }}
   namespace: {{ .Release.Namespace | quote }}
   labels: {{- include "common.labels.standard" . | nindent 4 }}
-    app.kubernetes.io/component: {{ template "common.names.fullname" . }}-node
+    app.kubernetes.io/component: {{ template "vsphere-csi.nodeName" . }}
     {{- if .Values.commonLabels }}
     {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
     {{- end }}

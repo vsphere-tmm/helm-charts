@@ -88,7 +88,7 @@ spec:
             - name: WEBHOOK_CONFIG_PATH
               value: "/etc/webhook/webhook.config"
             - name: LOGGER_LEVEL
-              value: "PRODUCTION" # Options: DEVELOPMENT, PRODUCTION
+              value: {{ include "common.tplvalues.render" (dict "value" .Values.global.logLevel "context" $) }}
             - name: CSI_NAMESPACE
               valueFrom:
                 fieldRef:

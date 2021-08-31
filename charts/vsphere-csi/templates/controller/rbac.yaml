@@ -1,9 +1,9 @@
 kind: ClusterRoleBinding
 apiVersion: {{ include "common.capabilities.rbac.apiVersion" . }}
 metadata:
-  name: {{ template "common.names.fullname" . }}-controller
+  name: {{ template "vsphere-csi.controllerName" . }}
   labels: {{- include "common.labels.standard" . | nindent 4 }}
-    app.kubernetes.io/component: {{ template "common.names.fullname" . }}-controller
+    app.kubernetes.io/component: {{ template "vsphere-csi.controllerName" . }}
     {{- if .Values.commonLabels }}
     {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
     {{- end }}
@@ -13,7 +13,7 @@ metadata:
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: {{ template "common.names.fullname" . }}-controller
+  name: {{ template "vsphere-csi.controllerName" . }}
 subjects:
   - kind: ServiceAccount
     name: {{ template "vsphere-csi.controller.serviceAccountName" . }}
@@ -23,9 +23,9 @@ subjects:
 apiVersion: {{ include "common.capabilities.rbac.apiVersion" . }}
 kind: ClusterRole
 metadata:
-  name: {{ include "common.names.fullname" . }}-controller
+  name: {{ include "vsphere-csi.controllerName" . }}
   labels: {{- include "common.labels.standard" . | nindent 4 }}
-    app.kubernetes.io/component: {{ template "common.names.fullname" . }}-controller
+    app.kubernetes.io/component: {{ template "vsphere-csi.controllerName" . }}
     {{- if .Values.commonLabels }}
     {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
     {{- end }}
@@ -54,6 +54,9 @@ rules:
   - apiGroups: ["storage.k8s.io"]
     resources: ["volumeattachments"]
     verbs: ["get", "list", "watch", "patch"]
+  - apiGroups: ["cns.vmware.com"]
+    resources: ["triggercsifullsyncs"]
+    verbs: ["create", "get", "update", "watch", "list"]
   - apiGroups: ["cns.vmware.com"]
     resources: ["cnsvspherevolumemigrations"]
     verbs: ["create", "get", "list", "watch", "update", "delete"]

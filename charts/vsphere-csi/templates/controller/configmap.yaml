@@ -4,7 +4,7 @@ metadata:
   name: internal-feature-states.csi.vsphere.vmware.com
   namespace: {{ .Release.Namespace | quote }}
   labels: {{- include "common.labels.standard" . | nindent 4 }}
-    app.kubernetes.io/component: {{ template "common.names.fullname" . }}
+    app.kubernetes.io/component: {{ template "vsphere-csi.controllerName" . }}
     {{- if .Values.commonLabels }}
     {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
     {{- end }}
@@ -15,3 +15,7 @@ data:
   "csi-migration": "false"
   "csi-auth-check": "true"
   "online-volume-extend": "true"
+  "trigger-csi-fullsync": "false"
+  "async-query-volume": "false"
+  "improved-csi-idempotency": "false"
+  "improved-volume-topology": "false"
