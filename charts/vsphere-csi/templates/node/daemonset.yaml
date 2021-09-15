@@ -148,7 +148,7 @@ spec:
             {{ if .Values.global.config.labels }}
             #needed only for topology aware setups
             - name: VSPHERE_CSI_CONFIG
-              value: "/etc/cloud/csi-vsphere.conf" 
+              value: "/etc/cloud/csi-vsphere.conf"
             {{ end }}
             - name: X_CSI_DEBUG
               value: "true"
