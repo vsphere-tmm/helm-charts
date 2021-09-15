@@ -160,7 +160,8 @@ service:
 controller:
   ## @param controller.name name used for the deployment, if unset defaults to "{{ template "common.names.fullname" . }}"
   name: vsphere-csi-controller
-  ## @param controller.config block to freely define options for the controller configmap"
+  ## @param controller.config block to freely define options for the controller configmap
+  ## see https://github.com/kubernetes-sigs/vsphere-csi-driver/blob/61d981a1a1641693a2a6727e1994c82d26fed14b/pkg/csi/service/common/constants.go#L258 
   config:
     csi-migration: false
     csi-auth-check: true
