@@ -64,11 +64,6 @@ spec:
           {{- include "common.tplvalues.render" (dict "value" .Values.webhook.initContainers "context" $) | nindent 8 }}
         {{- end }}
       containers:
-
-
-
-
-      
         - name: vsphere-csi-webhook
           image: {{ template "vsphere-csi.webhook.image" . }}
           imagePullPolicy: {{ .Values.webhook.image.pullPolicy }}
@@ -118,7 +113,7 @@ spec:
           {{- else if .Values.webhook.customReadinessProbe }}
           readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.webhook.customReadinessProbe "context" $) | nindent 12 }}
           {{- end }}
-          #ports: 
+          #ports:
           volumeMounts:
             - mountPath: /etc/webhook
               name: webhook-certs
@@ -126,8 +121,6 @@ spec:
           {{- if .Values.webhook.extraVolumeMounts }}
           {{- include "common.tplvalues.render" (dict "value" .Values.webhook.extraVolumeMounts "context" $) | nindent 12 }}
           {{- end }}
-
-
         {{- if .Values.webhook.sidecars }}
         {{- include "common.tplvalues.render" ( dict "value" .Values.webhook.sidecars "context" $) | nindent 8 }}
         {{- end }}

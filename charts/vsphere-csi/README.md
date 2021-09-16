@@ -121,6 +121,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | Name                                                          | Description                                                                                            | Value                                       |
 | ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ | ------------------------------------------- |
 | `controller.name`                                             | name used for the deployment, if unset defaults to "{{ template "common.names.fullname" . }}"          | `vsphere-csi-controller`                    |
+| `controller.config`                                           | block to freely define options for the controller configmap"          | see values.yaml                   |
 | `controller.image.registry`                                   | controller image registry                                                                              | `gcr.io`                                    |
 | `controller.image.repository`                                 | controller image repository                                                                            | `cloud-provider-vsphere/csi/release/driver` |
 | `controller.image.tag`                                        | controller image tag (immutable tags are recommended)                                                  | `v2.3.0`                                    |

@@ -63,11 +63,6 @@ spec:
           {{- include "common.tplvalues.render" (dict "value" .Values.controller.initContainers "context" $) | nindent 8 }}
         {{- end }}
       containers:
-
-
-
-
-
         - name: csi-attacher
           image: {{ template "vsphere-csi.controller.attacher.image" . }}
           imagePullPolicy: {{ .Values.controller.attacher.image.pullPolicy }}
@@ -116,12 +111,7 @@ spec:
               name: socket-dir
           {{- if .Values.controller.attacher.extraVolumeMounts }}
           {{- include "common.tplvalues.render" (dict "value" .Values.controller.attacher.extraVolumeMounts "context" $) | nindent 12 }}
-          {{- end }}      
-
-
-
-
-
+          {{- end }}
         - name: csi-resizer
           image: {{ template "vsphere-csi.controller.resizer.image" . }}
           imagePullPolicy: {{ .Values.controller.resizer.image.pullPolicy }}
@@ -171,11 +161,6 @@ spec:
           {{- if .Values.controller.resizer.extraVolumeMounts }}
           {{- include "common.tplvalues.render" (dict "value" .Values.controller.resizer.extraVolumeMounts "context" $) | nindent 12 }}
           {{- end }}
-
-
-
-
-      
         - name: vsphere-csi-controller
           image: {{ template "vsphere-csi.controller.image" . }}
           imagePullPolicy: {{ .Values.controller.image.pullPolicy }}
@@ -188,7 +173,7 @@ spec:
           {{- if .Values.controller.command }}
           command: {{- include "common.tplvalues.render" (dict "value" .Values.controller.command "context" $) | nindent 12 }}
           {{- end }}
-          args: 
+          args:
           {{- if .Values.controller.args }}
           {{- include "common.tplvalues.render" (dict "value" .Values.controller.args "context" $) | nindent 12 }}
           {{- end }}
@@ -256,13 +241,6 @@ spec:
           {{- if .Values.controller.extraVolumeMounts }}
           {{- include "common.tplvalues.render" (dict "value" .Values.controller.extraVolumeMounts "context" $) | nindent 12 }}
           {{- end }}
-
-
-
-
-
-
-      
         - name: liveness-probe
           image: {{ template "vsphere-csi.controller.livenessprobe.image" . }}
           imagePullPolicy: {{ .Values.controller.livenessprobe.image.pullPolicy }}
@@ -310,18 +288,6 @@ spec:
           {{- if .Values.controller.livenessprobe.extraVolumeMounts }}
           {{- include "common.tplvalues.render" (dict "value" .Values.controller.livenessprobe.extraVolumeMounts "context" $) | nindent 12 }}
           {{- end }}
-
-
-
-
-
-
-
-
-
-
-
-      
         - name: vsphere-syncer
           image: {{ template "vsphere-csi.controller.syncer.image" . }}
           imagePullPolicy: {{ .Values.controller.syncer.image.pullPolicy }}
@@ -388,14 +354,6 @@ spec:
           {{- if .Values.controller.syncer.extraVolumeMounts }}
           {{- include "common.tplvalues.render" (dict "value" .Values.controller.syncer.extraVolumeMounts "context" $) | nindent 12 }}
           {{- end }}
-
-
-
-
-
-
-
-      
         - name: csi-provisioner
           image: {{ template "vsphere-csi.controller.provisioner.image" . }}
           imagePullPolicy: {{ .Values.controller.provisioner.image.pullPolicy }}
@@ -409,7 +367,7 @@ spec:
           command: {{- include "common.tplvalues.render" (dict "value" .Values.controller.provisioner.command "context" $) | nindent 12 }}
           {{- end }}
           {{- if .Values.controller.provisioner.args }}
-          args: 
+          args:
           {{- include "common.tplvalues.render" (dict "value" .Values.controller.provisioner.args "context" $) | nindent 12 }}
           {{- if .Values.global.config.labels }}
             # needed only for topology aware setup
@@ -451,9 +409,6 @@ spec:
           {{- if .Values.controller.provisioner.extraVolumeMounts }}
           {{- include "common.tplvalues.render" (dict "value" .Values.controller.provisioner.extraVolumeMounts "context" $) | nindent 12 }}
           {{- end }}
-
-
-
         {{- if .Values.controller.sidecars }}
         {{- include "common.tplvalues.render" ( dict "value" .Values.controller.sidecars "context" $) | nindent 8 }}
         {{- end }}

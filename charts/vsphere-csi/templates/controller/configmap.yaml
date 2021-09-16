@@ -12,10 +12,6 @@ metadata:
   annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
   {{- end }}
 data:
-  "csi-migration": "false"
-  "csi-auth-check": "true"
-  "online-volume-extend": "true"
-  "trigger-csi-fullsync": "false"
-  "async-query-volume": "false"
-  "improved-csi-idempotency": "false"
-  "improved-volume-topology": "false"
+{{- range $key, $value := .Values.controller.config }}
+  {{ $key | quote }}: {{ $value | quote }}
+{{- end }}
