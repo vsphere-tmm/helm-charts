@@ -48,11 +48,11 @@ global:
     # Global properties in this section will be used for all specified vCenters unless overriden in VirtualCenter section.
     global:
 ## @param global.config.global.port Default port to use if not specified different for vCenter
-## @param global.config.global.insecureFlag Weather to default to insecure connections to vCenters by default
+## @param global.config.global.insecure-flag Whether to default to insecure connections to vCenters by default
 
       port: 443
-      # set insecureFlag to true if the vCenter uses a self-signed cert
-      insecureFlag: true
+      # set insecure-flag to true if the vCenter uses a self-signed cert
+      insecure-flag: true
       # settings for using k8s secret
       #secretName: vsphere-cloud-secret
       #secretNamespace: kube-system
