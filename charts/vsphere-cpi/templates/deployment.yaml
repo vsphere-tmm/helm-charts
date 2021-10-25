@@ -28,9 +28,14 @@ spec:
       app.kubernetes.io/component: cloud-controller-manager
   template:
     metadata:
-      {{- if .Values.vSphereCPI.podAnnotations }}
-      annotations: {{- include "common.tplvalues.render" (dict "value" .Values.vSphereCPI.podAnnotations "context" $) | nindent 8 }}
-      {{- end }}
+      annotations:
+        {{- if not .Values.global.config.secretsInline }}
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        {{- end }}
+        checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+        {{- if .Values.vSphereCPI.podAnnotations }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.vSphereCPI.podAnnotations "context" $) | nindent 8 }}
+        {{- end }}
       labels: {{- include "common.labels.standard" . | nindent 8 }}
         app.kubernetes.io/component: cloud-controller-manager
         {{- if .Values.vSphereCPI.podLabels }}
