@@ -10,7 +10,7 @@ metadata:
     {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
     {{- end }}
   {{- if or .Values.commonAnnotations ( eq ( .Release.Namespace | toString) "kube-system" )}}
-  annotations: 
+  annotations:
     {{- if or .Values.commonAnnotations }}
     {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
     {{- end }}
@@ -82,7 +82,8 @@ spec:
           {{- if .Values.vSphereCPI.args }}
           args: {{- include "common.tplvalues.render" (dict "value" .Values.vSphereCPI.args "context" $) | nindent 12 }}
             {{- if .Values.global.config.externalKubeconfig.enabled }}
-            - --kubeconfig=/etc/kubernetes/value
+            - --kubeconfig=/etc/kubernetes/{{ .Values.global.config.externalKubeconfig.keyName }}
+            - --authentication-kubeconfig=/etc/kubernetes/{{ .Values.global.config.externalKubeconfig.keyName }}
             {{- end }}
             {{- if le (.Values.vSphereCPI.replicaCount | int) 1 }}
             - --leader-elect=false
