@@ -29,6 +29,8 @@ spec:
         {{- include "common.tplvalues.render" (dict "value" .Values.node.podLabels "context" $) | nindent 8 }}
         {{- end }}
     spec:
+      nodeSelector:
+        kubernetes.io/os: linux
       serviceAccountName: {{ template "vsphere-csi.node.serviceAccountName" . }}
       {{- include "vsphere-csi.imagePullSecrets" . | nindent 6 }}
       {{- if .Values.node.dnsPolicy }}
@@ -145,19 +147,18 @@ spec:
               value: "node"
             - name: X_CSI_SPEC_REQ_VALIDATION
               value: "false"
-            {{ if .Values.global.config.labels }}
-            #needed only for topology aware setups
-            - name: VSPHERE_CSI_CONFIG
-              value: "/etc/cloud/csi-vsphere.conf"
-            {{ end }}
             - name: X_CSI_DEBUG
               value: "true"
             - name: LOGGER_LEVEL
               value: "PRODUCTION" # Options: DEVELOPMENT, PRODUCTION
+            - name: MAX_VOLUMES_PER_NODE
+              value: "59"     # Maximum number of volumes that controller can publish to the node. If value is not set or zero Kubernetes decide how many volumes can be published by the controller to the node.
             - name: CSI_NAMESPACE
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.namespace
+            - name: NODEGETINFO_WATCH_TIMEOUT_MINUTES
+              value: "1"
             {{- if .Values.node.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.node.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
@@ -171,8 +172,6 @@ spec:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.node.extraEnvVarsSecret "context" $) }}
             {{- end }}
           ports:
-          - containerPort: 9808
-            name: healthz
           {{- if .Values.node.resources }}
           resources: {{- toYaml .Values.node.resources | nindent 12 }}
           {{- end }}
@@ -187,12 +186,6 @@ spec:
           readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.node.customReadinessProbe "context" $) | nindent 12 }}
           {{- end }}
           volumeMounts:
-            # needed only for topology aware setups
-          {{ if .Values.global.config.labels }}
-            - name: vsphere-config-volume
-              mountPath: /etc/cloud
-              readOnly: true
-          {{ end }}
             - name: plugin-dir
               mountPath: /csi
             - name: pods-mount-dir
@@ -260,12 +253,6 @@ spec:
         {{- include "common.tplvalues.render" ( dict "value" .Values.node.sidecars "context" $) | nindent 8 }}
         {{- end }}
       volumes:
-      # needed only for topology aware setups
-      {{ if .Values.global.config.labels }}
-      - name: vsphere-config-volume
-        secret:
-          secretName: {{ template "common.names.fullname" . }}
-      {{ end }}
       - name: registration-dir
         hostPath:
           path: /var/lib/kubelet/plugins_registry

@@ -1,4 +1,3 @@
-{{- if .Values.webhook.enabled }}
 {{- $ca := genCA "vsphere-csi-ca" 365 }}
 {{- $coreCN := include "common.names.fullname"  . }}
 
@@ -7,25 +6,27 @@
 apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingWebhookConfiguration
 metadata:
-  name: validation.csi.vsphere.vmware.com
+  name: "validation-webhook.snapshot.storage.k8s.io"
   labels: {{- include "common.labels.standard" . | nindent 4 }}
     app.kubernetes.io/component: {{ template "common.names.fullname" . }}-webhook
 webhooks:
-  - name: validation.csi.vsphere.vmware.com
-    clientConfig:
-      service:
-        name: {{ template "common.names.fullname" . }}-webhook-svc
-        namespace: {{ .Release.Namespace | quote }}
-        path: "/validate"
-      caBundle: {{ $ca.Cert | b64enc | quote }}
-    rules:
-      - apiGroups:   ["storage.k8s.io"]
-        apiVersions: ["v1", "v1beta1"]
-        operations:  ["CREATE", "UPDATE"]
-        resources:   ["storageclasses"]
-    sideEffects: None
-    admissionReviewVersions: ["v1"]
-    failurePolicy: Fail
+- name: "validation-webhook.snapshot.storage.k8s.io"
+  rules:
+  - apiGroups: ["snapshot.storage.k8s.io"]
+    apiVersions: ["v1", "v1beta1"]
+    operations: ["CREATE", "UPDATE"]
+    resources: ["volumesnapshots", "volumesnapshotcontents"]
+    scope: "*"
+  clientConfig:
+    service:
+      namespace: {{ .Release.Namespace | quote }}
+      name: {{ template "common.names.fullname" . }}-snapshot-validation-service
+      path: "/volumesnapshot"
+    caBundle: {{ $ca.Cert | b64enc | quote }}
+  admissionReviewVersions: ["v1"]
+  sideEffects: None
+  failurePolicy: Ignore   # We recommend switching to Fail only after successful installation of the webhook server and webhook.
+  timeoutSeconds: 2   # This will affect the latency and performance. Finetune this value based on your application's tolerance.
 ---
 apiVersion: v1
 kind: Secret
@@ -42,11 +43,6 @@ metadata:
   {{- end }}
 type: Opaque
 stringData:
-  key.pem:  {{ $coreCrt.Key  | quote }}
-  cert.pem: {{ $coreCrt.Cert | quote }}
-  webhook.config: |
-    [WebHookConfig]
-    port = "8443"
-    cert-file = "/run/secrets/tls/cert.pem"
-    key-file = "/run/secrets/tls/key.pem"
-{{- end }}
+  tls.key:  {{ $coreCrt.Key  | quote }}
+  tls.crt: {{ $coreCrt.Cert | quote }}
+
