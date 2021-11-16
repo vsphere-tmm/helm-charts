@@ -923,7 +923,7 @@ controller:
   ## @param controller.podAntiAffinityPreset Pod anti-affinity preset. Ignored if `controller.affinity` is set. Allowed values: `soft` or `hard`
   ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
   ##
-  podAntiAffinityPreset: soft
+  podAntiAffinityPreset: hard
   ## Node controller.affinity preset
   ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#node-affinity
   ##
@@ -945,16 +945,7 @@ controller:
   ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
   ## NOTE: `controller.podAffinityPreset`, `controller.podAntiAffinityPreset`, and `controller.nodeAffinityPreset` will be ignored when it's set
   ##
-  affinity:
-    podAntiAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-      - labelSelector:
-          matchExpressions:
-          - key: "app"
-            operator: In
-            values:
-            - vsphere-csi-controller
-        topologyKey: "kubernetes.io/hostname"
+  affinity: {}
   ## @param controller.nodeSelector Node labels for controller pods assignment
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
@@ -1070,95 +1061,6 @@ snapshotwebhook:
     ##
     debug: false
 
-    ##
-    lifecycleHooks: {}
-    ## @param snapshotwebhook.provisioner.extraEnvVars Array with extra environment variables to add to snapshotwebhook.provisioner nodes
-    ## e.g:
-    ## extraEnvVars:
-    ##   - name: FOO
-    ##     value: "bar"
-    ##
-
-    ## Configure Container Security Context
-    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
-    ## @param snapshotwebhook.provisioner.containerSecurityContext.enabled Enabled snapshotwebhook.provisioner containers' Security Context
-    ## @param snapshotwebhook.provisioner.containerSecurityContext.runAsUser Set snapshotwebhook.provisioner containers' Security Context runAsUser
-    ##
-    containerSecurityContext:
-      enabled: false
-      runAsUser: 1001
-    ## @param snapshotwebhook.provisioner.command Override default container command (useful when using custom images)
-    ##
-    command: []
-    ## @param snapshotwebhook.provisioner.args Override default container args (useful when using custom images)
-    ##
-    args: ['--tls-cert-file=/run/secrets/tls/tls.crt', '--tls-private-key-file=/run/secrets/tls/tls.key']
-
-    ## @param snapshotwebhook.provisioner.extraEnvVars Array with extra environment variables to add to snapshotwebhook.provisioner nodes
-    ## e.g:
-    ## extraEnvVars:
-    ##   - name: FOO
-    ##     value: "bar"
-    ##
-    extraEnvVars: []
-    ## @param snapshotwebhook.provisioner.extraEnvVarsCM Name of existing ConfigMap containing extra env vars for snapshotwebhook.provisioner nodes
-    ##
-    extraEnvVarsCM:
-    ## @param snapshotwebhook.provisioner.extraEnvVarsSecret Name of existing Secret containing extra env vars for snapshotwebhook.provisioner nodes
-    ##
-    extraEnvVarsSecret:
-    ## snapshotwebhook.provisioner resource requests and limits
-    ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-    ## @param snapshotwebhook.provisioner.resources.limits The resources limits for the snapshotwebhook.provisioner containers
-    ## @param snapshotwebhook.provisioner.resources.requests The requested resources for the snapshotwebhook.provisioner containers
-    ##
-    resources:
-      limits: {}
-      requests: {}
-    ## Configure extra options for snapshotwebhook.provisioner containers' liveness and readiness probes
-    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
-    ## @param snapshotwebhook.provisioner.livenessProbe.enabled Enable livenessProbe on snapshotwebhook.provisioner nodes
-    ## @param snapshotwebhook.provisioner.livenessProbe.initialDelaySeconds Initial delay seconds for livenessProbe
-    ## @param snapshotwebhook.provisioner.livenessProbe.periodSeconds Period seconds for livenessProbe
-    ## @param snapshotwebhook.provisioner.livenessProbe.timeoutSeconds Timeout seconds for livenessProbe
-    ## @param snapshotwebhook.provisioner.livenessProbe.failureThreshold Failure threshold for livenessProbe
-    ## @param snapshotwebhook.provisioner.livenessProbe.successThreshold Success threshold for livenessProbe
-    ##
-    livenessProbe:
-      enabled: false
-      # httpGet:
-      #   path: /
-      initialDelaySeconds: foo
-      periodSeconds: bar
-      timeoutSeconds: foo
-      failureThreshold: bar
-      successThreshold: foo
-    ## @param snapshotwebhook.provisioner.readinessProbe.enabled Enable readinessProbe on snapshotwebhook.provisioner nodes
-    ## @param snapshotwebhook.provisioner.readinessProbe.initialDelaySeconds Initial delay seconds for readinessProbe
-    ## @param snapshotwebhook.provisioner.readinessProbe.periodSeconds Period seconds for readinessProbe
-    ## @param snapshotwebhook.provisioner.readinessProbe.timeoutSeconds Timeout seconds for readinessProbe
-    ## @param snapshotwebhook.provisioner.readinessProbe.failureThreshold Failure threshold for readinessProbe
-    ## @param snapshotwebhook.provisioner.readinessProbe.successThreshold Success threshold for readinessProbe
-    ##
-    readinessProbe:
-      enabled: false
-      # httpGet:
-      #   path: /
-      initialDelaySeconds: foo
-      periodSeconds: bar
-      timeoutSeconds: foo
-      failureThreshold: bar
-      successThreshold: foo
-    ## @param snapshotwebhook.provisioner.customLivenessProbe Custom livenessProbe that overrides the default one
-    ##
-    customLivenessProbe: {}
-    ## @param snapshotwebhook.provisioner.customReadinessProbe Custom readinessProbe that overrides the default one
-    ##
-    customReadinessProbe: {}
-    ## @param snapshotwebhook.provisioner.extraVolumeMounts Optionally specify extra list of additional volumeMounts for the snapshotwebhook.provisioner container(s)
-    ##
-    extraVolumeMounts: []
-
   ## @param snapshotwebhook.replicaCount Number of snapshotwebhook replicas to deploy
   ##
   replicaCount: 3
@@ -1175,7 +1077,7 @@ snapshotwebhook:
   ## @skip snapshotwebhook.livenessProbe.successThreshold Success threshold for livenessProbe
   ##
   livenessProbe:
-    enabled: true
+    enabled: false
     httpGet:
       path: /healthz
       port: healthz
@@ -1242,9 +1144,7 @@ snapshotwebhook:
   command: []
   ## @param snapshotwebhook.args Override default container args (useful when using custom images)
   ##
-  args:
-    - "--fss-name=internal-feature-states.csi.vsphere.vmware.com"
-    - "--fss-namespace=$(CSI_NAMESPACE)"
+  args: ['--tls-cert-file=/run/secrets/tls/tls.crt', '--tls-private-key-file=/run/secrets/tls/tls.key']
   ## @param snapshotwebhook.hostAliases snapshotwebhook pods host aliases
   ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
   ##
@@ -1286,16 +1186,7 @@ snapshotwebhook:
   ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
   ## NOTE: `snapshotwebhook.podAffinityPreset`, `snapshotwebhook.podAntiAffinityPreset`, and `snapshotwebhook.nodeAffinityPreset` will be ignored when it's set
   ##
-  affinity:
-    podAntiAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-      - labelSelector:
-          matchExpressions:
-          - key: "app"
-            operator: In
-            values:
-            - vsphere-csi-snapshotwebhook
-        topologyKey: "kubernetes.io/hostname"
+  affinity: {}
   ## @param snapshotwebhook.nodeSelector Node labels for snapshotwebhook pods assignment
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
