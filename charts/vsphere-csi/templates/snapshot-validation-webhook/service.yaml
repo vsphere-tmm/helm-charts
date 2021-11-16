@@ -1,3 +1,4 @@
+{{- if .Values.controller.config.block-volume-snapshot }}
 apiVersion: v1
 kind: Service
 metadata:
@@ -10,3 +11,4 @@ spec:
   - protocol: TCP
     port: 443   # Change if needed
     targetPort: 443   # Change if the webserver image expects a different port
+{{- end }}

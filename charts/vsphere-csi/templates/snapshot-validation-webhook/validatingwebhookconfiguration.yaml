@@ -1,3 +1,4 @@
+{{- if .Values.controller.config.block-volume-snapshot }}
 {{- $ca := genCA "vsphere-csi-ca" 365 }}
 {{- $coreCN := include "common.names.fullname"  . }}
 
@@ -45,4 +46,4 @@ type: Opaque
 stringData:
   tls.key:  {{ $coreCrt.Key  | quote }}
   tls.crt: {{ $coreCrt.Cert | quote }}
-
+{{- end }}
