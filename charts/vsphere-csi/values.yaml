@@ -170,7 +170,7 @@ controller:
     async-query-volume: true
     improved-csi-idempotency: true
     improved-volume-topology: true
-    block-volume-snapshot: false
+    block-volume-snapshot: true
     csi-windows-support: false
   ## controller image
   ## @param controller.image.registry controller image registry
@@ -2251,7 +2251,7 @@ winnode:
 webhook:
   ## @param webhook.enabled enable or disable webhook
 
-  enabled: false
+  enabled: true
   ## @param webhook.image.registry webhook image registry
   ## @param webhook.image.repository webhook image repository
   ## @param webhook.image.tag webhook image tag (immutable tags are recommended)

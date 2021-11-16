@@ -1,4 +1,4 @@
-{{- if .Values.controller.config.block-volume-snapshot }}
+{{- if (index .Values.controller.config "block-volume-snapshot" ) }}
 apiVersion: v1
 kind: Service
 metadata:
