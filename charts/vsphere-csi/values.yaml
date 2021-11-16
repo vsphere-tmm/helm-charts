@@ -2251,7 +2251,7 @@ winnode:
 webhook:
   ## @param webhook.enabled enable or disable webhook
 
-  enabled: true
+  enabled: false
   ## @param webhook.image.registry webhook image registry
   ## @param webhook.image.repository webhook image repository
   ## @param webhook.image.tag webhook image tag (immutable tags are recommended)
