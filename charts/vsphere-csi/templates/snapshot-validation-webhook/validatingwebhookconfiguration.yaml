@@ -34,7 +34,7 @@ webhooks:
 apiVersion: v1
 kind: Secret
 metadata:
-  name: {{ template "common.names.fullname" . }}-webhook-certs
+  name: {{ template "common.names.fullname" . }}-snapshot-webhook-certs
   namespace: {{ .Release.Namespace | quote }}
   labels: {{- include "common.labels.standard" . | nindent 4 }}
     app.kubernetes.io/component: {{ template "common.names.fullname" . }}-webhook

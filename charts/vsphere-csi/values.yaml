@@ -170,7 +170,7 @@ controller:
     async-query-volume: true
     improved-csi-idempotency: true
     improved-volume-topology: true
-    block-volume-snapshot: true
+    block-volume-snapshot: false
     csi-windows-support: false
   ## controller image
   ## @param controller.image.registry controller image registry
