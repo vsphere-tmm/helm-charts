@@ -923,7 +923,7 @@ controller:
   ## @param controller.podAntiAffinityPreset Pod anti-affinity preset. Ignored if `controller.affinity` is set. Allowed values: `soft` or `hard`
   ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
   ##
-  podAntiAffinityPreset: hard
+  podAntiAffinityPreset: soft
   ## Node controller.affinity preset
   ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#node-affinity
   ##
@@ -954,7 +954,7 @@ controller:
   ## @skip "controller.nodeSelector.node-role.kubernetes.io/master"
   ## @skip controller.nodeSelector.node-role.kubernetes.io\/master
 
-    #node-role.kubernetes.io/master: ""
+    node-role.kubernetes.io/master: ""
   ## @param controller.tolerations Tolerations for controller pods assignment
   ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
   ##
@@ -1194,8 +1194,7 @@ snapshotwebhook:
   ## @skip snapshotwebhook.nodeSelector.node-role.kubernetes.io/master
   ## @skip "snapshotwebhook.nodeSelector.node-role.kubernetes.io/master"
   ## @skip snapshotwebhook.nodeSelector.node-role.kubernetes.io\/master
-
-    #node-role.kubernetes.io/master: ""
+    node-role.kubernetes.io/master: ""
   ## @param snapshotwebhook.tolerations Tolerations for snapshotwebhook pods assignment
   ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
   ##
@@ -2416,7 +2415,7 @@ webhook:
   ##
   ## @skip webhook.nodeSelector.node-role.kubernetes.io/master
   nodeSelector:
-    #node-role.kubernetes.io/master: ""
+    node-role.kubernetes.io/master: ""
 
   ## @param webhook.tolerations Tolerations for webhook pods assignment
   ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
