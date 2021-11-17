@@ -13,7 +13,7 @@ metadata:
   annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
   {{- end }}
 spec:
-  replicas: {{ .Values.replicaCount }}
+  replicas: {{ .Values.webhook.replicaCount }}
   {{- if .Values.webhook.updateStrategy }}
   strategy: {{- toYaml .Values.webhook.updateStrategy | nindent 4 }}
   {{- end }}
@@ -81,7 +81,7 @@ spec:
           {{- end }}
           env:
             - name: WEBHOOK_CONFIG_PATH
-              value: "/etc/webhook/webhook.config"
+              value: "/run/secrets/tls/webhook.config"
             - name: LOGGER_LEVEL
               value: {{ include "common.tplvalues.render" (dict "value" .Values.global.logLevel "context" $) }}
             - name: CSI_NAMESPACE
@@ -115,7 +115,7 @@ spec:
           {{- end }}
           #ports:
           volumeMounts:
-            - mountPath: /etc/webhook
+            - mountPath: /run/secrets/tls/
               name: webhook-certs
               readOnly: true
           {{- if .Values.webhook.extraVolumeMounts }}
