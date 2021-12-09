@@ -42,7 +42,9 @@ spec:
         {{- include "common.tplvalues.render" (dict "value" .Values.vSphereCPI.podLabels "context" $) | nindent 8 }}
         {{- end }}
     spec:
+      {{- if or .Values.serviceAccount.create .Values.serviceAccount.name }}
       serviceAccountName: {{ template "vSphereCPI.serviceAccountName" . }}
+      {{- end }}
       {{- include "vSphereCPI.imagePullSecrets" . | nindent 6 }}
       {{- if .Values.vSphereCPI.hostAliases }}
       hostAliases: {{- include "common.tplvalues.render" (dict "value" .Values.vSphereCPI.hostAliases "context" $) | nindent 8 }}
