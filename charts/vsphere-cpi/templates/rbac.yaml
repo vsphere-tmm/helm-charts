@@ -1,3 +1,4 @@
+{{ if .Values.rbac.create  }}
 kind: ClusterRoleBinding
 apiVersion: {{ include "common.capabilities.rbac.apiVersion" . }}
 metadata:
@@ -19,7 +20,6 @@ subjects:
   - kind: ServiceAccount
     name: {{ template "vSphereCPI.serviceAccountName" . }}
     namespace: {{ .Release.Namespace }}
-{{ if .Values.rbac.create  }}
 ---
 apiVersion: {{ include "common.capabilities.rbac.apiVersion" . }}
 kind: ClusterRole
