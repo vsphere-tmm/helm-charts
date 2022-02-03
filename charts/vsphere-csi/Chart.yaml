@@ -13,7 +13,7 @@ dependencies:
     version: 1.x.x
 description: A Helm chart for vSphere CSI Driver
 engine: gotpl
-home: https://github.com/kubernetes-sigs/vsphere-csi-driverhttps://github.com/kubernetes-sigs/vsphere-csi-driver
+home: https://github.com/kubernetes-sigs/vsphere-csi-driver
 icon: https://raw.githubusercontent.com/kubernetes-sigs/vsphere-csi-driver/master/docs/images/vmware_logo.png
 keywords:
   - vsphere
