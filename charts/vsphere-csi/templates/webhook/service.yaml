@@ -1,9 +1,8 @@
 {{- if .Values.webhook.enabled }}
-
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ template "common.names.fullname" . }}-webhook-svc
+  name: {{ template "common.names.fullname" . }}-webhook
   namespace: {{ .Release.Namespace | quote }}
   labels: {{- include "common.labels.standard" . | nindent 4 }}
     app.kubernetes.io/component: {{ template "common.names.fullname" . }}-webhook

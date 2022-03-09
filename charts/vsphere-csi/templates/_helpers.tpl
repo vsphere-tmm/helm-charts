@@ -64,6 +64,14 @@ Return the proper webhook image name
 {{- end -}}
 
 {{/*
+Return the proper snapshot webhook image name
+*/}}
+{{- define "vsphere-csi.snapshotwebhook.image" -}}
+{{ include "common.images.image" (dict "imageRoot" .Values.snapshotwebhook.image "global" .Values.global) }}
+{{- end -}}
+
+
+{{/*
 Return the proper image name (for the init container volume-permissions image)
 */}}
 {{- define "vsphere-csi.volumePermissions.image" -}}
@@ -95,8 +103,16 @@ Create the name of the service account to use
 Create the name of the webhook service account to use
 */}}
 {{- define "vsphere-csi.webhook.serviceAccountName" -}}
-{{ include "common.secrets.name" (dict "existingSecret" .Values.webhook.serviceAccount.name "defaultNameSuffix" "node" "context" $) }}
+{{ include "common.secrets.name" (dict "existingSecret" .Values.webhook.serviceAccount.name "defaultNameSuffix" "webhook" "context" $) }}
 {{- end -}}
+
+{{/*
+Create the name of the snapshot webhook service account to use
+*/}}
+{{- define "vsphere-csi.snapshotwebhook.serviceAccountName" -}}
+{{ include "common.secrets.name" (dict "existingSecret" .Values.snapshotwebhook.serviceAccount.name "defaultNameSuffix" "snapshotwebhook" "context" $) }}
+{{- end -}}
+
 
 {{/*
 Compile all warnings into a single message.
@@ -123,6 +139,18 @@ Define Name for controller deployment
 {{ include "common.names.fullname" }}-controller
 {{- end -}}
 {{- end -}}
+
+{{/*
+Define Name for snapshotter daemonset
+*/}}
+{{- define "vsphere-csi.snapshotwebhookName" -}}
+{{- if .Values.snapshotwebhook.name -}}
+{{ .Values.snapshotwebhook.name }}
+{{- else -}}
+{{ include "common.names.fullname" }}-snapshotter
+{{- end -}}
+{{- end -}}
+
 {{/*
 Define Name for node daemonset
 */}}
@@ -131,5 +159,16 @@ Define Name for node daemonset
 {{ .Values.node.name }}
 {{- else -}}
 {{ include "common.names.fullname" }}-node
+{{- end -}}
+{{- end -}}
+
+{{/*
+Define Name for windowsnode daemonset
+*/}}
+{{- define "vsphere-csi.winNodeName" -}}
+{{- if .Values.win.name -}}
+{{ .Values.win.name }}
+{{- else -}}
+{{ include "common.names.fullname" }}-node-windows
 {{- end -}}
 {{- end -}}

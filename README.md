@@ -49,4 +49,4 @@ git push
 
 ## TODO
 
-* Automate chart release process
+* ~~Automate chart release process~~
