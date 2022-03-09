@@ -21,4 +21,4 @@ maintainers:
     email: myles@vmware.com
 name: vsphere-cpi
 sources:
-version: 1.1.4
+version: 1.1.5
