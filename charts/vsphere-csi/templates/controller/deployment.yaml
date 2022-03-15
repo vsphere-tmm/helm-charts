@@ -409,6 +409,58 @@ spec:
           {{- if .Values.controller.provisioner.extraVolumeMounts }}
           {{- include "common.tplvalues.render" (dict "value" .Values.controller.provisioner.extraVolumeMounts "context" $) | nindent 12 }}
           {{- end }}
+
+
+        - name: csi-snapshotter
+          image: {{ template "vsphere-csi.controller.snapshotter.image" . }}
+          imagePullPolicy: {{ .Values.controller.snapshotter.image.pullPolicy }}
+          {{- if .Values.controller.snapshotter.lifecycleHooks }}
+          lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.controller.snapshotter.lifecycleHooks "context" $) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.controller.snapshotter.containerSecurityContext.enabled }}
+          securityContext: {{- omit .Values.controller.snapshotter.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          {{- if .Values.controller.snapshotter.command }}
+          command: {{- include "common.tplvalues.render" (dict "value" .Values.controller.snapshotter.command "context" $) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.controller.snapshotter.args }}
+          args:
+          {{- include "common.tplvalues.render" (dict "value" .Values.controller.snapshotter.args "context" $) | nindent 12 }}
+          {{- end }}
+          env:
+            - name: ADDRESS
+              value: /csi/csi.sock
+            {{- if .Values.controller.snapshotter.extraEnvVars }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.controller.snapshotter.extraEnvVars "context" $) | nindent 12 }}
+            {{- end }}
+          envFrom:
+            {{- if .Values.controller.snapshotter.extraEnvVarsCM }}
+            - configMapRef:
+                name: {{ include "common.tplvalues.render" (dict "value" .Values.controller.snapshotter.extraEnvVarsCM "context" $) }}
+            {{- end }}
+            {{- if .Values.controller.snapshotter.extraEnvVarsSecret }}
+            - secretRef:
+                name: {{ include "common.tplvalues.render" (dict "value" .Values.controller.snapshotter.extraEnvVarsSecret "context" $) }}
+            {{- end }}
+          {{- if .Values.controller.snapshotter.resources }}
+          resources: {{- toYaml .Values.controller.snapshotter.resources | nindent 12 }}
+          {{- end }}
+          {{- if .Values.controller.snapshotter.livenessProbe.enabled }}
+          livenessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.controller.snapshotter.livenessProbe "enabled") "context" $) | nindent 12 }}
+          {{- else if .Values.controller.snapshotter.customLivenessProbe }}
+          livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.controller.snapshotter.customLivenessProbe "context" $) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.controller.snapshotter.readinessProbe.enabled }}
+          readinessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.controller.snapshotter.readinessProbe "enabled") "context" $) | nindent 12 }}
+          {{- else if .Values.controller.snapshotter.customReadinessProbe }}
+          readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.controller.snapshotter.customReadinessProbe "context" $) | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - mountPath: /csi
+              name: socket-dir
+          {{- if .Values.controller.snapshotter.extraVolumeMounts }}
+          {{- include "common.tplvalues.render" (dict "value" .Values.controller.snapshotter.extraVolumeMounts "context" $) | nindent 12 }}
+          {{- end }}
         {{- if .Values.controller.sidecars }}
         {{- include "common.tplvalues.render" ( dict "value" .Values.controller.sidecars "context" $) | nindent 8 }}
         {{- end }}

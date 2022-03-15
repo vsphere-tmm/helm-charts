@@ -1,9 +1,9 @@
 dependencies:
 - name: vsphere-cpi
   repository: https://vsphere-tmm.github.io/helm-charts
-  version: 1.1.2
+  version: 1.2.0
 - name: common
   repository: https://charts.bitnami.com/bitnami
-  version: 1.10.1
-digest: sha256:daffc3ed57e6510a63ad059b35945013ba2f7704a17610ea11ef1120eadc567f
-generated: "2021-11-16T21:28:53.258985544+01:00"
+  version: 1.11.3
+digest: sha256:f538f17d4ba37f6381e7ffb513a598a8ac37d63090141fda2bd7e8bff0b7ead6
+generated: "2022-03-15T11:45:38.825680935+01:00"
