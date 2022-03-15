@@ -4,6 +4,32 @@ entries:
   - annotations:
       category: cpi
     apiVersion: v2
+    appVersion: v1.22.5
+    created: "2022-03-15T11:19:15.860669295Z"
+    dependencies:
+    - name: common
+      repository: https://charts.bitnami.com/bitnami
+      tags:
+      - bitnami-common
+      version: 1.x.x
+    description: Helm chart for the vSphere-CPI
+    digest: 4245fdac0d8d5f59c3df3b185500f95a1fb5b199dd90227e9f500a15e4b11e82
+    home: https://github.com/kubernetes/cloud-provider-vsphere
+    keywords:
+    - vSphere
+    - CPI
+    maintainers:
+    - email: maximilian.rink@telekom.de
+      name: Maximilian Rink
+    - email: myles@vmware.com
+      name: Myles Gray
+    name: vsphere-cpi
+    urls:
+    - https://github.com/vsphere-tmm/helm-charts/releases/download/vsphere-cpi-1.2.1/vsphere-cpi-1.2.1.tgz
+    version: 1.2.1
+  - annotations:
+      category: cpi
+    apiVersion: v2
     appVersion: v1.22.2
     created: "2022-03-09T16:08:10.531218901Z"
     dependencies:
@@ -603,4 +629,4 @@ entries:
     urls:
     - https://vsphere-tmm.github.io/helm-charts/charts/vsphere-csi-0.0.4.tgz
     version: 0.0.4
-generated: "2022-03-09T16:08:10.5313614Z"
+generated: "2022-03-15T11:19:15.860771006Z"
