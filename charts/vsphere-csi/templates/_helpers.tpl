@@ -34,6 +34,12 @@ Return the proper controller provisioner image name
 {{- define "vsphere-csi.controller.provisioner.image" -}}
 {{ include "common.images.image" (dict "imageRoot" .Values.controller.provisioner.image "global" .Values.global) }}
 {{- end -}}
+{{/*
+Return the proper controller snapshotter image name
+*/}}
+{{- define "vsphere-csi.controller.snapshotter.image" -}}
+{{ include "common.images.image" (dict "imageRoot" .Values.controller.snapshotter.image "global" .Values.global) }}
+{{- end -}}
 
 
 
