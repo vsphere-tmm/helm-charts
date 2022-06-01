@@ -121,7 +121,7 @@ spec:
       volumes:
         - name: webhook-certs
           secret:
-            secretName: {{ template "common.names.fullname" . }}-webhook-certs
+            secretName: {{ template "common.names.fullname" . }}-snapshot-webhook-certs
         {{- if .Values.snapshotwebhook.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.snapshotwebhook.extraVolumes "context" $) | nindent 8 }}
         {{- end }}
