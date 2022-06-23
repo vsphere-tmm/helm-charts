@@ -2735,3 +2735,9 @@ rbac:
 
 vsphere-cpi:
   enabled: false
+
+snapshot:
+  controller:
+    enabled: false
+  validationWebhook:
+    enabled: false
