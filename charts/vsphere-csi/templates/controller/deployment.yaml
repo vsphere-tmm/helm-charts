@@ -1,3 +1,4 @@
+{{- if ne .Values.global.mode "workload" }}
 apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
 kind: Deployment
 metadata:
@@ -30,7 +31,11 @@ spec:
         {{- include "common.tplvalues.render" (dict "value" .Values.controller.podLabels "context" $) | nindent 8 }}
         {{- end }}
     spec:
+      {{- if ne .Values.global.mode "management" }}
       serviceAccountName: {{ template "vsphere-csi.controller.serviceAccountName" . }}
+      {{- else }}
+      automountServiceAccountToken: false
+      {{- end }}
       {{- include "vsphere-csi.imagePullSecrets" . | nindent 6 }}
       {{- if .Values.controller.dnsPolicy }}
       dnsPolicy: {{- include "common.tplvalues.render" (dict "value" .Values.controller.dnsPolicy "context" $) | nindent 8 }}
@@ -224,10 +229,15 @@ spec:
               value: "100"
             - name: INCLUSTER_CLIENT_BURST
               value: "100"
+            {{- if .Values.controller.csiNamespace }}
+            - name: CSI_NAMESPACE
+              value: {{ .Values.controller.csiNamespace }}
+            {{- else }}
             - name: CSI_NAMESPACE
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.namespace
+            {{- end }}
             {{- if .Values.controller.global.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.controller.global.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
@@ -372,10 +382,15 @@ spec:
               value: "100"
             - name: GODEBUG
               value: x509sha1=1
+            {{- if .Values.controller.csiNamespace }}
+            - name: CSI_NAMESPACE
+              value: {{ .Values.controller.csiNamespace }}
+            {{- else }}
             - name: CSI_NAMESPACE
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.namespace
+            {{- end }}
             {{- if .Values.controller.global.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.controller.global.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
@@ -574,3 +589,4 @@ spec:
         {{- if .Values.controller.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.controller.extraVolumes "context" $) | nindent 8 }}
         {{- end }}
+{{- end }}

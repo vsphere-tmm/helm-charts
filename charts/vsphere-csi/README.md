@@ -57,12 +57,13 @@ The command removes all the Kubernetes components associated with the chart and 
 
 ### Global parameters
 
-| Name                      | Description                                               | Value        |
-| ------------------------- | --------------------------------------------------------- | ------------ |
-| `global.imageRegistry`    | Global Docker image registry                              | `nil`        |
-| `global.imagePullSecrets` | Global Docker registry secret names as an array           | `undefined`  |
-| `global.storageClass`     | Global StorageClass for Persistent Volume(s)              | `nil`        |
-| `global.logLevel`         | Global logLevel for CSI, can be PRODUCTION or DEVELOPMENT | `PRODUCTION` |
+| Name                      | Description                                                  | Value        |
+| ------------------------- | ------------------------------------------------------------ | ------------ |
+| `global.mode`             | One of full, management, workload. See [below](#global-mode) | `full`        |
+| `global.imageRegistry`    | Global Docker image registry                                 | `nil`        |
+| `global.imagePullSecrets` | Global Docker registry secret names as an array              | `undefined`  |
+| `global.storageClass`     | Global StorageClass for Persistent Volume(s)                 | `nil`        |
+| `global.logLevel`         | Global logLevel for CSI, can be PRODUCTION or DEVELOPMENT    | `PRODUCTION` |
 
 
 ### global.config Global Configuration for both CPI and CSI
@@ -128,6 +129,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `controller.image.pullPolicy`                                 | controller image pull policy                                                                           | `IfNotPresent`                              |
 | `controller.image.pullSecrets`                                | controller image pull secrets                                                                          | `undefined`                                 |
 | `controller.image.debug`                                      | Enable image debug mode                                                                                | `false`                                     |
+| `controller.csiNamespace`                                     | CSI namespace (only relevant when global.mode is management)                                           | `nil`                                     |
 | `controller.global.extraEnvVars`                              | Array with extra environment variables for all controller containers                                   | `undefined`                                 |
 | `controller.global.extraEnvVarsCM`                            | Name of existing ConfigMap containing extra env vars for all controller containers                     | `nil`                                       |
 | `controller.global.extraEnvVarsSecret`                        | Name of existing Secret containing extra env vars for all controller containers                        | `nil`                                       |
@@ -570,6 +572,114 @@ If additional containers are needed in the same pod as vsphere-csi (such as addi
 This chart allows you to set your custom affinity using the `affinity` parameter. Find more information about Pod affinity in the [kubernetes documentation](https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity).
 
 As an alternative, use one of the preset configurations for pod affinity, pod anti-affinity, and node affinity available at the [bitnami/common](https://github.com/bitnami/charts/tree/master/bitnami/common#affinities) chart. To do so, set the `podAffinityPreset`, `podAntiAffinityPreset`, or `nodeAffinityPreset` parameters.
+
+### Global mode
+
+`global.mode` can be used to deploy vsphere-csi controller in a management cluster and the rest in a workload cluster.
+
+Usage:
+
+- Create `values-workload-cluster1.yaml`:
+
+  ```yaml
+  # values-workload-cluster1.yaml
+  global:
+    mode: workload
+    config:
+      storageclass:
+        enabled: true
+
+  controller:
+    config:
+      improved-volume-topology: false
+  ```
+
+- Create `values-mgmt-cluster1.yaml`:
+
+  ```yaml
+  # values-mgmt-cluster1.yaml
+  global:
+    mode: management
+    config:
+      global:
+        cluster-id: cluster1
+      vcenter:
+        your-vcenter-name-here:
+          user: use-your-vcenter-user-here
+          password: use-your-vcenter-password-here
+          datacenters:
+            - hrwest
+            - hreast
+
+  controller:
+    csiNamespace: vsphere-csi
+    global:
+      extraEnvVarsCM: kubernetes-service
+      extraVolumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access
+        readOnly: true
+    extraVolumes:
+    - name: kube-api-access
+      secret:
+        secretName: kube-api-access
+  ```
+
+- install on the workload cluster:
+
+```console
+$ export KUBECONFIG=cluster1.kubeconfig
+$ kubectl create namespace vsphere-csi
+namespace/vsphere-csi created
+$ helm upgrade --install vsphere-csi vsphere-tmm/vsphere-csi \
+  --namespace vsphere-csi \
+  --values values-workload-cluster1.yaml
+NAME: vsphere-csi
+LAST DEPLOYED: Wed Sep 28 15:46:42 2022
+NAMESPACE: vsphere-csi
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
+```
+
+- install on the management cluster:
+
+  ```console
+  $ export KUBECONFIG=mgmt.kubeconfig
+  $ kubectl create namespace vsphere-csi-cluster1
+  namespace/vsphere-csi-cluster1 created
+  $ helm upgrade --install vsphere-csi-cluster1 vsphere-tmm/vsphere-csi \
+    --namespace vsphere-csi-cluster1 \
+    --values values-mgmt-cluster1.yaml
+  NAME: vsphere-csi-cluster1
+  LAST DEPLOYED: Wed Sep 28 15:50:22 2022
+  NAMESPACE: vsphere-csi-cluster1
+  STATUS: deployed
+  REVISION: 1
+  TEST SUITE: None
+  ```
+
+- Create `KUBECONFIG`:
+
+  ```console
+  $ export KUBECONFIG=cluster1.kubeconfig
+  $ ca_crt="$(kubectl get secret -n vsphere-csi vsphere-csi-controller -ojsonpath={.data.'ca\.crt'} | base64 -d)"
+  $ token="$(kubectl get secret -n vsphere-csi vsphere-csi-controller -ojsonpath={.data.token} | base64 -d)"
+  $ host_port="$(kubectl config view -ojson | jq .clusters[0].cluster.server -r | cut -d / -f3)"
+  $ KUBERNETES_SERVICE_HOST="$(echo "$host_port" | cut -d: -f1)"
+  $ KUBERNETES_SERVICE_PORT="$(echo "$host_port" | cut -d: -f2)"
+
+  $ export KUBECONFIG=cluster1.kubeconfig
+  $ kubectl create secret -n vsphere-csi-cluster1 generic kube-api-access \
+      --from-literal="token=$token" \
+      --from-literal="ca.crt=$ca_crt" \
+      --from-literal="namespace=vsphere-csi"
+  $ kubectl create configmap -n vsphere-csi-cluster1 kubernetes-service \
+      --from-literal="KUBERNETES_SERVICE_HOST=$KUBERNETES_SERVICE_HOST" \
+      --from-literal="KUBERNETES_SERVICE_PORT=$KUBERNETES_SERVICE_PORT" \
+      --from-literal="namespace=vsphere-csi"
+  ```
+
 
 ## Troubleshooting
 

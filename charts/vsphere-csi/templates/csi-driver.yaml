@@ -1,3 +1,4 @@
+{{- if ne .Values.global.mode "management" }}
 {{- if .Values.global.config.csidriver.enabled -}}
 apiVersion: storage.k8s.io/v1
 kind: CSIDriver
@@ -7,3 +8,4 @@ spec:
   attachRequired: true
   podInfoOnMount: false
 {{- end -}}
+{{- end }}
