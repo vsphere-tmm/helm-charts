@@ -173,8 +173,12 @@ controller:
     block-volume-snapshot: true
     csi-windows-support: false
     use-csinode-id: true
+    list-volumes: false
     pv-to-backingdiskobjectid-mapping: false
     cnsmgr-suspend-create-volume: false
+    topology-preferential-datastores": true
+    max-pvscsi-targets-per-vm": false
+
 
   ## controller image
   ## @param controller.image.registry controller image registry
@@ -187,7 +191,7 @@ controller:
   image:
     registry: gcr.io
     repository: cloud-provider-vsphere/csi/release/driver
-    tag: v2.5.1
+    tag: v2.6.1
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -466,7 +470,7 @@ controller:
     image:
       registry: k8s.gcr.io
       repository: sig-storage/livenessprobe
-      tag: v2.6.0
+      tag: v2.7.0
       ## Specify a imagePullPolicy
       ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
       ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -587,7 +591,7 @@ controller:
     image:
       registry: gcr.io
       repository: cloud-provider-vsphere/csi/release/syncer
-      tag: v2.5.1
+      tag: v2.6.1
       ## Specify a imagePullPolicy
       ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
       ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -708,7 +712,7 @@ controller:
     image:
       registry: k8s.gcr.io
       repository: sig-storage/csi-provisioner
-      tag: v3.1.0
+      tag: v3.2.1
       ## Specify a imagePullPolicy
       ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
       ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -1082,7 +1086,7 @@ controller:
   ## @skip "controller.nodeSelector.node-role.kubernetes.io/master"
   ## @skip controller.nodeSelector.node-role.kubernetes.io\/master
 
-    node-role.kubernetes.io/master: ""
+    node-role.kubernetes.io/control-plane: ""
   ## @param controller.tolerations Tolerations for controller pods assignment
   ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
   ##
@@ -1174,7 +1178,7 @@ snapshotwebhook:
   image:
     registry: k8s.gcr.io
     repository: sig-storage/snapshot-validation-webhook
-    tag: v4.0.0
+    tag: v5.0.1
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -1325,7 +1329,7 @@ snapshotwebhook:
   ## @skip snapshotwebhook.nodeSelector.node-role.kubernetes.io/master
   ## @skip "snapshotwebhook.nodeSelector.node-role.kubernetes.io/master"
   ## @skip snapshotwebhook.nodeSelector.node-role.kubernetes.io\/master
-    node-role.kubernetes.io/master: ""
+    node-role.kubernetes.io/control-plane: ""
   ## @param snapshotwebhook.tolerations Tolerations for snapshotwebhook pods assignment
   ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
   ##
@@ -1417,7 +1421,7 @@ node:
   image:
     registry: gcr.io
     repository: cloud-provider-vsphere/csi/release/driver
-    tag: v2.5.1
+    tag: v2.6.1
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -1448,7 +1452,7 @@ node:
     image:
       registry: k8s.gcr.io
       repository: sig-storage/csi-node-driver-registrar
-      tag: v2.5.0
+      tag: v2.5.1
       ## Specify a imagePullPolicy
       ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
       ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -1573,7 +1577,7 @@ node:
     image:
       registry: k8s.gcr.io
       repository: sig-storage/livenessprobe
-      tag: v2.6.0
+      tag: v2.7.0
       ## Specify a imagePullPolicy
       ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
       ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -1769,7 +1773,6 @@ node:
   args:
     - "--fss-name=internal-feature-states.csi.vsphere.vmware.com"
     - "--fss-namespace=$(CSI_NAMESPACE)"
-    - "--use-gocsi=false"
   ## @param node.hostAliases node pods host aliases
   ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
   ##
@@ -1906,7 +1909,7 @@ winnode:
   image:
     registry: gcr.io
     repository: cloud-provider-vsphere/csi/release/driver
-    tag: v2.5.1
+    tag: v2.6.1
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -1937,7 +1940,7 @@ winnode:
     image:
       registry: k8s.gcr.io
       repository: sig-storage/csi-node-driver-registrar
-      tag: v2.5.0
+      tag: v2.5.1
       ## Specify a imagePullPolicy
       ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
       ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -2062,7 +2065,7 @@ winnode:
     image:
       registry: k8s.gcr.io
       repository: sig-storage/livenessprobe
-      tag: v2.6.0
+      tag: v2.7.0
       ## Specify a imagePullPolicy
       ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
       ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -2258,7 +2261,6 @@ winnode:
   args:
     - "--fss-name=internal-feature-states.csi.vsphere.vmware.com"
     - "--fss-namespace=$(CSI_NAMESPACE)"
-    - "--use-gocsi=false"
   ## @param winnode.hostAliases node pods host aliases
   ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
   ##
@@ -2403,7 +2405,7 @@ webhook:
   image:
     registry: gcr.io
     repository: cloud-provider-vsphere/csi/release/syncer
-    tag: v2.5.1
+    tag: v2.6.1
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -2551,7 +2553,7 @@ webhook:
   ##
   ## @skip webhook.nodeSelector.node-role.kubernetes.io/master
   nodeSelector:
-    node-role.kubernetes.io/master: ""
+    node-role.kubernetes.io/control-plane: ""
 
   ## @param webhook.tolerations Tolerations for webhook pods assignment
   ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
