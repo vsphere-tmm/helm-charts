@@ -176,8 +176,8 @@ controller:
     list-volumes: false
     pv-to-backingdiskobjectid-mapping: false
     cnsmgr-suspend-create-volume: false
-    topology-preferential-datastores": true
-    max-pvscsi-targets-per-vm": false
+    topology-preferential-datastores: true
+    max-pvscsi-targets-per-vm: false
 
 
   ## controller image
