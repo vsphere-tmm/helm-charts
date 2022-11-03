@@ -314,6 +314,8 @@ spec:
               value: "100"
             - name: INCLUSTER_CLIENT_BURST
               value: "100"
+            - name: GODEBUG
+              value: x509sha1=1
             - name: CSI_NAMESPACE
               valueFrom:
                 fieldRef:
