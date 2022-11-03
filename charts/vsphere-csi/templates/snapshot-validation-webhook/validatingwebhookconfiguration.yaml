@@ -11,7 +11,7 @@ kind: ValidatingWebhookConfiguration
 metadata:
   name: "validation-webhook.snapshot.storage.k8s.io"
   labels: {{- include "common.labels.standard" . | nindent 4 }}
-    app.kubernetes.io/component: {{ template "common.names.fullname" . }}-snapshotwebhook
+    app.kubernetes.io/component: {{ template "vsphere-csi.snapshotwebhookName" . }}
 webhooks:
 - name: "validation-webhook.snapshot.storage.k8s.io"
   rules:
@@ -37,7 +37,7 @@ metadata:
   name: {{ template "common.names.fullname" . }}-snapshot-webhook-certs
   namespace: {{ .Release.Namespace | quote }}
   labels: {{- include "common.labels.standard" . | nindent 4 }}
-    app.kubernetes.io/component: {{ template "common.names.fullname" . }}-webhook
+    app.kubernetes.io/component: {{ template "vsphere-csi.snapshotwebhookName" . }}
     {{- if .Values.commonLabels }}
     {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
     {{- end }}
