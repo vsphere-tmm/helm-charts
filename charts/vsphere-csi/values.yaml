@@ -208,6 +208,25 @@ controller:
     ## Enable debug mode
     ##
     debug: false
+
+  global:
+    ## @param controller.global.extraEnvVars Array with extra environment variables for all controller containers
+    ## e.g:
+    ## extraEnvVars:
+    ##   - name: FOO
+    ##     value: "bar"
+    ##
+    extraEnvVars: []
+    ## @param controller.global.extraEnvVarsCM Name of existing ConfigMap containing extra env vars for all controller containers
+    ##
+    extraEnvVarsCM:
+    ## @param controller.global.extraEnvVarsSecret Name of existing Secret containing extra env vars for all controller containers
+    ##
+    extraEnvVarsSecret:
+    ## @param controller.global.extraVolumeMounts Optionally specify extra list of additional volumeMounts for all controller containers
+    ##
+    extraVolumeMounts: []
+
   ## controller.resizer image
   ## @param controller.resizer.image.registry controller.resizer image registry
   ## @param controller.resizer.image.repository controller.resizer image repository
