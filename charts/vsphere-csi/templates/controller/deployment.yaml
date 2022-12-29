@@ -583,7 +583,7 @@ spec:
       volumes:
         - name: vsphere-config-volume
           secret:
-            secretName: {{ template "common.names.fullname" . }}
+            secretName: {{ default (include "common.names.fullname" .) .Values.global.config.existingSecret }}
         - name: socket-dir
           emptyDir: {}
         {{- if .Values.controller.extraVolumes }}

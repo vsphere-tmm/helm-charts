@@ -23,6 +23,8 @@ global:
 ## @param global.config.csidriver.enabled Enable CSI-Driver
 
   config:
+## @param global.config.global.existingSecret Use existing secret for csi-vsphere.conf
+    existingSecret:
     csidriver:
       enabled: true
 ## @param global.config.storageclass.enabled Enable creation of StorageClass
