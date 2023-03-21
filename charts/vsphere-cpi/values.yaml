@@ -89,7 +89,7 @@ vSphereCPI:
   image:
     registry: gcr.io
     repository: cloud-provider-vsphere/cpi/release/manager
-    tag: v1.22.5
+    tag: v1.25.1
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -231,12 +231,21 @@ vSphereCPI:
   ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
   ## NOTE: `vSphereCPI.podAffinityPreset`, `vSphereCPI.podAntiAffinityPreset`, and `vSphereCPI.nodeAffinityPreset` will be ignored when it's set
   ##
-  affinity: {}
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: node-role.kubernetes.io/control-plane
+            operator: Exists
+        - matchExpressions:
+          - key: node-role.kubernetes.io/master
+            operator: Exists
+
   ## @param vSphereCPI.nodeSelector Node labels for vSphereCPI pods assignment
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
-  nodeSelector:
-    node-role.kubernetes.io/master: ""
+  nodeSelector: {}
   ## @param vSphereCPI.tolerations Tolerations for vSphereCPI pods assignment
   ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
   ##
@@ -248,6 +257,9 @@ vSphereCPI:
       effect: NoSchedule
       operator: Exists
     - key: node.kubernetes.io/not-ready
+      effect: NoSchedule
+      operator: Exists
+    - key: node-role.kubernetes.io/control-plane
       effect: NoSchedule
       operator: Exists
   ## @param vSphereCPI.updateStrategy.type vSphereCPI statefulset strategy type
