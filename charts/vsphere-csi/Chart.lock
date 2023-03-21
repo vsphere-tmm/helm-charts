@@ -1,4 +1,10 @@
 dependencies:
+- name: snapshot-controller
+  repository: https://piraeus.io/helm-charts/
+  version: 1.5.1
+- name: snapshot-validation-webhook
+  repository: https://piraeus.io/helm-charts/
+  version: 1.5.0
 - name: vsphere-cpi
   repository: https://vsphere-tmm.github.io/helm-charts
   version: 1.3.0
