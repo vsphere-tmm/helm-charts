@@ -34,8 +34,11 @@ metadata:
   {{- end }}
 rules:
   - apiGroups: [""]
-    resources: ["nodes", "pods", "configmaps"]
+    resources: ["nodes", "pods"]
     verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["get", "list", "watch", "create"]
   - apiGroups: [""]
     resources: ["persistentvolumeclaims"]
     verbs: ["get", "list", "watch", "update"]
@@ -63,6 +66,9 @@ rules:
   - apiGroups: ["cns.vmware.com"]
     resources: ["cnsvspherevolumemigrations"]
     verbs: ["create", "get", "list", "watch", "update", "delete"]
+  - apiGroups: ["cns.vmware.com"]
+    resources: ["cnsvolumeinfoes"]
+    verbs: ["create", "get", "list", "watch", "delete"]
   - apiGroups: ["apiextensions.k8s.io"]
     resources: ["customresourcedefinitions"]
     verbs: ["get", "create", "update"]
