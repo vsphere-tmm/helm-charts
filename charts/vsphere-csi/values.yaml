@@ -163,21 +163,22 @@ controller:
   ## @param controller.config block to freely define options for the controller configmap
   ## see https://github.com/kubernetes-sigs/vsphere-csi-driver/blob/61d981a1a1641693a2a6727e1994c82d26fed14b/pkg/csi/service/common/constants.go#L258
   config:
-    csi-migration: false
+    csi-migration: true
     csi-auth-check: true
     online-volume-extend: true
     trigger-csi-fullsync: false
     async-query-volume: true
-    improved-csi-idempotency: true
-    improved-volume-topology: true
     block-volume-snapshot: true
-    csi-windows-support: false
+    csi-windows-support: true
     use-csinode-id: true
-    list-volumes: false
+    list-volumes: true
     pv-to-backingdiskobjectid-mapping: false
     cnsmgr-suspend-create-volume: true
     topology-preferential-datastores: true
     max-pvscsi-targets-per-vm: true
+    multi-vcenter-csi-topology: true
+    csi-internal-generated-cluster-id: true
+    listview-tasks: false
 
 
   ## controller image
@@ -191,7 +192,7 @@ controller:
   image:
     registry: gcr.io
     repository: cloud-provider-vsphere/csi/release/driver
-    tag: v2.7.0
+    tag: v3.0.0
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -239,7 +240,7 @@ controller:
     image:
       registry: k8s.gcr.io
       repository: sig-storage/csi-resizer
-      tag: v1.5.0
+      tag: v1.7.0
       ## Specify a imagePullPolicy
       ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
       ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -287,6 +288,9 @@ controller:
       - "--kube-api-qps=100"
       - "--kube-api-burst=100"
       - "--leader-election"
+      - "--leader-election-lease-duration=120s"
+      - "--leader-election-renew-deadline=60s"
+      - "--leader-election-retry-period=30s"
     ## @param controller.resizer.extraEnvVars Array with extra environment variables to add to controller.resizer nodes
     ## e.g:
     ## extraEnvVars:
@@ -365,7 +369,7 @@ controller:
     image:
       registry: k8s.gcr.io
       repository: sig-storage/csi-attacher
-      tag: v3.5.0
+      tag: v4.2.0
       ## Specify a imagePullPolicy
       ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
       ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -410,6 +414,9 @@ controller:
       - "--timeout=300s"
       - "--csi-address=$(ADDRESS)"
       - "--leader-election"
+      - "--leader-election-lease-duration=120s"
+      - "--leader-election-renew-deadline=60s"
+      - "--leader-election-retry-period=30s"
       - "--kube-api-qps=100"
       - "--kube-api-burst=100"
     ## @param controller.attacher.extraEnvVars Array with extra environment variables to add to controller.attacher nodes
@@ -489,7 +496,7 @@ controller:
     image:
       registry: k8s.gcr.io
       repository: sig-storage/livenessprobe
-      tag: v2.7.0
+      tag: v2.9.0
       ## Specify a imagePullPolicy
       ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
       ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -610,7 +617,7 @@ controller:
     image:
       registry: gcr.io
       repository: cloud-provider-vsphere/csi/release/syncer
-      tag: v2.7.0
+      tag: v3.0.0
       ## Specify a imagePullPolicy
       ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
       ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -652,6 +659,9 @@ controller:
     ##
     args:
       - "--leader-election"
+      - "--leader-election-lease-duration=120s"
+      - "--leader-election-renew-deadline=60s"
+      - "--leader-election-retry-period=30s"
       - "--fss-name=internal-feature-states.csi.vsphere.vmware.com"
       - "--fss-namespace=$(CSI_NAMESPACE)"
     ## @param controller.syncer.extraEnvVars Array with extra environment variables to add to controller.syncer nodes
@@ -731,7 +741,7 @@ controller:
     image:
       registry: k8s.gcr.io
       repository: sig-storage/csi-provisioner
-      tag: v3.2.1
+      tag: v3.4.0
       ## Specify a imagePullPolicy
       ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
       ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -778,6 +788,9 @@ controller:
       - "--kube-api-qps=100"
       - "--kube-api-burst=100"
       - "--leader-election"
+      - "--leader-election-lease-duration=120s"
+      - "--leader-election-renew-deadline=60s"
+      - "--leader-election-retry-period=30s"
       - "--default-fstype=ext4"
 
     ## @param controller.provisioner.extraEnvVars Array with extra environment variables to add to controller.provisioner nodes
@@ -857,7 +870,7 @@ controller:
     image:
       registry: k8s.gcr.io
       repository: sig-storage/csi-snapshotter
-      tag: v6.0.1
+      tag: v6.2.1
       ## Specify a imagePullPolicy
       ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
       ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -904,6 +917,9 @@ controller:
       - "--timeout=300s"
       - "--csi-address=$(ADDRESS)"
       - "--leader-election"
+      - "--leader-election-lease-duration=120s"
+      - "--leader-election-renew-deadline=60s"
+      - "--leader-election-retry-period=30s"
 
     ## @param controller.snapshotter.extraEnvVars Array with extra environment variables to add to controller.snapshotter nodes
     ## e.g:
@@ -1126,7 +1142,7 @@ controller:
     type: RollingUpdate
   ## @param controller.priorityClassName controller pods' priorityClassName
   ##
-  priorityClassName: ""
+  priorityClassName: system-cluster-critical
   ## @param controller.lifecycleHooks for the controller container(s) to automate configuration before or after startup
   ##
   lifecycleHooks: {}
@@ -1235,9 +1251,9 @@ snapshotwebhook:
     httpGet:
       path: /healthz
       port: healthz
-    initialDelaySeconds: 25
-    periodSeconds: 5
-    timeoutSeconds: 3
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 180
     failureThreshold: 3
     #successThreshold: foo
   ## @param snapshotwebhook.readinessProbe.enabled Enable readinessProbe on snapshotwebhook nodes
@@ -1369,7 +1385,7 @@ snapshotwebhook:
     type: RollingUpdate
   ## @param snapshotwebhook.priorityClassName snapshotwebhook pods' priorityClassName
   ##
-  priorityClassName: ""
+  priorityClassName: system-node-critical
   ## @param snapshotwebhook.lifecycleHooks for the snapshotwebhook container(s) to automate configuration before or after startup
   ##
   lifecycleHooks: {}
@@ -1440,7 +1456,7 @@ node:
   image:
     registry: gcr.io
     repository: cloud-provider-vsphere/csi/release/driver
-    tag: v2.7.0
+    tag: v3.0.0
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -1471,7 +1487,7 @@ node:
     image:
       registry: k8s.gcr.io
       repository: sig-storage/csi-node-driver-registrar
-      tag: v2.5.1
+      tag: v2.7.0
       ## Specify a imagePullPolicy
       ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
       ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -1596,7 +1612,7 @@ node:
     image:
       registry: k8s.gcr.io
       repository: sig-storage/livenessprobe
-      tag: v2.7.0
+      tag: v2.9.0
       ## Specify a imagePullPolicy
       ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
       ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -1856,7 +1872,7 @@ node:
     type: RollingUpdate
   ## @param node.priorityClassName node pods' priorityClassName
   ##
-  priorityClassName: ""
+  priorityClassName: system-node-critical
   ## @param node.lifecycleHooks for the node container(s) to automate configuration before or after startup
   ##
   lifecycleHooks: {}
@@ -1928,7 +1944,7 @@ winnode:
   image:
     registry: gcr.io
     repository: cloud-provider-vsphere/csi/release/driver
-    tag: v2.7.0
+    tag: v3.0.0
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -1959,7 +1975,7 @@ winnode:
     image:
       registry: k8s.gcr.io
       repository: sig-storage/csi-node-driver-registrar
-      tag: v2.5.1
+      tag: v2.7.0
       ## Specify a imagePullPolicy
       ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
       ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -2084,7 +2100,7 @@ winnode:
     image:
       registry: k8s.gcr.io
       repository: sig-storage/livenessprobe
-      tag: v2.7.0
+      tag: v2.9.0
       ## Specify a imagePullPolicy
       ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
       ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -2344,7 +2360,7 @@ winnode:
     type: RollingUpdate
   ## @param winnode.priorityClassName node pods' priorityClassName
   ##
-  priorityClassName: ""
+  priorityClassName: system-node-critical
   ## @param winnode.lifecycleHooks for the node container(s) to automate configuration before or after startup
   ##
   lifecycleHooks: {}
@@ -2424,7 +2440,7 @@ webhook:
   image:
     registry: gcr.io
     repository: cloud-provider-vsphere/csi/release/syncer
-    tag: v2.7.0
+    tag: v3.0.0
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
