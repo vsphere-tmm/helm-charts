@@ -496,7 +496,7 @@ spec:
           {{- include "common.tplvalues.render" (dict "value" .Values.controller.provisioner.extraVolumeMounts "context" $) | nindent 12 }}
           {{- end }}
 
-
+        {{- if (index .Values.controller.config "block-volume-snapshot" ) }}
         - name: csi-snapshotter
           image: {{ template "vsphere-csi.controller.snapshotter.image" . }}
           imagePullPolicy: {{ .Values.controller.snapshotter.image.pullPolicy }}
@@ -563,6 +563,7 @@ spec:
           {{- end }}
         {{- if .Values.controller.sidecars }}
         {{- include "common.tplvalues.render" ( dict "value" .Values.controller.sidecars "context" $) | nindent 8 }}
+        {{- end }}
         {{- end }}
       volumes:
         - name: vsphere-config-volume
