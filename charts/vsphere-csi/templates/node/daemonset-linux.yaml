@@ -96,9 +96,6 @@ spec:
             - secretRef:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.node.registrar.extraEnvVarsSecret "context" $) }}
             {{- end }}
-          ports:
-          - containerPort: 9808
-            name: healthz
           {{- if .Values.node.registrar.resources }}
           resources: {{- toYaml .Values.node.registrar.resources | nindent 12 }}
           {{- end }}
@@ -174,6 +171,8 @@ spec:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.node.extraEnvVarsSecret "context" $) }}
             {{- end }}
           ports:
+          - containerPort: 9808
+            name: healthz
           {{- if .Values.node.resources }}
           resources: {{- toYaml .Values.node.resources | nindent 12 }}
           {{- end }}
