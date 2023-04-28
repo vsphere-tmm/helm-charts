@@ -1,4 +1,4 @@
-{{- if not .Values.global.config.secretsInline }}
+{{- if not (or .Values.global.config.secretsInline .Values.global.config.existingConfig.enabled) }}
 apiVersion: v1
 kind: ConfigMap
 metadata:

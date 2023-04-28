@@ -28,10 +28,12 @@ spec:
   template:
     metadata:
       annotations:
+        {{- if not .Values.global.config.existingConfig.enabled }}
         {{- if not .Values.global.config.secretsInline }}
         checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
         {{- end }}
         checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+        {{- end }}
         {{- if .Values.vSphereCPI.podAnnotations }}
         {{- include "common.tplvalues.render" (dict "value" .Values.vSphereCPI.podAnnotations "context" $) | nindent 8 }}
         {{- end }}
@@ -137,12 +139,22 @@ spec:
       {{- end }}
       volumes:
         - name: vsphere-config-volume
+          {{- if not .Values.global.config.existingConfig.enabled }}
           {{- if not .Values.global.config.secretsInline }}
           configMap:
             name: {{ template "common.names.fullname" . }}
           {{- else }}
           secret:
             secretName: {{ template "common.names.fullname" . }}
+          {{- end }}
+          {{- else }}
+          {{- if eq .Values.global.config.existingConfig.type "Secret" }}
+          secret:
+            secretName: {{ .Values.global.config.existingConfig.name }}
+          {{- else }}
+          configMap:
+            name: {{ .Values.global.config.existingConfig.name }}
+          {{- end }}
           {{- end }}
         {{- if .Values.global.config.externalKubeconfig.enabled }}
         - name: kubeconfig-volume
