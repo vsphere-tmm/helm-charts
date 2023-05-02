@@ -1,3 +1,4 @@
+{{- if ne .Values.global.mode "management" }}
 {{- if .Values.webhook.enabled }}
 
 kind: RoleBinding
@@ -40,5 +41,6 @@ rules:
   - apiGroups: [""]
     resources: ["configmaps"]
     verbs: ["get", "list", "watch"]
+{{- end }}
 {{- end }}
 {{- end }}

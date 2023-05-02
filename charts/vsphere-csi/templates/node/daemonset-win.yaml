@@ -1,3 +1,4 @@
+{{- if ne .Values.global.mode "management" }}
 {{  if false  }}
 apiVersion: apps/v1
 kind: DaemonSet
@@ -278,4 +279,5 @@ spec:
         {{- if .Values.winnode.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.winnode.extraVolumes "context" $) | nindent 8 }}
         {{- end }}
+{{- end }}
 {{- end }}

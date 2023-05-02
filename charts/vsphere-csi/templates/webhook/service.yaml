@@ -1,3 +1,4 @@
+{{- if ne .Values.global.mode "management" }}
 {{- if .Values.webhook.enabled }}
 apiVersion: v1
 kind: Service
@@ -28,4 +29,5 @@ spec:
       targetPort: 8443
   selector: {{- include "common.labels.matchLabels" . | nindent 4 }}
     app.kubernetes.io/component: {{ template "common.names.fullname" . }}-webhook
+{{- end }}
 {{- end }}

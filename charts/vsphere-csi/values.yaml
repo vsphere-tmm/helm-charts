@@ -3,20 +3,21 @@
 ## Please, note that this will override the image parameters, including dependencies, configured to use the global value
 ## Current available global Docker image parameters: imageRegistry, imagePullSecrets and storageClass
 
-## @param global.imageRegistry Global Docker image registry
-## @param global.imagePullSecrets Global Docker registry secret names as an array
-## @param global.storageClass Global StorageClass for Persistent Volume(s)
-## @param global.logLevel Global logLevel for CSI, can be PRODUCTION or DEVELOPMENT
-
 ##
 global:
+  ## @param global.mode String one of full, management, workload
+  mode: full
+  ## @param global.imageRegistry Global Docker image registry
   imageRegistry:
   ## E.g.
   ## imagePullSecrets:
   ##   - myRegistryKeySecretName
   ##
+  ## @param global.imagePullSecrets Global Docker registry secret names as an array
   imagePullSecrets: []
+  ## @param global.storageClass Global StorageClass for Persistent Volume(s)
   storageClass:
+  ## @param global.logLevel Global logLevel for CSI, can be PRODUCTION or DEVELOPMENT
   logLevel: PRODUCTION
 ## @section global.config Global Configuration for both CPI and CSI
 ## @param global.config.csidriver.enabled Enable CSI-Driver
@@ -209,6 +210,9 @@ controller:
     ## Enable debug mode
     ##
     debug: false
+
+  ## @param controller.csiNamespace CSI namespace (only relevant when global.mode is management)
+  csiNamespace:
 
   global:
     ## @param controller.global.extraEnvVars Array with extra environment variables for all controller containers
@@ -1443,7 +1447,7 @@ snapshotwebhook:
 ## Configuration for the node daemonset
 ##
 node:
-  ## @param winnode.name name used for the demonset, if unset defaults to "{{ template "common.names.fullname" . }}"
+  ## @param node.name name used for the demonset, if unset defaults to "{{ template "common.names.fullname" . }}"
   name: vsphere-csi-node
   ## @param node.image.registry node image registry
   ## @param node.image.repository node image repository
