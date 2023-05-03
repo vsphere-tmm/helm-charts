@@ -394,6 +394,46 @@ entries:
   vsphere-csi:
   - apiVersion: v2
     appVersion: 3.0.1
+    created: "2023-05-03T15:20:57.46222202Z"
+    dependencies:
+    - condition: snapshot.controller.enabled
+      name: snapshot-controller
+      repository: https://piraeus.io/helm-charts/
+      version: 1.5.1
+    - condition: snapshot.validationWebhook.enabled
+      name: snapshot-validation-webhook
+      repository: https://piraeus.io/helm-charts/
+      version: 1.5.0
+    - condition: vsphere-cpi.enabled
+      name: vsphere-cpi
+      repository: https://vsphere-tmm.github.io/helm-charts
+      version: 1.x.x
+    - name: common
+      repository: https://charts.bitnami.com/bitnami
+      tags:
+      - bitnami-common
+      version: 1.x.x
+    description: A Helm chart for vSphere CSI Driver
+    digest: ffcc66ce45d3b40f3dee875c8f5cd24d000d4f5eaffb3de9bd4d699f477f4472
+    home: https://github.com/kubernetes-sigs/vsphere-csi-driver
+    icon: https://raw.githubusercontent.com/kubernetes-sigs/vsphere-csi-driver/master/docs/images/vmware_logo.png
+    keywords:
+    - vsphere
+    - vmware
+    - csi
+    maintainers:
+    - email: maximilian.rink@telekom.de
+      name: Maximilian Rink
+    - email: myles@vmware.com
+      name: Myles Gray
+    name: vsphere-csi
+    sources:
+    - https://github.com/kubernetes-sigs/vsphere-csi-driver
+    urls:
+    - https://github.com/vsphere-tmm/helm-charts/releases/download/vsphere-csi-3.2.2/vsphere-csi-3.2.2.tgz
+    version: 3.2.2
+  - apiVersion: v2
+    appVersion: 3.0.1
     created: "2023-05-02T15:24:27.250221028Z"
     dependencies:
     - condition: snapshot.controller.enabled
@@ -1171,4 +1211,4 @@ entries:
     urls:
     - https://vsphere-tmm.github.io/helm-charts/charts/vsphere-csi-0.0.4.tgz
     version: 0.0.4
-generated: "2023-05-02T15:24:27.250758829Z"
+generated: "2023-05-03T15:20:57.462669922Z"
