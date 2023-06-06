@@ -18,6 +18,10 @@ global:
       enabled: false
       secretName: ""
       keyName: "value"
+    existingConfig:
+      enabled: false
+      type: Secret # or ConfigMap
+      name: vsphere-cpi
     secretsInline: true
     # Global properties in this section will be used for all specified vCenters unless overriden in VirtualCenter section.
     # global:
