@@ -53,9 +53,20 @@ spec:
       {{- end }}
       {{- if .Values.controller.nodeSelector }}
       nodeSelector: {{- include "common.tplvalues.render" ( dict "value" .Values.controller.nodeSelector "context" $) | nindent 8 }}
+      {{- else }}
+      nodeSelector:
+        node-role.kubernetes.io/control-plane: ""
       {{- end }}
       {{- if .Values.controller.tolerations }}
       tolerations: {{- include "common.tplvalues.render" (dict "value" .Values.controller.tolerations "context" .) | nindent 8 }}
+      {{- else }}
+      tolerations:
+        - key: node-role.kubernetes.io/control-plane
+          operator: Exists
+          effect: NoSchedule
+        - key: node-role.kubernetes.io/master
+          operator: Exists
+          effect: NoSchedule
       {{- end }}
       {{- if .Values.controller.priorityClassName }}
       priorityClassName: {{ .Values.controller.priorityClassName | quote }}
