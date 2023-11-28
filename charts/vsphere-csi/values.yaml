@@ -28,6 +28,7 @@ global:
     csidriver:
       enabled: true
 ## @param global.config.storageclass.enabled Enable creation of StorageClass
+## @param global.config.storageclass.name Set storageClass name
 ## @param global.config.storageclass.storagepolicyname Set storagePolicyName
 ## @param global.config.storageclass.expansion Enable VolumeExpansion for storageclass, see https://vsphere-csi-driver.sigs.k8s.io/features/volume_expansion.html
 ## @param global.config.storageclass.default Make created storageClass default
@@ -35,6 +36,7 @@ global:
 
     storageclass:
       enabled: false
+      name: "vsphere-csi"
       storagepolicyname: ""
       expansion: false # https://vsphere-csi-driver.sigs.k8s.io/features/volume_expansion.html
       default: false

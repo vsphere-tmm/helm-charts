@@ -67,16 +67,17 @@ The command removes all the Kubernetes components associated with the chart and 
 
 ### global.config Global Configuration for both CPI and CSI
 
-| Name                                           | Description                                                                                                        | Value    |
-| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ | -------- |
-| `global.config.csidriver.enabled`              | Enable CSI-Driver                                                                                                  | `true`   |
-| `global.config.existingSecret`                 | Use existing secret for csi-vsphere.conf                                                                           | `nil`    |
-| `global.config.storageclass.enabled`           | Enable creation of StorageClass                                                                                    | `false`  |
-| `global.config.storageclass.storagepolicyname` | Set storagePolicyName                                                                                              | `""`     |
-| `global.config.storageclass.expansion`         | Enable VolumeExpansion for storageclass, see https://vsphere-csi-driver.sigs.k8s.io/features/volume_expansion.html | `false`  |
-| `global.config.storageclass.default`           | Make created storageClass default                                                                                  | `false`  |
-| `global.config.storageclass.reclaimPolicy`     | Set reclaimPolicy for storageclass                                                                                 | `Delete` |
-| `global.config.netconfig`                      | Configre Network config for Filebased-Volumes                                                                      | `{}`     |
+| Name                                           | Description                                                                                                        | Value         |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ | ------------- |
+| `global.config.csidriver.enabled`              | Enable CSI-Driver                                                                                                  | `true`        |
+| `global.config.existingSecret`                 | Use existing secret for csi-vsphere.conf                                                                           | `nil`         |
+| `global.config.storageclass.enabled`           | Enable creation of StorageClass                                                                                    | `false`       |
+| `global.config.storageclass.name`              | Set storageClass name                                                                                              | `vsphere-csi` |
+| `global.config.storageclass.storagepolicyname` | Set storagePolicyName                                                                                              | `""`          |
+| `global.config.storageclass.expansion`         | Enable VolumeExpansion for storageclass, see https://vsphere-csi-driver.sigs.k8s.io/features/volume_expansion.html | `false`       |
+| `global.config.storageclass.default`           | Make created storageClass default                                                                                  | `false`       |
+| `global.config.storageclass.reclaimPolicy`     | Set reclaimPolicy for storageclass                                                                                 | `Delete`      |
+| `global.config.netconfig`                      | Configre Network config for Filebased-Volumes                                                                      | `{}`          |
 
 ### global.config.global Global properties in this section will be used for all specified vCenters unless overriden in VirtualCenter section.
 
