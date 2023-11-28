@@ -23,7 +23,7 @@ global:
 ## @param global.config.csidriver.enabled Enable CSI-Driver
 
   config:
-## @param global.config.global.existingSecret Use existing secret for csi-vsphere.conf
+## @param global.config.existingSecret Use existing secret for csi-vsphere.conf
     existingSecret:
     csidriver:
       enabled: true
@@ -163,7 +163,7 @@ service:
 controller:
   ## @param controller.name name used for the deployment, if unset defaults to "{{ template "common.names.fullname" . }}"
   name: vsphere-csi-controller
-  ## @param controller.config block to freely define options for the controller configmap
+  ## @param controller.config [object] block to freely define options for the controller configmap
   ## see https://github.com/kubernetes-sigs/vsphere-csi-driver/blob/61d981a1a1641693a2a6727e1994c82d26fed14b/pkg/csi/service/common/constants.go#L258
   config:
     csi-migration: true
@@ -195,7 +195,7 @@ controller:
   image:
     registry: gcr.io
     repository: cloud-provider-vsphere/csi/release/driver
-    tag: v3.0.2
+    tag: v3.1.2
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -244,9 +244,9 @@ controller:
   ##
   resizer:
     image:
-      registry: k8s.gcr.io
+      registry: registry.k8s.io
       repository: sig-storage/csi-resizer
-      tag: v1.7.0
+      tag: v1.8.0
       ## Specify a imagePullPolicy
       ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
       ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -373,9 +373,9 @@ controller:
   ## @param controller.attacher.image.debug Enable image debug mode
   ##
     image:
-      registry: k8s.gcr.io
+      registry: registry.k8s.io
       repository: sig-storage/csi-attacher
-      tag: v4.2.0
+      tag: v4.3.0
       ## Specify a imagePullPolicy
       ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
       ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -500,9 +500,9 @@ controller:
   ## @param controller.livenessprobe.image.debug Enable image debug mode
   ##
     image:
-      registry: k8s.gcr.io
+      registry: registry.k8s.io
       repository: sig-storage/livenessprobe
-      tag: v2.9.0
+      tag: v2.10.0
       ## Specify a imagePullPolicy
       ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
       ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -745,9 +745,9 @@ controller:
   ## @param controller.provisioner.image.debug Enable image debug mode
   ##
     image:
-      registry: k8s.gcr.io
+      registry: registry.k8s.io
       repository: sig-storage/csi-provisioner
-      tag: v3.4.0
+      tag: v3.5.0
       ## Specify a imagePullPolicy
       ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
       ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -874,9 +874,9 @@ controller:
   ## @param controller.snapshotter.image.debug Enable image debug mode
   ##
     image:
-      registry: k8s.gcr.io
+      registry: registry.k8s.io
       repository: sig-storage/csi-snapshotter
-      tag: v6.2.1
+      tag: v6.2.2
       ## Specify a imagePullPolicy
       ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
       ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -1119,15 +1119,12 @@ controller:
   ## NOTE: `controller.podAffinityPreset`, `controller.podAntiAffinityPreset`, and `controller.nodeAffinityPreset` will be ignored when it's set
   ##
   affinity: {}
-  ## @param controller.nodeSelector Node labels for controller pods assignment
+  ## @param controller.nodeSelector [object] Node labels for controller pods assignment
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
   ## e.g:
   ## nodeSelector:
   ##   node-role.kubernetes.io/control-plane: ""
   nodeSelector: {}
-  ## @skip controller.nodeSelector.node-role.kubernetes.io/master
-  ## @skip "controller.nodeSelector.node-role.kubernetes.io/master"
-  ## @skip controller.nodeSelector.node-role.kubernetes.io\/master
     
   ## @param controller.tolerations Tolerations for controller pods assignment
   ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
@@ -1219,7 +1216,7 @@ snapshotwebhook:
   ## @param snapshotwebhook.image.debug Enable image debug mode
   ##
   image:
-    registry: k8s.gcr.io
+    registry: registry.k8s.io
     repository: sig-storage/snapshot-validation-webhook
     tag: v6.0.1
     ## Specify a imagePullPolicy
@@ -1365,15 +1362,12 @@ snapshotwebhook:
   ## NOTE: `snapshotwebhook.podAffinityPreset`, `snapshotwebhook.podAntiAffinityPreset`, and `snapshotwebhook.nodeAffinityPreset` will be ignored when it's set
   ##
   affinity: {}
-  ## @param snapshotwebhook.nodeSelector Node labels for snapshotwebhook pods assignment
+  ## @param snapshotwebhook.nodeSelector [object] Node labels for snapshotwebhook pods assignment
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
   nodeSelector:
-  ## @skip snapshotwebhook.nodeSelector.node-role.kubernetes.io/master
-  ## @skip "snapshotwebhook.nodeSelector.node-role.kubernetes.io/master"
-  ## @skip snapshotwebhook.nodeSelector.node-role.kubernetes.io\/master
     node-role.kubernetes.io/control-plane: ""
-  ## @param snapshotwebhook.tolerations Tolerations for snapshotwebhook pods assignment
+  ## @param snapshotwebhook.tolerations [array, default: see values.yaml] Tolerations for snapshotwebhook pods assignment
   ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
   ##
   tolerations:
@@ -1464,7 +1458,7 @@ node:
   image:
     registry: gcr.io
     repository: cloud-provider-vsphere/csi/release/driver
-    tag: v3.0.2
+    tag: v3.1.2
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -1493,9 +1487,9 @@ node:
   ## @param node.registrar.image.debug Enable image debug mode
   ##
     image:
-      registry: k8s.gcr.io
+      registry: registry.k8s.io
       repository: sig-storage/csi-node-driver-registrar
-      tag: v2.7.0
+      tag: v2.8.0
       ## Specify a imagePullPolicy
       ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
       ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -1570,6 +1564,7 @@ node:
     ## @param node.registrar.livenessProbe.timeoutSeconds Timeout seconds for livenessProbe
     ## @skip node.registrar.livenessProbe.failureThreshold Failure threshold for livenessProbe
     ## @skip node.registrar.livenessProbe.successThreshold Success threshold for livenessProbe
+    ## @param node.registrar.livenessProbe.exec [object] Command for Exec Livenessprobe
     ##
     livenessProbe:
       enabled: true
@@ -1618,9 +1613,9 @@ node:
   ## @param node.livenessprobe.image.debug Enable image debug mode
   ##
     image:
-      registry: k8s.gcr.io
+      registry: registry.k8s.io
       repository: sig-storage/livenessprobe
-      tag: v2.9.0
+      tag: v2.10.0
       ## Specify a imagePullPolicy
       ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
       ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -1858,11 +1853,11 @@ node:
   ## NOTE: `node.podAffinityPreset`, `node.podAntiAffinityPreset`, and `node.nodeAffinityPreset` will be ignored when it's set
   ##
   affinity: {}
-  ## @param node.nodeSelector Node labels for node pods assignment
+  ## @param node.nodeSelector [object] Node labels for node pods assignment
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
   nodeSelector: {}
-  ## @param node.tolerations Tolerations for node pods assignment
+  ## @param node.tolerations [array, default: see values.yaml] Tolerations for node pods assignment
   ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
   ##
   tolerations:
@@ -1952,7 +1947,7 @@ winnode:
   image:
     registry: gcr.io
     repository: cloud-provider-vsphere/csi/release/driver
-    tag: v3.0.2
+    tag: v3.1.2
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -1981,7 +1976,7 @@ winnode:
   ## @param winnode.registrar.image.debug Enable image debug mode
   ##
     image:
-      registry: k8s.gcr.io
+      registry: registry.k8s.io
       repository: sig-storage/csi-node-driver-registrar
       tag: v2.7.0
       ## Specify a imagePullPolicy
@@ -2106,9 +2101,9 @@ winnode:
   ## @param winnode.livenessprobe.image.debug Enable image debug mode
   ##
     image:
-      registry: k8s.gcr.io
+      registry: registry.k8s.io
       repository: sig-storage/livenessprobe
-      tag: v2.9.0
+      tag: v2.10.0
       ## Specify a imagePullPolicy
       ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
       ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -2350,7 +2345,7 @@ winnode:
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
   nodeSelector: {}
-  ## @param winnode.tolerations Tolerations for node pods assignment
+  ## @param winnode.tolerations [array, default: see values.yaml] Tolerations for node pods assignment
   ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
   ##
   tolerations:
@@ -2448,7 +2443,7 @@ webhook:
   image:
     registry: gcr.io
     repository: cloud-provider-vsphere/csi/release/syncer
-    tag: v3.0.2
+    tag: v3.1.2
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -2591,14 +2586,13 @@ webhook:
   ## NOTE: `webhook.podAffinityPreset`, `webhook.podAntiAffinityPreset`, and `webhook.nodeAffinityPreset` will be ignored when it's set
   ##
   affinity: {}
-  ## @param webhook.nodeSelector Node labels for webhook pods assignment
+  ## @param webhook.nodeSelector [object] Node labels for webhook pods assignment
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
-  ## @skip webhook.nodeSelector.node-role.kubernetes.io/master
   nodeSelector:
     node-role.kubernetes.io/control-plane: ""
 
-  ## @param webhook.tolerations Tolerations for webhook pods assignment
+  ## @param webhook.tolerations [array, default: see values.yaml] Tolerations for webhook pods assignment
   ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
   ##
   tolerations:
@@ -2697,6 +2691,7 @@ metrics:
   ## Prometheus Operator ServiceMonitor resource
   ##
   serviceMonitor:
+    ## @param metrics.serviceMonitor.enabled if true, a ServiceMonitor CR is created
     enabled: false
     ## @param metrics.serviceMonitor.namespace Namespace which Prometheus is running in
     ## e.g:
