@@ -31,12 +31,14 @@ global:
 ## @param global.config.storageclass.storagepolicyname Set storagePolicyName
 ## @param global.config.storageclass.expansion Enable VolumeExpansion for storageclass, see https://vsphere-csi-driver.sigs.k8s.io/features/volume_expansion.html
 ## @param global.config.storageclass.default Make created storageClass default
+## @param global.config.storageclass.reclaimPolicy Set reclaimPolicy for storageclass
 
     storageclass:
       enabled: false
       storagepolicyname: ""
       expansion: false # https://vsphere-csi-driver.sigs.k8s.io/features/volume_expansion.html
       default: false
+      reclaimPolicy: Delete
 ## @param global.config.netconfig Configre Network config for Filebased-Volumes
 
     netconfig: {}
@@ -173,7 +175,6 @@ controller:
     async-query-volume: true
     block-volume-snapshot: true
     csi-windows-support: true
-    use-csinode-id: true
     list-volumes: true
     pv-to-backingdiskobjectid-mapping: false
     cnsmgr-suspend-create-volume: true
@@ -294,9 +295,9 @@ controller:
       - "--kube-api-qps=100"
       - "--kube-api-burst=100"
       - "--leader-election"
-      - "--leader-election-lease-duration=120s"
-      - "--leader-election-renew-deadline=60s"
-      - "--leader-election-retry-period=30s"
+      - "--leader-election-lease-duration=30s"
+      - "--leader-election-renew-deadline=20s"
+      - "--leader-election-retry-period=10s"
     ## @param controller.resizer.extraEnvVars Array with extra environment variables to add to controller.resizer nodes
     ## e.g:
     ## extraEnvVars:
@@ -656,8 +657,10 @@ controller:
     ## @param controller.syncer.containerSecurityContext.runAsUser Set controller.syncer containers' Security Context runAsUser
     ##
     containerSecurityContext:
-      enabled: false
-      runAsUser: 1001
+      enabled: true
+      runAsNonRoot: true
+      runAsUser: 65532
+      runAsGroup: 65532
     ## @param controller.syncer.command Override default container command (useful when using custom images)
     ##
     command: []
@@ -1063,9 +1066,10 @@ controller:
   ## @param controller.containerSecurityContext.runAsUser Set controller containers' Security Context runAsUser
   ##
   containerSecurityContext:
-    enabled: false
-    runAsUser: 1001
-
+    enabled: true
+    runAsNonRoot: true
+    runAsUser: 65532
+    runAsGroup: 65532
   ## @param controller.existingConfigmap The name of an existing ConfigMap with your custom configuration for controller
   ##
   existingConfigmap:
