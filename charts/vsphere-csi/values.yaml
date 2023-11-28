@@ -1137,6 +1137,7 @@ controller:
   ##     operator: Exists
   ##     effect: NoSchedule
   tolerations: []
+  ## @extra controller.updateStrategy Allows setting of the updateStrategy for the node daemonset, this can be any valid updateStrategy type
   ## @param controller.updateStrategy.type controller statefulset strategy type
   ## ref: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies
   ##
@@ -1865,6 +1866,7 @@ node:
       operator: Exists
     - effect: NoSchedule
       operator: Exists
+  ## @extra node.updateStrategy Allows setting of the updateStrategy for the node daemonset, this can be any valid updateStrategy type
   ## @param node.updateStrategy.type node statefulset strategy type
   ## ref: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies
   ##
@@ -2353,6 +2355,7 @@ winnode:
       operator: Exists
     - effect: NoSchedule
       operator: Exists
+  ## @extra winnode.updateStrategy Allows setting of the updateStrategy for the node daemonset, this can be any valid updateStrategy type
   ## @param winnode.updateStrategy.type node statefulset strategy type
   ## ref: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies
   ##
