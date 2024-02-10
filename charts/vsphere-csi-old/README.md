@@ -91,7 +91,7 @@ If your Kubernetes clusters are in a network that is firewalled from the Interne
 
 ## Manually installing the vSphere CSI driver
 
-If you want to provide your own `csi-vsphere.conf`, for example, to handle multple datacenters/vCenters or for using zones, you can learn how to manually deploy the CSI driver by reading the following [documentation](https://vsphere-csi-driver.sigs.k8s.io/driver-deployment/installation.html).
+If you want to provide your own `csi-vsphere.conf`, for example, to handle multiple datacenters/vCenters or for using zones, you can learn how to manually deploy the CSI driver by reading the following [documentation](https://vsphere-csi-driver.sigs.k8s.io/driver-deployment/installation.html).
 
 ## Uninstalling the vSphere CSI Helm Chart
 

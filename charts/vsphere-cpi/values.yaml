@@ -23,7 +23,7 @@ global:
       type: Secret # or ConfigMap
       name: vsphere-cpi
     secretsInline: true
-    # Global properties in this section will be used for all specified vCenters unless overriden in VirtualCenter section.
+    # Global properties in this section will be used for all specified vCenters unless overridden in VirtualCenter section.
     # global:
     #   port: 443
     #   # set insecureFlag to true if the vCenter uses a self-signed cert

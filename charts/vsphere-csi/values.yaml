@@ -41,7 +41,7 @@ global:
       expansion: false # https://vsphere-csi-driver.sigs.k8s.io/features/volume_expansion.html
       default: false
       reclaimPolicy: Delete
-## @param global.config.netconfig Configre Network config for Filebased-Volumes
+## @param global.config.netconfig Configure Network config for Filebased-Volumes
 
     netconfig: {}
       # A:
@@ -50,9 +50,9 @@ global:
       #   permissions: "READ_WRITE"
       #   rootsquash: true
       #   datastore: "datastore"
-## @section global.config.global Global properties in this section will be used for all specified vCenters unless overriden in VirtualCenter section.
+## @section global.config.global Global properties in this section will be used for all specified vCenters unless overridden in VirtualCenter section.
 
-    # Global properties in this section will be used for all specified vCenters unless overriden in VirtualCenter section.
+    # Global properties in this section will be used for all specified vCenters unless overridden in VirtualCenter section.
     global:
 ## @param global.config.global.port Default port to use if not specified different for vCenter
 ## @param global.config.global.insecure-flag Whether to default to insecure connections to vCenters by default
@@ -65,7 +65,7 @@ global:
       #secretNamespace: kube-system
       #cluster-id: your-unique-cluster-id
     # vcenter section
-## @param global.config.vcenter vCenter-specifc confguration
+## @param global.config.vcenter vCenter-specific configuration
 
     vcenter: {}
       # your-vcenter-name-here:
