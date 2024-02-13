@@ -77,15 +77,15 @@ The command removes all the Kubernetes components associated with the chart and 
 | `global.config.storageclass.expansion`         | Enable VolumeExpansion for storageclass, see https://vsphere-csi-driver.sigs.k8s.io/features/volume_expansion.html | `false`       |
 | `global.config.storageclass.default`           | Make created storageClass default                                                                                  | `false`       |
 | `global.config.storageclass.reclaimPolicy`     | Set reclaimPolicy for storageclass                                                                                 | `Delete`      |
-| `global.config.netconfig`                      | Configre Network config for Filebased-Volumes                                                                      | `{}`          |
+| `global.config.netconfig`                      | Configure Network config for Filebased-Volumes                                                                      | `{}`          |
 
-### global.config.global Global properties in this section will be used for all specified vCenters unless overriden in VirtualCenter section.
+### global.config.global Global properties in this section will be used for all specified vCenters unless overridden in VirtualCenter section.
 
 | Name                                 | Description                                                       | Value  |
 | ------------------------------------ | ----------------------------------------------------------------- | ------ |
 | `global.config.global.port`          | Default port to use if not specified different for vCenter        | `443`  |
 | `global.config.global.insecure-flag` | Whether to default to insecure connections to vCenters by default | `true` |
-| `global.config.vcenter`              | vCenter-specifc confguration                                      | `{}`   |
+| `global.config.vcenter`              | vCenter-specific configuration                                    | `{}`   |
 | `global.config.labels`               | Used to configure Toplogy-awareness                               | `{}`   |
 
 ### Common parameters
