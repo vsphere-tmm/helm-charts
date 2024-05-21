@@ -150,7 +150,7 @@ spec:
             - name: LOGGER_LEVEL
               value: "PRODUCTION" # Options: DEVELOPMENT, PRODUCTION
             - name: MAX_VOLUMES_PER_NODE
-              value: "59"     # Maximum number of volumes that controller can publish to the node. If value is not set or zero Kubernetes decide how many volumes can be published by the controller to the node.
+              value: {{ .Values.node.maxVolumesPerNode | quote }}
             - name: GODEBUG
               value: x509sha1=1
             - name: CSI_NAMESPACE
