@@ -151,8 +151,6 @@ spec:
               value: "PRODUCTION" # Options: DEVELOPMENT, PRODUCTION
             - name: MAX_VOLUMES_PER_NODE
               value: {{ .Values.node.maxVolumesPerNode | quote }}
-            - name: GODEBUG
-              value: x509sha1=1
             - name: CSI_NAMESPACE
               valueFrom:
                 fieldRef:
