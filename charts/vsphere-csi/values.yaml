@@ -170,22 +170,8 @@ controller:
   ## @param controller.config [object] block to freely define options for the controller configmap
   ## see https://github.com/kubernetes-sigs/vsphere-csi-driver/blob/61d981a1a1641693a2a6727e1994c82d26fed14b/pkg/csi/service/common/constants.go#L258
   config:
-    csi-migration: true
-    csi-auth-check: true
-    online-volume-extend: true
     trigger-csi-fullsync: false
-    async-query-volume: true
-    block-volume-snapshot: true
-    csi-windows-support: true
-    list-volumes: true
     pv-to-backingdiskobjectid-mapping: false
-    cnsmgr-suspend-create-volume: true
-    topology-preferential-datastores: true
-    max-pvscsi-targets-per-vm: true
-    multi-vcenter-csi-topology: true
-    csi-internal-generated-cluster-id: true
-    listview-tasks: false
-
 
   ## controller image
   ## @param controller.image.registry controller image registry
@@ -198,7 +184,7 @@ controller:
   image:
     registry: gcr.io
     repository: cloud-provider-vsphere/csi/release/driver
-    tag: v3.1.2
+    tag: v3.2.0
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -249,7 +235,7 @@ controller:
     image:
       registry: registry.k8s.io
       repository: sig-storage/csi-resizer
-      tag: v1.8.0
+      tag: v1.10.0
       ## Specify a imagePullPolicy
       ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
       ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -378,7 +364,7 @@ controller:
     image:
       registry: registry.k8s.io
       repository: sig-storage/csi-attacher
-      tag: v4.3.0
+      tag: v4.5.0
       ## Specify a imagePullPolicy
       ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
       ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -505,7 +491,7 @@ controller:
     image:
       registry: registry.k8s.io
       repository: sig-storage/livenessprobe
-      tag: v2.10.0
+      tag: v2.12.0
       ## Specify a imagePullPolicy
       ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
       ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -626,7 +612,7 @@ controller:
     image:
       registry: gcr.io
       repository: cloud-provider-vsphere/csi/release/syncer
-      tag: v3.0.2
+      tag: v3.2.0
       ## Specify a imagePullPolicy
       ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
       ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -670,9 +656,9 @@ controller:
     ##
     args:
       - "--leader-election"
-      - "--leader-election-lease-duration=120s"
-      - "--leader-election-renew-deadline=60s"
-      - "--leader-election-retry-period=30s"
+      - "--leader-election-lease-duration=30s"
+      - "--leader-election-renew-deadline=20s"
+      - "--leader-election-retry-period=10s"
       - "--fss-name=internal-feature-states.csi.vsphere.vmware.com"
       - "--fss-namespace=$(CSI_NAMESPACE)"
     ## @param controller.syncer.extraEnvVars Array with extra environment variables to add to controller.syncer nodes
@@ -752,7 +738,7 @@ controller:
     image:
       registry: registry.k8s.io
       repository: sig-storage/csi-provisioner
-      tag: v3.5.0
+      tag: v4.0.0
       ## Specify a imagePullPolicy
       ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
       ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -881,7 +867,7 @@ controller:
     image:
       registry: registry.k8s.io
       repository: sig-storage/csi-snapshotter
-      tag: v6.2.2
+      tag: v7.0.1
       ## Specify a imagePullPolicy
       ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
       ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -1225,7 +1211,7 @@ snapshotwebhook:
   image:
     registry: registry.k8s.io
     repository: sig-storage/snapshot-validation-webhook
-    tag: v6.0.1
+    tag: v7.0.1
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -1465,7 +1451,7 @@ node:
   image:
     registry: gcr.io
     repository: cloud-provider-vsphere/csi/release/driver
-    tag: v3.1.2
+    tag: v3.2.0
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -1496,7 +1482,7 @@ node:
     image:
       registry: registry.k8s.io
       repository: sig-storage/csi-node-driver-registrar
-      tag: v2.8.0
+      tag: v2.10.0
       ## Specify a imagePullPolicy
       ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
       ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -1622,7 +1608,7 @@ node:
     image:
       registry: registry.k8s.io
       repository: sig-storage/livenessprobe
-      tag: v2.10.0
+      tag: v2.12.0
       ## Specify a imagePullPolicy
       ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
       ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -1957,7 +1943,7 @@ winnode:
   image:
     registry: gcr.io
     repository: cloud-provider-vsphere/csi/release/driver
-    tag: v3.1.2
+    tag: v3.2.0
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -1988,7 +1974,7 @@ winnode:
     image:
       registry: registry.k8s.io
       repository: sig-storage/csi-node-driver-registrar
-      tag: v2.7.0
+      tag: v2.10.0
       ## Specify a imagePullPolicy
       ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
       ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -2113,7 +2099,7 @@ winnode:
     image:
       registry: registry.k8s.io
       repository: sig-storage/livenessprobe
-      tag: v2.10.0
+      tag: v2.12.0
       ## Specify a imagePullPolicy
       ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
       ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -2456,7 +2442,7 @@ webhook:
   image:
     registry: gcr.io
     repository: cloud-provider-vsphere/csi/release/syncer
-    tag: v3.1.2
+    tag: v3.2.0
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
