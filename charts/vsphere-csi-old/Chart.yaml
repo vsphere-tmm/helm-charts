@@ -2,7 +2,7 @@ apiVersion: v2
 appVersion: 2.0.0
 name: vsphere-csi
 description: A Helm chart for vSphere CSI Driver
-version: 0.0.4
+version: 0.0.5
 keywords:
   - vsphere
   - vmware
