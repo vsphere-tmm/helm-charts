@@ -1887,6 +1887,8 @@ node:
   ## @param node.lifecycleHooks for the node container(s) to automate configuration before or after startup
   ##
   lifecycleHooks: {}
+  ## @param node.maxVolumesPerNode Maximum number of volumes that controller can publish to the node. If zero Kubernetes decide
+  maxVolumesPerNode: 59
   ## @param node.extraEnvVars Array with extra environment variables to add to node nodes
   ## e.g:
   ## extraEnvVars:
@@ -2376,6 +2378,8 @@ winnode:
   ## @param winnode.lifecycleHooks for the node container(s) to automate configuration before or after startup
   ##
   lifecycleHooks: {}
+  ## @param winnode.maxVolumesPerNode Maximum number of volumes that controller can publish to the node. If zero Kubernetes decide
+  maxVolumesPerNode: 59
   ## @param winnode.extraEnvVars Array with extra environment variables to add to node nodes
   ## e.g:
   ## extraEnvVars:
