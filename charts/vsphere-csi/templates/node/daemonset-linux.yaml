@@ -30,8 +30,6 @@ spec:
         {{- include "common.tplvalues.render" (dict "value" .Values.node.podLabels "context" $) | nindent 8 }}
         {{- end }}
     spec:
-      nodeSelector:
-        kubernetes.io/os: linux
       serviceAccountName: {{ template "vsphere-csi.node.serviceAccountName" . }}
       {{- include "vsphere-csi.imagePullSecrets" . | nindent 6 }}
       {{- if .Values.node.dnsPolicy }}
@@ -50,6 +48,10 @@ spec:
       {{- end }}
       {{- if .Values.node.nodeSelector }}
       nodeSelector: {{- include "common.tplvalues.render" ( dict "value" .Values.node.nodeSelector "context" $) | nindent 8 }}
+        kubernetes.io/os: linux
+      {{- else }}
+      nodeSelector:
+        kubernetes.io/os: linux
       {{- end }}
       {{- if .Values.node.tolerations }}
       tolerations: {{- include "common.tplvalues.render" (dict "value" .Values.node.tolerations "context" .) | nindent 8 }}
