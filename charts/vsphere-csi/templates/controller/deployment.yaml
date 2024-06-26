@@ -53,9 +53,6 @@ spec:
       {{- end }}
       {{- if .Values.controller.nodeSelector }}
       nodeSelector: {{- include "common.tplvalues.render" ( dict "value" .Values.controller.nodeSelector "context" $) | nindent 8 }}
-      {{- else }}
-      nodeSelector:
-        node-role.kubernetes.io/control-plane: ""
       {{- end }}
       {{- if .Values.controller.tolerations }}
       tolerations: {{- include "common.tplvalues.render" (dict "value" .Values.controller.tolerations "context" .) | nindent 8 }}
@@ -240,8 +237,6 @@ spec:
               value: "100"
             - name: INCLUSTER_CLIENT_BURST
               value: "100"
-            - name: GODEBUG
-              value: x509sha1=1,tlsmaxrsasize=16384
             {{- if .Values.controller.csiNamespace }}
             - name: CSI_NAMESPACE
               value: {{ .Values.controller.csiNamespace }}
@@ -393,8 +388,6 @@ spec:
               value: "100"
             - name: INCLUSTER_CLIENT_BURST
               value: "100"
-            - name: GODEBUG
-              value: x509sha1=1,tlsmaxrsasize=16384
             {{- if .Values.controller.csiNamespace }}
             - name: CSI_NAMESPACE
               value: {{ .Values.controller.csiNamespace }}
