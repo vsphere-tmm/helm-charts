@@ -184,7 +184,7 @@ controller:
   image:
     registry: gcr.io
     repository: cloud-provider-vsphere/csi/release/driver
-    tag: v3.2.0
+    tag: v3.3.0
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -235,7 +235,7 @@ controller:
     image:
       registry: registry.k8s.io
       repository: sig-storage/csi-resizer
-      tag: v1.10.0
+      tag: v1.10.1
       ## Specify a imagePullPolicy
       ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
       ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -364,7 +364,7 @@ controller:
     image:
       registry: registry.k8s.io
       repository: sig-storage/csi-attacher
-      tag: v4.5.0
+      tag: v4.5.1
       ## Specify a imagePullPolicy
       ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
       ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -612,7 +612,7 @@ controller:
     image:
       registry: gcr.io
       repository: cloud-provider-vsphere/csi/release/syncer
-      tag: v3.2.0
+      tag: v3.3.0
       ## Specify a imagePullPolicy
       ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
       ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -738,7 +738,7 @@ controller:
     image:
       registry: registry.k8s.io
       repository: sig-storage/csi-provisioner
-      tag: v4.0.0
+      tag: v4.0.1
       ## Specify a imagePullPolicy
       ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
       ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -867,7 +867,7 @@ controller:
     image:
       registry: registry.k8s.io
       repository: sig-storage/csi-snapshotter
-      tag: v7.0.1
+      tag: v7.0.2
       ## Specify a imagePullPolicy
       ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
       ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -1110,7 +1110,19 @@ controller:
   ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
   ## NOTE: `controller.podAffinityPreset`, `controller.podAntiAffinityPreset`, and `controller.nodeAffinityPreset` will be ignored when it's set
   ##
-  affinity: {}
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: node-role.kubernetes.io/control-plane
+            operator: Exists
+        - matchExpressions:
+          - key: node-role.kubernetes.io/controlplane
+            operator: Exists
+        - matchExpressions:
+          - key: node-role.kubernetes.io/master
+            operator: Exists
   ## @param controller.nodeSelector [object] Node labels for controller pods assignment
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
   ## e.g:
@@ -1211,7 +1223,7 @@ snapshotwebhook:
   image:
     registry: registry.k8s.io
     repository: sig-storage/snapshot-validation-webhook
-    tag: v7.0.1
+    tag: v7.0.2
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -1358,8 +1370,7 @@ snapshotwebhook:
   ## @param snapshotwebhook.nodeSelector [object] Node labels for snapshotwebhook pods assignment
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
-  nodeSelector:
-    node-role.kubernetes.io/control-plane: ""
+  nodeSelector: {}
   ## @param snapshotwebhook.tolerations [array, default: see values.yaml] Tolerations for snapshotwebhook pods assignment
   ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
   ##
@@ -1451,7 +1462,7 @@ node:
   image:
     registry: gcr.io
     repository: cloud-provider-vsphere/csi/release/driver
-    tag: v3.2.0
+    tag: v3.3.0
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -1482,7 +1493,7 @@ node:
     image:
       registry: registry.k8s.io
       repository: sig-storage/csi-node-driver-registrar
-      tag: v2.10.0
+      tag: v2.10.1
       ## Specify a imagePullPolicy
       ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
       ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -1943,7 +1954,7 @@ winnode:
   image:
     registry: gcr.io
     repository: cloud-provider-vsphere/csi/release/driver
-    tag: v3.2.0
+    tag: v3.3.0
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -1974,7 +1985,7 @@ winnode:
     image:
       registry: registry.k8s.io
       repository: sig-storage/csi-node-driver-registrar
-      tag: v2.10.0
+      tag: v2.10.1
       ## Specify a imagePullPolicy
       ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
       ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -2442,7 +2453,7 @@ webhook:
   image:
     registry: gcr.io
     repository: cloud-provider-vsphere/csi/release/syncer
-    tag: v3.2.0
+    tag: v3.3.0
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -2584,13 +2595,23 @@ webhook:
   ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
   ## NOTE: `webhook.podAffinityPreset`, `webhook.podAntiAffinityPreset`, and `webhook.nodeAffinityPreset` will be ignored when it's set
   ##
-  affinity: {}
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: node-role.kubernetes.io/control-plane
+            operator: Exists
+        - matchExpressions:
+          - key: node-role.kubernetes.io/controlplane
+            operator: Exists
+        - matchExpressions:
+          - key: node-role.kubernetes.io/master
+            operator: Exists
   ## @param webhook.nodeSelector [object] Node labels for webhook pods assignment
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
-  nodeSelector:
-    node-role.kubernetes.io/control-plane: ""
-
+  nodeSelector: {}
   ## @param webhook.tolerations [array, default: see values.yaml] Tolerations for webhook pods assignment
   ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
   ##
