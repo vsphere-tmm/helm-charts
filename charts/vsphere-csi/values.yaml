@@ -2778,5 +2778,3 @@ vsphere-cpi:
 snapshot:
   controller:
     enabled: false
-  validationWebhook:
-    enabled: false
