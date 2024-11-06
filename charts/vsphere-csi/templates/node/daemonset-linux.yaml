@@ -279,6 +279,6 @@ spec:
           path: /sys/devices
           type: Directory
         {{- if .Values.node.extraVolumes }}
-        {{- include "common.tplvalues.render" (dict "value" .Values.node.extraVolumes "context" $) | nindent 8 }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.node.extraVolumes "context" $) | nindent 6 }}
         {{- end }}
 {{- end }}
