@@ -2428,6 +2428,9 @@ winnode:
     ## If not set and create is true, a name is generated using the common.names.fullname template
     ##
     name: ""
+  kubelet:
+    ## @param winnode.kubelet.windowsPath Path to kubelet location on the node
+    windowsPath: /var/lib/kubelet
 
 
 linuxnode:

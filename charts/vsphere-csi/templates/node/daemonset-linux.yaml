@@ -191,7 +191,7 @@ spec:
             - name: plugin-dir
               mountPath: /csi
             - name: pods-mount-dir
-              mountPath: /var/lib/kubelet
+              mountPath: {{ .Values.linuxnode.kubelet.linuxPath }}
               # needed so that any mounts setup inside this container are
               # propagated back to the host machine.
               mountPropagation: "Bidirectional"
