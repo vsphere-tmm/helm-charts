@@ -41,7 +41,7 @@ global:
       expansion: false # https://vsphere-csi-driver.sigs.k8s.io/features/volume_expansion.html
       default: false
       reclaimPolicy: Delete
-      #volumebindingmode: Immedeate
+      volumebindingmode: "WaitForFirstConsumer"
       datastoreurl: ""
 ## @param global.config.netconfig Configure Network config for Filebased-Volumes
 
