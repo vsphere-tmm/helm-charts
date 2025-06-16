@@ -15,7 +15,7 @@ parameters:
   storagepolicyname: {{ .Values.global.config.storageclass.storagepolicyname }}
   {{- end -}}
   {{- if .Values.global.config.storageclass.datastoreurl }}
-  datastoreurl:  {{ .Values.global.config.storageclass.datastoreurl }}
+  datastoreurl:  {{ .Values.global.config.storageclass.datastoreurl | quote }}
   {{- end -}}
 {{- end -}}
 {{- if .Values.global.config.storageclass.expansion }}
