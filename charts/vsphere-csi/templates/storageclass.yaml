@@ -8,11 +8,16 @@ metadata:
   annotations:
     storageclass.kubernetes.io/is-default-class: "true"
 {{- end }}
-
 provisioner: csi.vsphere.vmware.com
-{{- if .Values.global.config.storageclass.storagepolicyname }}
+{{- if  }}
+{{- if or (.Values.global.config.storageclass.storagepolicyname) (.Values.global.config.storageclass.datastoreurl) }}
 parameters:
+  {{- if .Values.global.config.storageclass.storagepolicyname }}
   storagepolicyname: {{ .Values.global.config.storageclass.storagepolicyname }}
+  {{- end -}}
+  {{- if .Values.global.config.storageclass.datastoreurl }}
+  datastoreurl:  {{ .Values.global.config.storageclass.datastoreurl }}
+  {{- end -}}
 {{- end -}}
 {{- if .Values.global.config.storageclass.expansion }}
 allowVolumeExpansion: true
@@ -22,6 +27,8 @@ reclaimPolicy: {{ .Values.global.config.storageclass.reclaimpolicy }}
 {{- end -}}
 {{- if .Values.global.config.labels }}
 volumeBindingMode: WaitForFirstConsumer
+{{- else if (not .Values.global.config.labels) (.Values.global.config.storageclass.volumebindingmode) }}
+volumeBindingMode: {{ .Values.global.config.storageclass.volumebindingmode }}
 {{- end -}}
 {{- end -}}
 {{- end }}
