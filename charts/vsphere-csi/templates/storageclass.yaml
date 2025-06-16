@@ -26,7 +26,7 @@ reclaimPolicy: {{ .Values.global.config.storageclass.reclaimpolicy }}
 {{- end -}}
 {{- if .Values.global.config.labels }}
 volumeBindingMode: WaitForFirstConsumer
-{{- else if (not .Values.global.config.labels) (.Values.global.config.storageclass.volumebindingmode) }}
+{{- else if and (not .Values.global.config.labels) (.Values.global.config.storageclass.volumebindingmode) }}
 volumeBindingMode: {{ .Values.global.config.storageclass.volumebindingmode }}
 {{- end -}}
 {{- end -}}
