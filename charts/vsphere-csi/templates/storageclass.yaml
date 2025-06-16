@@ -9,7 +9,6 @@ metadata:
     storageclass.kubernetes.io/is-default-class: "true"
 {{- end }}
 provisioner: csi.vsphere.vmware.com
-{{- if  }}
 {{- if or (.Values.global.config.storageclass.storagepolicyname) (.Values.global.config.storageclass.datastoreurl) }}
 parameters:
   {{- if .Values.global.config.storageclass.storagepolicyname }}
