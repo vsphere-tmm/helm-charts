@@ -23,8 +23,14 @@ spec:
       app.kubernetes.io/component: {{ template "common.names.fullname" . }}-webhook
   template:
     metadata:
-      {{- if .Values.webhook.podAnnotations }}
-      annotations: {{- include "common.tplvalues.render" (dict "value" .Values.webhook.podAnnotations "context" $) | nindent 8 }}
+      {{- if or .Values.webhook.podAnnotations (and .Values.metrics.enabled .Values.metrics.podAnnotations) }}
+      annotations:
+        {{- if .Values.webhook.podAnnotations }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.webhook.podAnnotations "context" $) | nindent 8 }}
+        {{- end }}
+        {{- if and .Values.metrics.enabled .Values.metrics.podAnnotations }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.metrics.podAnnotations "context" $) | nindent 8 }}
+        {{- end }}
       {{- end }}
       labels: {{- include "common.labels.standard" . | nindent 8 }}
         app.kubernetes.io/component: {{ template "common.names.fullname" . }}-webhook
