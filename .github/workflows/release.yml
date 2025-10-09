@@ -22,15 +22,23 @@ jobs:
       - name: Install Helm
         uses: azure/setup-helm@v1
         with:
-          version: v3.6.3
+          version: v3.19.0
 
       - name: Add helm Repos for dependencies
         run: |
           helm repo add bitnami https://charts.bitnami.com/bitnami
           helm repo add vsphere-tmm https://vsphere-tmm.github.io/helm-charts
           helm repo add piraeus https://piraeus.io/helm-charts/
+      - name: Build chart dependencies
+        env:
+          HELM_EXPERIMENTAL_OCI: "1"
+        run: |
+          # Vendor dependencies so chart-releaser packages local charts and doesn't try
+          # to pull from OCI registries itself (avoids helm internal OCI client bug).
+          helm dependency build charts/vsphere-csi
+          helm dependency build charts/vsphere-cpi || true
       - name: Run chart-releaser
-        uses: helm/chart-releaser-action@v1.2.1         
+        uses: helm/chart-releaser-action@v1.7.0 
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
           HELM_EXPERIMENTAL_OCI: "1"
