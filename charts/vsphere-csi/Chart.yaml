@@ -1,5 +1,5 @@
 apiVersion: v2
-appVersion: 3.3.1
+appVersion: 3.5.0
 dependencies:
   - condition: snapshot.controller.enabled
     name: snapshot-controller
@@ -29,4 +29,4 @@ maintainers:
 name: vsphere-csi
 sources:
   - https://github.com/kubernetes-sigs/vsphere-csi-driver
-version: 3.7.7
+version: 3.8.0

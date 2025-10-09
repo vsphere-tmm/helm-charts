@@ -21,8 +21,14 @@ spec:
       app.kubernetes.io/component: {{ template "common.names.fullname" . }}-node
   template:
     metadata:
-      {{- if .Values.node.podAnnotations }}
-      annotations: {{- include "common.tplvalues.render" (dict "value" .Values.node.podAnnotations "context" $) | nindent 8 }}
+      {{- if or .Values.node.podAnnotations (and .Values.metrics.enabled .Values.metrics.podAnnotations) }}
+      annotations:
+        {{- if .Values.node.podAnnotations }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.node.podAnnotations "context" $) | nindent 8 }}
+        {{- end }}
+        {{- if and .Values.metrics.enabled .Values.metrics.podAnnotations }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.metrics.podAnnotations "context" $) | nindent 8 }}
+        {{- end }}
       {{- end }}
       labels: {{- include "common.labels.standard" . | nindent 8 }}
         app.kubernetes.io/component: {{ template "common.names.fullname" . }}-node
