@@ -1,5 +1,5 @@
 apiVersion: v2
-appVersion: 3.5.0
+appVersion: 3.8.0
 dependencies:
   - condition: snapshot.controller.enabled
     name: snapshot-controller

@@ -278,7 +278,7 @@ controller:
     ## @param controller.resizer.args Override default container args (useful when using custom images)
     ##
     args:
-      - "--v=4"
+      - "--v=2"
       - "--timeout=300s"
       - "--handle-volume-inuse-error=false"
       - "--csi-address=$(ADDRESS)"
@@ -407,7 +407,7 @@ controller:
     ## @param controller.attacher.args Override default container args (useful when using custom images)
     ##
     args:
-      - "--v=4"
+      - "--v=2"
       - "--timeout=300s"
       - "--csi-address=$(ADDRESS)"
       - "--leader-election"
@@ -534,7 +534,7 @@ controller:
     ## @param controller.livenessprobe.args Override default container args (useful when using custom images)
     ##
     args:
-      - "--v=4"
+      - "--v=2"
       - "--csi-address=/csi/csi.sock"
     ## @param controller.livenessprobe.extraEnvVars Array with extra environment variables to add to controller.livenessprobe nodes
     ## e.g:
@@ -781,7 +781,7 @@ controller:
     ## @param controller.provisioner.args Override default container args (useful when using custom images)
     ##
     args:
-      - "--v=4"
+      - "--v=2"
       - "--timeout=300s"
       - "--csi-address=$(ADDRESS)"
       - "--kube-api-qps=100"
@@ -910,7 +910,7 @@ controller:
     ## @param controller.snapshotter.args Override default container args (useful when using custom images)
     ##
     args:
-      - "--v=4"
+      - "--v=2"
       - "--kube-api-qps=100"
       - "--kube-api-burst=100"
       - "--timeout=300s"
@@ -1297,7 +1297,7 @@ node:
     ## @param node.registrar.args Override default container args (useful when using custom images)
     ##
     args:
-      - "--v=5"
+      - "--v=2"
       - "--csi-address=$(ADDRESS)"
       - "--kubelet-registration-path=$(DRIVER_REG_SOCK_PATH)"
     ## @param node.registrar.extraEnvVars Array with extra environment variables to add to node.registrar nodes
@@ -1423,7 +1423,7 @@ node:
     ## @param node.livenessprobe.args Override default container args (useful when using custom images)
     ##
     args:
-      - "--v=4"
+      - "--v=2"
       - "--csi-address=/csi/csi.sock"
     ## @param node.livenessprobe.extraEnvVars Array with extra environment variables to add to node.livenessprobes nodes
     ## e.g:
@@ -1789,7 +1789,7 @@ winnode:
     ## @param winnode.registrar.args Override default container args (useful when using custom images)
     ##
     args:
-      - "--v=5"
+      - "--v=2"
       - "--csi-address=$(ADDRESS)"
       - "--kubelet-registration-path=$(DRIVER_REG_SOCK_PATH)"
     ## @param winnode.registrar.extraEnvVars Array with extra environment variables to add to winnode.registrar nodes
@@ -1914,7 +1914,7 @@ winnode:
     ## @param winnode.livenessprobe.args Override default container args (useful when using custom images)
     ##
     args:
-      - "--v=4"
+      - "--v=2"
       - "--csi-address=/csi/csi.sock"
     ## @param winnode.livenessprobe.extraEnvVars Array with extra environment variables to add to winnode.livenessprobes nodes
     ## e.g:
